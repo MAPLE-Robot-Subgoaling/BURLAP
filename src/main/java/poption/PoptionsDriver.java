@@ -13,6 +13,7 @@ import java.util.Random;
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.options.Option;
+import burlap.behavior.singleagent.options.SubgoalBoundedOption;
 import burlap.behavior.singleagent.options.SubgoalOption;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.debugtools.DPrint;
@@ -323,7 +324,7 @@ public class PoptionsDriver {
 
 		// create the grounded option
 		Policy optionPolicy = trainer.createOptionPolicy(goal, hf);
-		SubgoalOption option = new SubgoalOption(name, optionPolicy, initiationConditionTest, terminationConditionTest);
+		SubgoalBoundedOption option = new SubgoalBoundedOption(name, optionPolicy, initiationConditionTest, terminationConditionTest);
 //		option.setExpectationHashingFactory(hf);
 
 		return option;
@@ -361,7 +362,7 @@ public class PoptionsDriver {
 //		collectData(numTrials, rng.nextLong());
 		
 		// training phase
-//		train(rng);
+		train(rng);
 		//trainer.visualize(outputPath); // does not show accurate bounds/walls except for last domain
 		
 		// evaluation phase (ground parameterized options in RL environment)
@@ -381,14 +382,14 @@ public class PoptionsDriver {
 		RandomFactory.seedMapped(0, 3914836); //3914836 tough for cleanup
 		Random rng = RandomFactory.getMapped(0);
 		
-		PoptionsTrainer trainer = new CleanupWorldTrainer(1, 1, rng.nextLong(), CleanupWorld.PF_BLOCK_IN_ROOM);
+		PoptionsTrainer trainer = new CleanupWorldTrainer(1, 1, rng.nextLong(), CleanupWorld.PF_BLOCK_IN_DOOR);
 //		PoptionsTrainer trainer = new DoorWorldTrainer(5, 14, 5, 14, rng.nextLong());
 		Classifier model = new J48();
 		String outputPath = "output/";
 		String outputPrefix = "driver_";
 		
 		PoptionsDriver driver = new PoptionsDriver(trainer, model, outputPath, outputPrefix);
-		int numTrainingTrials = 50;
+		int numTrainingTrials = 1000;
 		driver.run(rng, numTrainingTrials);
 		
 	}

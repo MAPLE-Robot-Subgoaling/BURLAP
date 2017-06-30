@@ -8,7 +8,7 @@ import burlap.mdp.singleagent.common.GoalBasedRF;
 
 public class CleanupWorldRF extends GoalBasedRF{
 
-	double noopCost = -0.001;
+	double noopCost = -1;
 	double pullCost = -0.001;
 	double pushCost = -0.001;
 //	double turnCost = -0.001;

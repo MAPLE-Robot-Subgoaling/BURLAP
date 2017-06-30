@@ -122,6 +122,8 @@ public class BFS extends DeterministicPlanner {
 		this.encodePlanIntoPolicy(lastVistedNode);
 
 		
+		
+//		DPrint.cl(debugCode, policy.getClass().getSimpleName());
 		DPrint.cl(debugCode,"Num Expanded: " + nexpanded);
 
 		return new SDPlannerPolicy(this);

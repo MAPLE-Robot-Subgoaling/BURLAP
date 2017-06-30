@@ -356,6 +356,10 @@ public class CleanupWorld implements DomainGenerator {
 		return domain;
 	}
 	
+	public RewardFunction getRf() {
+		return rf;
+	}
+	
 	/*
 	public class PullActionType extends ObjectParameterizedActionType {
 
