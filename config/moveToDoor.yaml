@@ -1,0 +1,50 @@
+{
+    
+    "trainerName" : "moveToDoor",
+    "shortName" : "m2d",
+    "domainName" : "cleanup",
+    "domainGenerator" : {
+        "minX"                  : 0,
+        "minY"                  : 0,
+        "maxX"                  : 9,
+        "maxY"                  : 9
+	},
+    "numGoals" : 1,
+	"useEpsilonDecay" : true,
+	"minEpsilonDecay" : 0.00,
+	
+	"rewardDefault"				: 0.0,
+	"rewardGoal"				: 100.0,
+	"rewardNoop"				: -1.0,
+	"rewardPull"				: 0,
+    
+    "numEpisodes"               : 200,
+    "writeEvery"                : 1,
+    "maxEpisodeSize"            : 1000,
+    "outputPath"                : "./out_opos_cleanup/",
+    
+    "agent" : {
+        "type"                  : "QLearning",
+		"gamma"                 : 0.95,
+		"qInitFunction"			: {
+			"type"				: "ConstantValueFunction",
+			"value"				: 0.0
+		},
+        "learningPolicyALT" : {
+            "type"              : "BoltzmannQPolicy",
+            "temperature"       : "0.05"
+        },
+		"learningPolicy" : {
+            "type"              : "EpsilonGreedy",
+            "epsilon"	        : "0.1",
+			"rand"				: {
+				"type"			: "Random",
+				"seed"			: 37923056
+			}
+        },
+		"learningRate" : {
+			"type"				: "ConstantLR",
+			"learningRate"		: 0.01
+		}
+	}
+}

@@ -46,7 +46,6 @@ public class SimulationConfig {
 				.registerSubtype(SarsaLam.class, "SarsaLam")
 			;
 		
-		
 		RuntimeTypeAdapterFactory<Policy> adapterPolicy = RuntimeTypeAdapterFactory
 				.of(Policy.class, "type")
 				.registerSubtype(BoltzmannQPolicy.class, "BoltzmannQPolicy")

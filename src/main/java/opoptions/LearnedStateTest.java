@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.opoptions;
+package opoptions;
 
 import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.mdp.core.state.State;

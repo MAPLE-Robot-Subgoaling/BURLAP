@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.opoptions;
+package opoptions;
 
 
 import burlap.mdp.core.oo.state.OOState;

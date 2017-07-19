@@ -1,11 +1,11 @@
-package burlap.behavior.singleagent.opoptions;
+package opoptions;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import burlap.behavior.singleagent.opoptions.trainers.OPOCleanup;
 import burlap.debugtools.DPrint;
+import opoptions.trainers.OPOCleanup;
 import utils.SimulationConfig;
 
 public class OPODriver {
@@ -85,7 +85,7 @@ public class OPODriver {
 			log("\nTrainer: " + trainer.getTrainerName() + " (" + trainer.getDomainName() + " domain)");
 			log("Seed " + (i+1) + " / " + trainingSeeds.size() + ": " + seed);
 			trainer.setSeed(seed);
-			trainer.runTraining(serializationFile);
+			trainer.runTraining(serializationFile, null);
 		}	
 	}
 	
@@ -102,7 +102,7 @@ public class OPODriver {
 	}
 	
 	public void addTrainers() {
-		OPOCleanup moveToDoor = (OPOCleanup) SimulationConfig.load("./config/moveToDoor.json", OPOCleanup.class);
+		OPOCleanup moveToDoor = (OPOCleanup) SimulationConfig.load("./config/moveToDoor.yaml", OPOCleanup.class);
 		addTrainer(moveToDoor);
 	}
 
@@ -125,7 +125,7 @@ public class OPODriver {
 		
 		driver.addTrainers();
 		driver.runTraining();
-		driver.runEvaluation();
+//		driver.runEvaluation();
 		
 	}
 	

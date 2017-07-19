@@ -1,4 +1,4 @@
-package burlap.behavior.singleagent.opoptions;
+package opoptions;
 
 public class OPOption implements OptionGenerator {
 

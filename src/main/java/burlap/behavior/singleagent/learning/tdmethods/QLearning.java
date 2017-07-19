@@ -75,7 +75,7 @@ public class QLearning extends MDPSolver implements QProvider, LearningAgent, Pl
 	/**
 	 * The learning policy to use. Typically these will be policies that link back to this object so that they change as the Q-value estimate change.
 	 */
-	protected Policy												learningPolicy;
+	private Policy												learningPolicy;
 
 
 	/**
@@ -117,6 +117,10 @@ public class QLearning extends MDPSolver implements QProvider, LearningAgent, Pl
 	 */
 	protected int													totalNumberOfSteps = 0;
 	
+	
+	public QLearning() {
+		this.QLInit(null, 0.99, null, new ConstantValueFunction(0.0), 0.01, new EpsilonGreedy(this, 0.1), Integer.MAX_VALUE);
+	}
 	
 	/**
 	 * Initializes Q-learning with 0.1 epsilon greedy policy, the same Q-value initialization everywhere, and places no limit on the number of steps the 
@@ -211,7 +215,7 @@ public class QLearning extends MDPSolver implements QProvider, LearningAgent, Pl
 		this.solverInit(domain, gamma, hashingFactory);
 		this.qFunction = new HashMap<HashableState, QLearningStateNode>();
 		this.learningRate = new ConstantLR(learningRate);
-		this.learningPolicy = learningPolicy;
+		this.setLearningPolicy(learningPolicy);
 		this.maxEpisodeSize = maxEpisodeSize;
 		this.qInitFunction = qInitFunction;
 		
@@ -439,7 +443,7 @@ public class QLearning extends MDPSolver implements QProvider, LearningAgent, Pl
 		maxQChangeInLastEpisode = 0.;
 		while(!env.isInTerminalState() && (eStepCounter < maxSteps || maxSteps == -1)){
 
-			Action action = learningPolicy.action(curState.s());
+			Action action = getLearningPolicy().action(curState.s());
 			QValue curQ = this.getQ(curState, action);
 
 
@@ -538,6 +542,11 @@ public class QLearning extends MDPSolver implements QProvider, LearningAgent, Pl
 		} catch(FileNotFoundException e) {
 			e.printStackTrace();
 		}
+	}
+
+
+	public Policy getLearningPolicy() {
+		return learningPolicy;
 	}
 
 }
