@@ -21,30 +21,15 @@
     "numEpisodes"               : 200,
     "writeEvery"                : 1,
     "maxEpisodeSize"            : 1000,
-    "outputPath"                : "./out_opos_cleanup/",
-    
+    "outputPath"                : "./out_opos_cleanup/moveToDoor/",
     "agent" : {
-        "type"                  : "QLearning",
-		"gamma"                 : 0.95,
-		"qInitFunction"			: {
+        "type"                  : "ValueIteration",
+        "gamma"                 : 0.9,
+        "maxDelta"              : 0.00001,
+        "maxIterations"         : 10000,
+        "valueInitializer"	    : {
 			"type"				: "ConstantValueFunction",
 			"value"				: 0.0
-		},
-        "learningPolicyALT" : {
-            "type"              : "BoltzmannQPolicy",
-            "temperature"       : "0.05"
-        },
-		"learningPolicy" : {
-            "type"              : "EpsilonGreedy",
-            "epsilon"	        : "0.1",
-			"rand"				: {
-				"type"			: "Random",
-				"seed"			: 37923056
-			}
-        },
-		"learningRate" : {
-			"type"				: "ConstantLR",
-			"learningRate"		: 0.01
 		}
 	}
 }

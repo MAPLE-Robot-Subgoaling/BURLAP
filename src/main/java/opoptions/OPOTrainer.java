@@ -1,5 +1,6 @@
 package opoptions;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,6 +15,7 @@ import burlap.behavior.singleagent.auxiliary.performance.PerformancePlotter;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.behavior.singleagent.learning.tdmethods.vfa.ApproximateQLearning;
 import burlap.behavior.singleagent.learning.tdmethods.vfa.GradientDescentSarsaLam;
+import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.oo.state.OOState;
@@ -94,23 +96,6 @@ public abstract class OPOTrainer extends SimulationConfig {
 		return lastTrainingSeedTimestamp;
 	}
 
-	public String setupSerializationFile(String path, boolean moveFile) {
-		String prepend = path;
-		String outYaml = prepend + ".yaml";
-		System.out.println("looking for serialization file " + prepend + " and out " + outYaml);
-		if (moveFile) {
-			String moveYaml = prepend + "_" + new SimpleDateFormat("yyyyMMddhhmmss").format(new Date()).toString() + ".yaml";
-			Path filePathSource = Paths.get(outYaml);
-			Path filePathDestination = Paths.get(moveYaml);
-			try {
-				Files.move(filePathSource, filePathDestination);
-			} catch (IOException e1) {
-				// do nothing
-			}
-		}
-		String serializationFile = outYaml;
-		return serializationFile;
-	}
 
 	public void setSeed(Long seed) {
 		this.seed = seed;
@@ -120,37 +105,37 @@ public abstract class OPOTrainer extends SimulationConfig {
 	private int getIndexForRandomFactory() {
 		return DEFAULT_RNG_INDEX;
 	}
-	
+
 	public abstract OOState setupStateTraining();
 	
 	public abstract OOSADomain setupDomain();
 	
-	public MDPSolver setupAgent(String serializationFile) {
+	public MDPSolver setupAgent() {
 		agent.resetSolver();
 		agent.setDomain(domain);
 		hashingFactory = new SimpleHashableStateFactory(identifierIndependentHashing);
 		agent.setHashingFactory(hashingFactory);
-		Policy policy =  null;
-		if (agent instanceof QLearning) {
-			QLearning ql = (QLearning) agent;
-			policy = ql.getLearningPolicy();
-		} else {
-			throw new RuntimeException("error: unknown agent type specified in setupAgent");
-		}
-		((SolverDerivedPolicy)policy).setSolver(agent);
+//		Policy policy =  null;
+//		if (agent instanceof QLearning) {
+//			QLearning ql = (QLearning) agent;
+//			policy = ql.getLearningPolicy();
+//		} else if (agent instanceof ValueIteration) {
+//			// pass
+//		} else {
+//			throw new RuntimeException("error: unknown agent type specified in setupAgent");
+//		}
+//		((SolverDerivedPolicy)policy).setSolver(agent);
 		return agent;
 	}
 	
-	public String runSimulation(PerformancePlotter plotter) {
-		String seedTimestamp = Simulation.run(this, plotter);
+	public String planAndRollout(FileWriter writer, PerformancePlotter plotter) {
+		String seedTimestamp = Simulation.plan(this, writer);
 		return seedTimestamp;
 	}
-	
-	public void serializeAndWrite(String serializationFile) {
-		System.err.println("serializeAndWrite not implemented");
-	}
 
-	public void runTraining(String serializationFile, PerformancePlotter plotter) {
+	public abstract void runEpisodeVisualizer(String filePrefix);
+	
+	public void runTraining(FileWriter writer, PerformancePlotter plotter) {
 
 		// 1. setup the state
 		// 2. setup the domain
@@ -165,20 +150,16 @@ public abstract class OPOTrainer extends SimulationConfig {
 		setupDomain();
 		
 		// 3. setup the agent
-		setupAgent(serializationFile);
+		setupAgent();
 		
 		// 4. run the simulation
-		String seedTimestamp = runSimulation(plotter);
+		String seedTimestamp = planAndRollout(writer, plotter);
 		lastTrainingSeedTimestamp = seedTimestamp;
-		
-		// 5. serialize if needed
-		serializeAndWrite(serializationFile);
 		
 	}
 	
 	public void runEvaluation(String serializationFile) {
-		// TODO Auto-generated method stub
-		System.err.println("runEvaluation not implemented");
+		throw new RuntimeException("runEvaluation not implemented");
 	}
 
 }

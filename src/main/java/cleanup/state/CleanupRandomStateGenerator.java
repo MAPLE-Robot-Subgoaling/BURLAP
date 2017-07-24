@@ -5,9 +5,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.auxiliary.StateGenerator;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
+import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.State;
 import cleanup.CleanupGoalDescription;
@@ -15,10 +17,15 @@ import cleanup.Cleanup;
 
 public class CleanupRandomStateGenerator implements StateGenerator {
 
+	private static final int DEBUG_CODE = 932891293;
 	public static int DEFAULT_RNG_INDEX = 0;
 	private int numBlocks = 2;
 	private int width = 13;
 	private  int height = 13;
+	
+	public static void setDebugMode(boolean mode) {
+		DPrint.toggleCode(DEBUG_CODE, mode);
+	}
 	
 	public int getNumBlocks() {
 		return numBlocks;
@@ -110,7 +117,7 @@ public class CleanupRandomStateGenerator implements StateGenerator {
 //			if (s.isOpen(room, bX, bY)) {
 //				String shape = Cleanup.SHAPES[rng.nextInt(Cleanup.SHAPES.length)];
 //				String color = Cleanup.COLORS[rng.nextInt(Cleanup.COLORS.length)];
-//				System.out.println("block"+i+": "+ shape + " " + color + " (" + bX + ", " + bY + ") in the " + room.get(Cleanup.ATT_COLOR) + " " + ((CleanupRoom)room).name);
+//				DPrint.cl(DEBUG_CODE,"block"+i+": "+ shape + " " + color + " (" + bX + ", " + bY + ") in the " + room.get(Cleanup.ATT_COLOR) + " " + ((CleanupRoom)room).name);
 //				s.addObject(new CleanupBlock(id, bX, bY, shape, color));
 //				i = i + 1;
 //			}
@@ -253,7 +260,7 @@ public class CleanupRandomStateGenerator implements StateGenerator {
 //			if (s.isOpen(room, bX, bY)) {
 //				String shape = Cleanup.SHAPES[rng.nextInt(Cleanup.SHAPES.length)];
 //				String color = Cleanup.COLORS[rng.nextInt(Cleanup.COLORS.length)];
-//				System.out.println("block"+i+": "+ shape + " " + color + " (" + bX + ", " + bY + ") in the " + room.get(Cleanup.ATT_COLOR) + " " + ((CleanupRoom)room).name);
+//				DPrint.cl(DEBUG_CODE,"block"+i+": "+ shape + " " + color + " (" + bX + ", " + bY + ") in the " + room.get(Cleanup.ATT_COLOR) + " " + ((CleanupRoom)room).name);
 //				s.addObject(new CleanupBlock(id, bX, bY, shape, color));
 //				i = i + 1;
 //			}
@@ -316,7 +323,7 @@ public class CleanupRandomStateGenerator implements StateGenerator {
 			if (s.isOpen(room, bX, bY)) {
 				String shape = Cleanup.SHAPES[rng.nextInt(Cleanup.SHAPES.length)];
 				String color = Cleanup.COLORS[rng.nextInt(Cleanup.COLORS.length)];
-				System.out.println("block"+i+": "+ shape + " " + color + " (" + bX + ", " + bY + ") in the " + room.get(Cleanup.ATT_COLOR) + " room");
+				DPrint.cl(DEBUG_CODE,"block"+i+": "+ shape + " " + color + " (" + bX + ", " + bY + ") in the " + room.get(Cleanup.ATT_COLOR) + " room");
 				s.addObject(new CleanupBlock(id, bX, bY, shape, color));
 				i = i + 1;
 			}
@@ -350,8 +357,11 @@ public class CleanupRandomStateGenerator implements StateGenerator {
 		return false;
 	}
 
+	public static CleanupGoalDescription[] getRandomGoalDescription(CleanupState s, int numGoals, PropositionalFunction pf) {
+		return getRandomGoalDescription(s, numGoals, pf, RandomFactory.getMapped(DEFAULT_RNG_INDEX));
+	}
 	
-	public static CleanupGoalDescription[] getRandomGoalDescription(Random rng, CleanupState s, int numGoals, PropositionalFunction pf) {
+	public static CleanupGoalDescription[] getRandomGoalDescription(CleanupState s, int numGoals, PropositionalFunction pf, Random rng) {
 		CleanupGoalDescription[] goals = new CleanupGoalDescription[numGoals];
 		if (pf.getName().equals(Cleanup.PF_BLOCK_IN_ROOM)) {
 			List<ObjectInstance> blocks = s.objectsOfClass(Cleanup.CLASS_BLOCK);
@@ -366,7 +376,7 @@ public class CleanupRandomStateGenerator implements StateGenerator {
 					room = rooms.get(rng.nextInt(rooms.size()));
 				}
 				goals[i] = new CleanupGoalDescription(new String[]{block.name(), room.name()}, pf);
-				System.out.println(goals[i] + ": "
+				DPrint.cl(DEBUG_CODE,goals[i] + ": "
 						+ block.get(Cleanup.ATT_COLOR) + " "
 						+ block.get(Cleanup.ATT_SHAPE) + " to "
 						+ room.get(Cleanup.ATT_COLOR) + " room");
@@ -378,11 +388,11 @@ public class CleanupRandomStateGenerator implements StateGenerator {
 				ObjectInstance door = doors.get(rng.nextInt(doors.size()));
 				ObjectInstance agent = agents.get(0);
 				goals[i] = new CleanupGoalDescription(new String[]{agent.name(), door.name()}, pf);
-				System.out.println(goals[i] + ": agent (x:"
+				DPrint.cl(DEBUG_CODE,goals[i] + ": agent (x:"
 						+ agent.get(Cleanup.ATT_X) + ", y:"
 						+ agent.get(Cleanup.ATT_Y) + ") to door (x:"
-						+ door.get(Cleanup.ATT_TOP) + ", y:"
-						+ door.get(Cleanup.ATT_LEFT) + ")");
+						+ door.get(Cleanup.ATT_X) + ", y:"
+						+ door.get(Cleanup.ATT_Y) + ")");
 			}
 		} else if (pf.getName().equals(Cleanup.PF_BLOCK_IN_DOOR)) {
 			List<ObjectInstance> blocks = s.objectsOfClass(Cleanup.CLASS_BLOCK);
@@ -391,11 +401,11 @@ public class CleanupRandomStateGenerator implements StateGenerator {
 				ObjectInstance door = doors.get(rng.nextInt(doors.size()));
 				ObjectInstance block = blocks.get(0);
 				goals[i] = new CleanupGoalDescription(new String[]{block.name(), door.name()}, pf);
-				System.out.println(goals[i] + ": block (x:"
+				DPrint.cl(DEBUG_CODE,goals[i] + ": block (x:"
 						+ block.get(Cleanup.ATT_X) + ", y:"
 						+ block.get(Cleanup.ATT_Y) + ") to door (x:"
-						+ door.get(Cleanup.ATT_TOP) + ", y:"
-						+ door.get(Cleanup.ATT_LEFT) + ")");
+						+ door.get(Cleanup.ATT_X) + ", y:"
+						+ door.get(Cleanup.ATT_Y) + ")");
 			}
 		} else {
 			throw new RuntimeException("Randomization of goal not implemented for given propositional function.");
@@ -422,7 +432,7 @@ public class CleanupRandomStateGenerator implements StateGenerator {
 				String roomColor = (String) room.get(Cleanup.ATT_COLOR);
 				if (blockColor.equals(roomColor)) {
 					goals[i] = new CleanupGoalDescription(new String[]{block.name(), room.name()}, pf);
-					System.out.println(goals[i] + ": "
+					DPrint.cl(DEBUG_CODE,goals[i] + ": "
 							+ block.get(Cleanup.ATT_COLOR) + " "
 							+ block.get(Cleanup.ATT_SHAPE) + " to "
 							+ room.get(Cleanup.ATT_COLOR) + " " + ((CleanupRoom)room).getName());
@@ -450,7 +460,7 @@ public class CleanupRandomStateGenerator implements StateGenerator {
 				String doorColor = (String) door.get(Cleanup.ATT_COLOR);
 				if (blockColor.equals(doorColor)) {
 					goals[i] = new CleanupGoalDescription(new String[]{block.name(), door.name()}, pf);
-					System.out.println(goals[i] + ": "
+					DPrint.cl(DEBUG_CODE,goals[i] + ": "
 							+ block.get(Cleanup.ATT_COLOR) + " "
 							+ block.get(Cleanup.ATT_SHAPE) + " to "
 							+ door.get(Cleanup.ATT_COLOR) + " " + ((CleanupDoor)door).getName());
@@ -462,6 +472,73 @@ public class CleanupRandomStateGenerator implements StateGenerator {
 			}
 		}
 		return goals;
+	}
+
+	public OOState generateOneRoomOneDoor() {
+		
+		Random rng = RandomFactory.getMapped(DEFAULT_RNG_INDEX);
+		
+		int numBlocks = 0;
+		int numRooms = 1;
+		int numDoors = 1;
+		
+		int mx = width/2;
+		int my = height/2;
+		int ax = mx;
+		int ay = my;
+		String agentDirection = Cleanup.directions[rng.nextInt(Cleanup.directions.length)];
+		CleanupState s = new CleanupState(width, height, ax, ay, agentDirection, numBlocks, numRooms, numDoors);
+		
+		List<String> blockColors = new ArrayList<String>(); // Arrays.asList(Cleanup.COLORS);
+		blockColors.add("green");
+		blockColors.add("blue");
+		blockColors.add("yellow");
+		blockColors.add("red");
+		blockColors.add("magenta");
+		List<String> roomColors = new ArrayList<String>();
+		roomColors.addAll(blockColors);
+		roomColors.add("cyan");
+		roomColors.add("orange");
+		roomColors.add("white");
+		
+		int mainW = 2;
+		int mainH = 2;
+		
+		int index = 0;
+		while (numBlocks > 0) {
+			int bx = ax + (rng.nextBoolean() ? -1 : 1);
+			int by = ay + (rng.nextBoolean() ? -1 : 1);
+			if (!s.blockAt(bx, by)) {
+				s.addObject(new CleanupBlock("block"+index, bx, by, "backpack", blockColors.get(rng.nextInt(numDoors - 1))));
+				numBlocks -= 1;
+				index += 1;
+			}
+		};
+		
+		
+		String roomColor = roomColors.get(rng.nextInt(roomColors.size()));
+		CleanupRoom room = new CleanupRoom("room0", mx-mainW, mx+mainW, my-mainH, my+mainH, roomColor, Cleanup.SHAPE_ROOM);
+		int rx = ((Integer)room.get(Cleanup.ATT_LEFT));
+		int ry = ((Integer)room.get(Cleanup.ATT_BOTTOM));
+		int rWidth  = ((Integer)room.get(Cleanup.ATT_RIGHT)) - ((Integer)room.get(Cleanup.ATT_LEFT));
+		int rHeight = ((Integer)room.get(Cleanup.ATT_TOP)) - ((Integer)room.get(Cleanup.ATT_BOTTOM));
+		boolean leftOrBottom = rng.nextBoolean();
+		int dx = 0;
+		int dy = 0;
+		boolean onVerticalWall = rng.nextBoolean();
+		if (onVerticalWall) {
+			dx = leftOrBottom ? rx : rx + rWidth;
+			dy = 1 + ry + rng.nextInt(rHeight-1);
+		} else {
+			dx = 1 + rx + rng.nextInt(rWidth-1);
+			dy = leftOrBottom ? ry : ry + rHeight;
+		}
+		CleanupDoor door = new CleanupDoor("door0", dx, dx, dy, dy, Cleanup.LOCKABLE_STATES[0], Cleanup.SHAPE_DOOR, blockColors.get(0));
+		
+		s.addObject(room);
+		s.addObject(door);
+		
+		return s;
 	}
 	
 	

@@ -1,10 +1,12 @@
 package utils;
 
+import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.auxiliary.performance.PerformancePlotter;
@@ -13,6 +15,7 @@ import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.behavior.singleagent.learning.tdmethods.SarsaLam;
 import burlap.behavior.singleagent.learning.tdmethods.vfa.ApproximateQLearning;
 import burlap.behavior.singleagent.learning.tdmethods.vfa.GradientDescentSarsaLam;
+import burlap.behavior.singleagent.planning.Planner;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
@@ -24,6 +27,32 @@ public class Simulation {
 	public static EnvironmentServer environmentServer;
 	public static SimulatedEnvironment env;
 	public static MDPSolver agent;
+	
+	public static String plan(SimulationConfig config, FileWriter writer) {
+
+		String outputPath = config.getOutputPath();
+		long seed = config.getSeed();
+		int maxEpisodeSize = config.getMaxEpisodeSize();
+		SADomain domain = config.getDomain();
+		State initialState = config.getInitialState();
+		MDPSolver agent = config.getAgent();
+//		Planner planner = config.getPlanner();
+		env = new SimulatedEnvironment(domain, initialState);
+//		if (plotter != null) {
+//			environmentServer = new EnvironmentServer(env, plotter);
+//			plotter.toggleDataCollection(true);
+//			plotter.startNewTrial();
+//		}
+		String timestamp = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss").format(new Date()).toString();
+		String filePrepend = timestamp;//seed + "" + timestamp;
+		
+		Policy policy = ((Planner) agent).planFromState(initialState);
+		Episode e = PolicyUtils.rollout(policy, env, maxEpisodeSize);
+//		if (plotter != null) { plotter.endEpisode(); }
+		e.write(outputPath + filePrepend + ".episode");
+		
+		return filePrepend;
+	}
 	
 	public static String run(SimulationConfig config, PerformancePlotter plotter) {
 		

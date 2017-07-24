@@ -63,6 +63,10 @@ public class ValueIteration extends DynamicProgramming implements Planner {
 	protected boolean												hasRunVI = false;
 	
 	
+	public ValueIteration() {
+		this.DPPInit(null, 0.99, null);
+	}
+	
 	/**
 	 * Initializers the valueFunction.
 	 * @param domain the domain in which to plan

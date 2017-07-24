@@ -16,8 +16,11 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.behavior.singleagent.learning.tdmethods.SarsaLam;
+import burlap.behavior.singleagent.planning.Planner;
+import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
 import burlap.behavior.valuefunction.ConstantValueFunction;
 import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.ValueFunction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 
@@ -31,6 +34,7 @@ public class SimulationConfig {
 	protected double minEpsilonDecay;
 	protected String outputPath;
 	protected MDPSolver agent;
+	protected Planner planner;
 	
 	// generated in code
 	protected SADomain domain;
@@ -40,10 +44,16 @@ public class SimulationConfig {
 	@SuppressWarnings("unchecked")
 	public static SimulationConfig load(String filename, Class clasz) {
 
+//		RuntimeTypeAdapterFactory<Planner> adapterPlanner = RuntimeTypeAdapterFactory
+//				.of(Planner.class, "type")
+//				.registerSubtype(ValueIteration.class, "ValueIteration")
+//			;
+		
 		RuntimeTypeAdapterFactory<MDPSolver> adapterAgent = RuntimeTypeAdapterFactory
 				.of(MDPSolver.class, "type")
 				.registerSubtype(QLearning.class, "QLearning")
 				.registerSubtype(SarsaLam.class, "SarsaLam")
+				.registerSubtype(ValueIteration.class, "ValueIteration")
 			;
 		
 		RuntimeTypeAdapterFactory<Policy> adapterPolicy = RuntimeTypeAdapterFactory
@@ -63,11 +73,18 @@ public class SimulationConfig {
 				.registerSubtype(ConstantValueFunction.class, "ConstantValueFunction")
 			;
 		
+		RuntimeTypeAdapterFactory<ValueFunction> adapterValueFunction = RuntimeTypeAdapterFactory
+				.of(ValueFunction.class, "type")
+				.registerSubtype(ConstantValueFunction.class, "ConstantValueFunction")
+			;
+		
 		Gson configJson = new GsonBuilder()
+//				.registerTypeAdapterFactory(adapterPlanner)
 				.registerTypeAdapterFactory(adapterAgent)
 				.registerTypeAdapterFactory(adapterPolicy)
 				.registerTypeAdapterFactory(adapterLearningRate)
 				.registerTypeAdapterFactory(adapterQFunction)
+				.registerTypeAdapterFactory(adapterValueFunction)
 				.create()
 			;
 	
@@ -122,5 +139,13 @@ public class SimulationConfig {
 	public void setNumEpisodes(int numEpisodes) {
 		this.numEpisodes = numEpisodes;
 	}
+
+//	public Planner getPlanner() {
+//		return planner;
+//	}
+//	
+//	public void setPlanner(Planner planner) {
+//		this.planner = planner;
+//	}
 
 }

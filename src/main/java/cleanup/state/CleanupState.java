@@ -229,10 +229,19 @@ public class CleanupState implements MutableOOState {
 	}
 
 	public boolean wallAt(ObjectInstance r, int x, int y){
+		if (r == null) {
+			System.err.println("null room at " + x + ", " + y + ", treating as wall");
+			return true;
+		}
 		if (x < 0 || x >= width || y < 0 || y >= height) {
 			return true;
 		}
-		int top = (Integer)r.get(Cleanup.ATT_TOP);
+		Integer top = null;
+		try {
+			top = (Integer)r.get(Cleanup.ATT_TOP);
+		} catch (Exception e) {
+			System.out.println("stop");
+		}
 		int left = (Integer)r.get(Cleanup.ATT_LEFT);
 		int bottom = (Integer)r.get(Cleanup.ATT_BOTTOM);
 		int right = (Integer)r.get(Cleanup.ATT_RIGHT);
