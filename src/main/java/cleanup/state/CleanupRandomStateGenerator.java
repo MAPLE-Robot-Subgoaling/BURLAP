@@ -481,9 +481,16 @@ public class CleanupRandomStateGenerator implements StateGenerator {
 		int numBlocks = 0;
 		int numRooms = 1;
 		int numDoors = 1;
+
+		int maxRadiusWidth = 4;
+		int maxRadiusHeight = 4;
+		int mainW = 1 + rng.nextInt(maxRadiusWidth);
+		int mainH = 1 + rng.nextInt(maxRadiusHeight);
+		int availableW = maxRadiusWidth - mainW;
+		int availableH = maxRadiusHeight - mainH;
+		int mx = (width/2)  + rng.nextInt(availableW+1);
+		int my = (height/2) + rng.nextInt(availableH+1);
 		
-		int mx = width/2;
-		int my = height/2;
 		int ax = mx;
 		int ay = my;
 		String agentDirection = Cleanup.directions[rng.nextInt(Cleanup.directions.length)];
@@ -501,8 +508,6 @@ public class CleanupRandomStateGenerator implements StateGenerator {
 		roomColors.add("orange");
 		roomColors.add("white");
 		
-		int mainW = 2;
-		int mainH = 2;
 		
 		int index = 0;
 		while (numBlocks > 0) {
@@ -533,7 +538,7 @@ public class CleanupRandomStateGenerator implements StateGenerator {
 			dx = 1 + rx + rng.nextInt(rWidth-1);
 			dy = leftOrBottom ? ry : ry + rHeight;
 		}
-		CleanupDoor door = new CleanupDoor("door0", dx, dx, dy, dy, Cleanup.LOCKABLE_STATES[0], Cleanup.SHAPE_DOOR, blockColors.get(0));
+		CleanupDoor door = new CleanupDoor("door0", dx, dx, dy, dy, Cleanup.LOCKABLE_STATES[0], Cleanup.SHAPE_DOOR, Cleanup.COLOR_GRAY);
 		
 		s.addObject(room);
 		s.addObject(door);

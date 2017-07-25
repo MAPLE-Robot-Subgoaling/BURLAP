@@ -2,18 +2,25 @@ package opoptions;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import burlap.behavior.singleagent.Episode;
+import burlap.datastructures.AlphanumericSorting;
 import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
+import burlap.mdp.core.oo.state.OOState;
+import burlap.mdp.core.oo.state.ObjectInstance;
+import burlap.mdp.core.state.State;
 import opoptions.trainers.OPOCleanup;
 import utils.SimulationConfig;
 import weka.core.Instances;
@@ -87,44 +94,22 @@ public class OPODriver {
 		}
 	}
 	
-	public void collectTrajectories() {
+	public void runTraining() {
 		for (OPOTrainer trainer : trainers) {
-			collectTrajectories(trainer);
+			runTraining(trainer);
 		}
 	}
 
-	public void collectTrajectories(OPOTrainer trainer) {
-		boolean moveFile = MOVE_FILE;
-		String path = getOutputFilename(trainer);
-		String csvPath = path + ".csv";
-//		String serializationFile = setupSerializationFile(path, moveFile);
-		log(csvPath);
-		try {
-			File file = new File(csvPath);
-			file.getParentFile().mkdirs();
-			FileWriter writer = new FileWriter(file);
-
-			int numTrajectories = trainingSeeds.size();
-			log("Beginning " + numTrajectories + " trajectories");
-			for (int i = 0; i < numTrajectories; i++) {
-				Long seed = trainingSeeds.get(i);
-				log("\nTrainer: " + trainer.getTrainerName() + " (" + trainer.getDomainName() + " domain)");
-				log("Seed " + (i+1) + " / " + numTrajectories + ": " + seed);
-				trainer.setSeed(seed);
-				trainer.runTraining(writer, null);
-
-			}
-			
-			writer.flush();
-			writer.close();
-			
-			log("not calling csvToArff yet");
-//			csvToArff(path);
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
+	public void runTraining(OPOTrainer trainer) {
+		
+		int numTrajectories = trainingSeeds.size();
+		log("Beginning " + numTrajectories + " trajectories");
+		for (int i = 0; i < numTrajectories; i++) {
+			Long seed = trainingSeeds.get(i);
+			log("\nTrainer: " + trainer.getTrainerName() + " (" + trainer.getDomainName() + " domain)");
+			log("Seed " + (i+1) + " / " + numTrajectories + ": " + seed);
+			trainer.setSeed(seed);
+			trainer.runTraining(null);
 		}
 		
 	}
@@ -198,6 +183,86 @@ public class OPODriver {
 		}
 	}
 
+	private void collectDataset() {
+		for (OPOTrainer trainer : trainers) {
+			collectDataset(trainer);
+		}
+	}
+	
+	private List<OOState> getStates(OPOTrainer trainer) {
+		List<OOState> allStates = new ArrayList<OOState>();
+		List<Episode> episodes = Episode.readEpisodes(trainer.getOutputPath());
+		log(episodes.size());
+		for (Episode episode : episodes) {
+			List<State> states = episode.stateSequence;
+			for (State state : states) {
+				OOState s = (OOState) state;
+				allStates.add(s);
+			}
+		}
+		return allStates;
+	}
+
+	private void writeFeatureVectorHeader(FileWriter writer, OOState state) throws IOException {
+		StringBuilder sb = new StringBuilder();
+		String label = "label";
+		List<ObjectInstance> objects = state.objects();
+		for (ObjectInstance object : objects) {
+			for (Object variableKey : object.variableKeys()) {
+				String key = variableKey.toString();
+				sb.append(object.className());
+				sb.append(":");
+				sb.append(key);
+				sb.append(",");
+			}
+		}
+		sb.append(label);
+		sb.append('\n');
+		writer.append(sb.toString());
+	}
+	
+	private void writeFeatureVector(FileWriter writer, OOState state, OPOTrainer trainer) throws IOException {
+		StringBuilder sb = new StringBuilder();
+		boolean isGoal = trainer.satisfiesGoal(state);
+		String label = isGoal ? "goal" : "internal";
+		List<ObjectInstance> objects = state.objects();
+		for (ObjectInstance object : objects) {
+			for (Object variableKey : object.variableKeys()) {
+				String key = variableKey.toString();
+				String val = object.get(key).toString();
+				sb.append(val);
+				sb.append(",");
+			}
+		}
+		sb.append(label);
+		sb.append('\n');
+		writer.append(sb.toString());
+	}
+	
+	private void collectDataset(OPOTrainer trainer) {
+		try {
+			String path = getOutputFilename(trainer);
+			String csvPath = path + ".csv";
+			log("saving to " + csvPath);
+			List<OOState> states = getStates(trainer);
+			File file = new File(csvPath);
+			file.getParentFile().mkdirs();
+			FileWriter writer = new FileWriter(file);
+			writeFeatureVectorHeader(writer, states.get(0));
+			for (OOState state : states) {
+				writeFeatureVector(writer, state, trainer);
+			}
+			writer.flush();
+			writer.close();
+			csvToArff(path);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
 	public static void main(String[] args) {
 		
 		Random rng = new Random();
@@ -210,7 +275,7 @@ public class OPODriver {
 		
 		OPODriver driver = new OPODriver(outputPath, outputPrefix);
 		long initSeedTraining = rng.nextLong();//2103460911L;
-		int numSeedsTraining = 1;
+		int numSeedsTraining = 100;
 		driver.addSeedsTo(driver.getTrainingSeeds(), initSeedTraining, numSeedsTraining);
 		log(initSeedTraining + ": " + driver.getTrainingSeeds());
 //		long initSeedEvaluation = rng.nextLong();
@@ -220,13 +285,14 @@ public class OPODriver {
 		
 		driver.addTrainers();
 		
-		driver.collectTrajectories();
+		driver.runTraining();
+		
+		driver.collectDataset();
 		
 		driver.runVisualizer();
 		
 //		driver.runEvaluation();
 		
 	}
-
 	
 }

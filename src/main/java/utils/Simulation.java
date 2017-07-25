@@ -4,6 +4,8 @@ import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
+
 import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.PolicyUtils;
@@ -28,7 +30,7 @@ public class Simulation {
 	public static SimulatedEnvironment env;
 	public static MDPSolver agent;
 	
-	public static String plan(SimulationConfig config, FileWriter writer) {
+	public static String plan(SimulationConfig config) {
 
 		String outputPath = config.getOutputPath();
 		long seed = config.getSeed();
@@ -43,14 +45,17 @@ public class Simulation {
 //			plotter.toggleDataCollection(true);
 //			plotter.startNewTrial();
 //		}
-		String timestamp = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss").format(new Date()).toString();
-		String filePrepend = timestamp;//seed + "" + timestamp;
+		String timestamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date()).toString();
+		String strSeed = Long.toString(seed).replaceAll("(.{4})", "$1_");
+		String filePrepend = timestamp + "_" + strSeed;//seed + "" + timestamp;
 		
 		Policy policy = ((Planner) agent).planFromState(initialState);
 		Episode e = PolicyUtils.rollout(policy, env, maxEpisodeSize);
 //		if (plotter != null) { plotter.endEpisode(); }
-		e.write(outputPath + filePrepend + ".episode");
+		e.write(outputPath +  filePrepend + ".episode");
 		
+		
+
 		return filePrepend;
 	}
 	

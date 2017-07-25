@@ -18,6 +18,7 @@ import burlap.behavior.singleagent.learning.tdmethods.vfa.GradientDescentSarsaLa
 import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.TerminalFunction;
+import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.model.RewardFunction;
@@ -41,7 +42,6 @@ public abstract class OPOTrainer extends SimulationConfig {
 	protected HashableStateFactory hashingFactory;
 	protected Environment env;
 	
-
 	private String lastTrainingSeedTimestamp = "unsetSeedTimestamp";
 
 	public String getTrainerName() {
@@ -66,6 +66,12 @@ public abstract class OPOTrainer extends SimulationConfig {
 
 	public void setIdentifierIndependentHashing(boolean identifierIndependentHashing) {
 		this.identifierIndependentHashing = identifierIndependentHashing;
+	}
+	
+	public abstract PropositionalFunction getGoalPF();
+	
+	public boolean satisfiesGoal(OOState s) {
+		return getGoalPF().someGroundingIsTrue(s);
 	}
 
 	public RewardFunction getRf() {
@@ -96,7 +102,6 @@ public abstract class OPOTrainer extends SimulationConfig {
 		return lastTrainingSeedTimestamp;
 	}
 
-
 	public void setSeed(Long seed) {
 		this.seed = seed;
 		RandomFactory.seedMapped(getIndexForRandomFactory(), this.seed);
@@ -115,33 +120,22 @@ public abstract class OPOTrainer extends SimulationConfig {
 		agent.setDomain(domain);
 		hashingFactory = new SimpleHashableStateFactory(identifierIndependentHashing);
 		agent.setHashingFactory(hashingFactory);
-//		Policy policy =  null;
-//		if (agent instanceof QLearning) {
-//			QLearning ql = (QLearning) agent;
-//			policy = ql.getLearningPolicy();
-//		} else if (agent instanceof ValueIteration) {
-//			// pass
-//		} else {
-//			throw new RuntimeException("error: unknown agent type specified in setupAgent");
-//		}
-//		((SolverDerivedPolicy)policy).setSolver(agent);
 		return agent;
 	}
 	
-	public String planAndRollout(FileWriter writer, PerformancePlotter plotter) {
-		String seedTimestamp = Simulation.plan(this, writer);
+	public String planAndRollout(PerformancePlotter plotter) {
+		String seedTimestamp = Simulation.plan(this);
 		return seedTimestamp;
 	}
 
 	public abstract void runEpisodeVisualizer(String filePrefix);
 	
-	public void runTraining(FileWriter writer, PerformancePlotter plotter) {
+	public void runTraining(PerformancePlotter plotter) {
 
 		// 1. setup the state
 		// 2. setup the domain
 		// 3. setup the agent
 		// 4. run the simulation
-		// 5. serialize (if needed)
 		
 		// 1. setup the state
 		setupStateTraining();
@@ -153,7 +147,7 @@ public abstract class OPOTrainer extends SimulationConfig {
 		setupAgent();
 		
 		// 4. run the simulation
-		String seedTimestamp = planAndRollout(writer, plotter);
+		String seedTimestamp = planAndRollout(plotter);
 		lastTrainingSeedTimestamp = seedTimestamp;
 		
 	}

@@ -30,8 +30,8 @@ public class OPOCleanup extends OPOTrainer {
 	public double rewardPull;
 	
 	// generated in code
-	public CleanupGoal goal;
-	public CleanupGoalDescription[] goalDescriptions;
+	private CleanupGoal goal;
+	private CleanupGoalDescription[] goalDescriptions;
 	
 	public OPOCleanup() {
 		// use SimulationConfig to load the trainer, not this constructor
@@ -58,14 +58,18 @@ public class OPOCleanup extends OPOTrainer {
 		domain = (OOSADomain) domainGenerator.generateDomain();
 		
 		// setup the goal
-		PropositionalFunction agentInDoor = ((OOSADomain) domain).propFunction(Cleanup.PF_AGENT_IN_DOOR);
+		PropositionalFunction agentInDoor = getGoalPF();
 		goalDescriptions = CleanupRandomStateGenerator.getRandomGoalDescription((CleanupState) initialState, numGoals, agentInDoor);
 		goal.setGoals(goalDescriptions);
 		OPODriver.log("Goal is: " + goalDescriptions[0]);
 		
 		return (OOSADomain) domain;
 	}
-
+	
+	public PropositionalFunction getGoalPF() {
+		PropositionalFunction goalPF = ((OOSADomain) domain).propFunction(Cleanup.PF_AGENT_IN_DOOR);
+		return goalPF;
+	}
 
 	@Override
 	public void runEpisodeVisualizer(String filePrefix) {
