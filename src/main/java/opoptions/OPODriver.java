@@ -252,11 +252,7 @@ public class OPODriver {
         writer.append(sb.toString());
     }
 
-    private void writeFeatureVector(FileWriter writer, Transition transition, OPOTrainer trainer) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        OOState state = transition.state;
-        boolean isGoal = trainer.satisfiesGoal(state);
-        String label = isGoal ? "goal" : "internal";
+    public static StringBuilder stateToStringBuilder(StringBuilder sb, OOState state) {
         List<ObjectInstance> objects = state.objects();
         for (ObjectInstance object : objects) {
             for (Object variableKey : object.variableKeys()) {
@@ -266,6 +262,15 @@ public class OPODriver {
                 sb.append(",");
             }
         }
+        return sb;
+    }
+
+    private void writeFeatureVector(FileWriter writer, Transition transition, OPOTrainer trainer) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        OOState state = transition.state;
+        boolean isGoal = trainer.satisfiesGoal(state);
+        String label = isGoal ? "goal" : "internal";
+        sb = stateToStringBuilder(sb, state);
         Action action = transition.action;
         String actionName = action == null ? "null" : action.actionName();
         double reward = transition.reward;
@@ -328,8 +333,16 @@ public class OPODriver {
             log(evaluation.toMatrixString());
             SerializationHelper.write(path + "_" + classifier.getClass().getSimpleName() + ".model", classifier);
 
-        } catch (Exception e) {
+            LearnedStateTest test = new LearnedStateTest(classifier, data);
+            List<Transition> transitions = getTransitions(trainer);
+            for (Transition t : transitions) {
+                OOState s = t.state;
+                boolean satisfied = test.satisfies(s);
+                log("state satisfies condition: " + satisfied + ", " + stateToStringBuilder(new StringBuilder(), s));
+            }
 
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
 //		ArffLoader.ArffReader headerReader = null;
@@ -358,7 +371,7 @@ public class OPODriver {
 
         OPODriver driver = new OPODriver();
         long initSeedTraining = rng.nextLong();//2103460911L;
-        int numSeedsTraining = 100;
+        int numSeedsTraining = 10;
         driver.addSeedsTo(driver.getTrainingSeeds(), initSeedTraining, numSeedsTraining);
         log(initSeedTraining + ": " + driver.getTrainingSeeds());
 //		long initSeedEvaluation = rng.nextLong();

@@ -90,7 +90,11 @@ public class CleanupModel implements FullStateModel {
 				int nby = ay;
 				CleanupBlock nBlock = cws.touchBlock(block.name());
 				nBlock.set(Cleanup.ATT_X, nbx);
+				nBlock.set(Cleanup.ATT_LEFT, nbx);
+				nBlock.set(Cleanup.ATT_RIGHT, nbx);
 				nBlock.set(Cleanup.ATT_Y, nby);
+				nBlock.set(Cleanup.ATT_TOP, nby);
+				nBlock.set(Cleanup.ATT_BOTTOM, nby);
 				//face in direction of the block movement
 				String newDirection = "";
 				if(by - ay > 0){
@@ -107,7 +111,11 @@ public class CleanupModel implements FullStateModel {
 				}
 				CleanupAgent nAgent = cws.touchAgent();
 				nAgent.set(Cleanup.ATT_X, nx);
+				nAgent.set(Cleanup.ATT_LEFT, nx);
+				nAgent.set(Cleanup.ATT_RIGHT, nx);
 				nAgent.set(Cleanup.ATT_Y, ny);
+				nAgent.set(Cleanup.ATT_TOP, ny);
+				nAgent.set(Cleanup.ATT_BOTTOM, ny);
 				nAgent.set(Cleanup.ATT_DIR, newDirection);
 			} 
 			return s;
@@ -161,10 +169,18 @@ public class CleanupModel implements FullStateModel {
 				if (blockCanMove) {
 					CleanupBlock nBlock = cws.touchBlock(pushedBlock.name());
 					nBlock.set(Cleanup.ATT_X, nbx);
+					nBlock.set(Cleanup.ATT_LEFT, nbx);
+					nBlock.set(Cleanup.ATT_RIGHT, nbx);
 					nBlock.set(Cleanup.ATT_Y, nby);
+					nBlock.set(Cleanup.ATT_TOP, nby);
+					nBlock.set(Cleanup.ATT_BOTTOM, nby);
 				}
 				nAgent.set(Cleanup.ATT_X, nx);
+				nAgent.set(Cleanup.ATT_LEFT, nx);
+				nAgent.set(Cleanup.ATT_RIGHT, nx);
 				nAgent.set(Cleanup.ATT_Y, ny);
+				nAgent.set(Cleanup.ATT_TOP, ny);
+				nAgent.set(Cleanup.ATT_BOTTOM, ny);
 			}
 			nAgent.set(Cleanup.ATT_DIR, actionName);
 			return s;
