@@ -25,121 +25,124 @@ import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.mdp.singleagent.environment.extensions.EnvironmentServer;
 
 public class Simulation {
-	
-	public static EnvironmentServer environmentServer;
-	public static SimulatedEnvironment env;
-	public static MDPSolver agent;
-	
-	public static String plan(SimulationConfig config) {
 
-		String episodeOutputPath = config.getEpisodeOutputPath();
-		long seed = config.getSeed();
-		int maxEpisodeSize = config.getMaxEpisodeSize();
-		SADomain domain = config.getDomain();
-		State initialState = config.getInitialState();
-		MDPSolver agent = config.getAgent();
+    public static EnvironmentServer environmentServer;
+    public static SimulatedEnvironment env;
+    public static MDPSolver agent;
+
+    public static String plan(SimulationConfig config) {
+
+        String episodeOutputPath = config.getEpisodeOutputPath();
+        long seed = config.getSeed();
+        int maxEpisodeSize = config.getMaxEpisodeSize();
+        SADomain domain = config.getDomain();
+        State initialState = config.getInitialState();
+        MDPSolver agent = config.getAgent();
 //		Planner planner = config.getPlanner();
-		env = new SimulatedEnvironment(domain, initialState);
+        env = new SimulatedEnvironment(domain, initialState);
 //		if (plotter != null) {
 //			environmentServer = new EnvironmentServer(env, plotter);
 //			plotter.toggleDataCollection(true);
 //			plotter.startNewTrial();
 //		}
-		String timestamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date()).toString();
-		String strSeed = Long.toString(seed).replaceAll("(.{4})", "$1_");
-		String filePrepend = timestamp + "_" + strSeed;//seed + "" + timestamp;
-		
-		Policy policy = ((Planner) agent).planFromState(initialState);
-		Episode e = PolicyUtils.rollout(policy, env, maxEpisodeSize);
-//		if (plotter != null) { plotter.endEpisode(); }
-		e.write(episodeOutputPath +  filePrepend + ".episode");
-		
-		
+        String timestamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date()).toString();
+        String strSeed = Long.toString(seed).replaceAll("(.{4})", "$1_");
+        String filePrepend = timestamp + "_" + strSeed;//seed + "" + timestamp;
 
-		return filePrepend;
-	}
-	
-	public static String run(SimulationConfig config, PerformancePlotter plotter) {
-		
-		long seed = config.getSeed();
-		int numEpisodes = config.getNumEpisodes();
-		int maxEpisodeSize = config.getMaxEpisodeSize();
-		int writeEvery = config.getWriteEvery();
-		String episodeOutputPath = config.getEpisodeOutputPath();
-		SADomain domain = config.getDomain();
-		State initialState = config.getInitialState();
-		agent = config.getAgent();
-		Policy policy =  null;
-		if (agent instanceof QLearning) {
-			QLearning ql = (QLearning) agent;
-			policy = ql.getLearningPolicy();
-		} else {
-			throw new RuntimeException("Error: unknown class specified for agent in Simulation.run");
-		}
-		
-		env = new SimulatedEnvironment(domain, initialState);
-		if (plotter != null) {
-			environmentServer = new EnvironmentServer(env, plotter);
-			plotter.toggleDataCollection(true);
-			plotter.startNewTrial();
-		}
-		
-		String timestamp = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date()).toString();
-		String filePrepend = seed + "_" + timestamp;
-		for(int i = 0; i < numEpisodes; i++){
-			
-			double decayedEpsilon = 0.0;
-			if (config.useEpsilonDecay && policy instanceof EpsilonGreedy) {
-				decayedEpsilon = (numEpisodes-i)/(1.0*numEpisodes);
-				if (decayedEpsilon < config.minEpsilonDecay) { decayedEpsilon = config.minEpsilonDecay; }
-				((EpsilonGreedy)policy).setEpsilon(decayedEpsilon);
-			}
-			Environment environment = env;
-			if (plotter != null) {
-				environment = environmentServer;
-			}
-			Episode e = ((LearningAgent) agent).runLearningEpisode(environment, maxEpisodeSize);
-			if (plotter != null) { plotter.endEpisode(); }
-			if (i % writeEvery == 0) {
-				e.write(episodeOutputPath + filePrepend + "/" + i);
-			}
-			String extra = "";
-			if (config.useEpsilonDecay) {
-				System.out.println(i + ": " + e.maxTimeStep() + " steps, " + e.discountedReturn(agent.getGamma()) + " discounted return, epsilon: " + decayedEpsilon + extra);
-			} else {
-				System.out.println(i + ": " + e.maxTimeStep() + " steps, " + e.discountedReturn(agent.getGamma()) + " discounted return" + extra);
-			}
-			environment.resetEnvironment();
+        Policy policy = ((Planner) agent).planFromState(initialState);
+        Episode e = PolicyUtils.rollout(policy, env, maxEpisodeSize);
+//		if (plotter != null) { plotter.endEpisode(); }
+        e.write(episodeOutputPath + filePrepend + ".episode");
+
+
+        return filePrepend;
+    }
+
+    public static String run(SimulationConfig config, PerformancePlotter plotter) {
+
+        long seed = config.getSeed();
+        int numEpisodes = config.getNumEpisodes();
+        int maxEpisodeSize = config.getMaxEpisodeSize();
+        int writeEvery = config.getWriteEvery();
+        String episodeOutputPath = config.getEpisodeOutputPath();
+        SADomain domain = config.getDomain();
+        State initialState = config.getInitialState();
+        agent = config.getAgent();
+        Policy policy = null;
+        if (agent instanceof QLearning) {
+            QLearning ql = (QLearning) agent;
+            policy = ql.getLearningPolicy();
+        } else {
+            throw new RuntimeException("Error: unknown class specified for agent in Simulation.run");
+        }
+
+        env = new SimulatedEnvironment(domain, initialState);
+        if (plotter != null) {
+            environmentServer = new EnvironmentServer(env, plotter);
+            plotter.toggleDataCollection(true);
+            plotter.startNewTrial();
+        }
+
+        String timestamp = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date()).toString();
+        String filePrepend = seed + "_" + timestamp;
+        for (int i = 0; i < numEpisodes; i++) {
+
+            double decayedEpsilon = 0.0;
+            if (config.useEpsilonDecay && policy instanceof EpsilonGreedy) {
+                decayedEpsilon = (numEpisodes - i) / (1.0 * numEpisodes);
+                if (decayedEpsilon < config.minEpsilonDecay) {
+                    decayedEpsilon = config.minEpsilonDecay;
+                }
+                ((EpsilonGreedy) policy).setEpsilon(decayedEpsilon);
+            }
+            Environment environment = env;
+            if (plotter != null) {
+                environment = environmentServer;
+            }
+            Episode e = ((LearningAgent) agent).runLearningEpisode(environment, maxEpisodeSize);
+            if (plotter != null) {
+                plotter.endEpisode();
+            }
+            if (i % writeEvery == 0) {
+                e.write(episodeOutputPath + filePrepend + "/" + i);
+            }
+            String extra = "";
+            if (config.useEpsilonDecay) {
+                System.out.println(i + ": " + e.maxTimeStep() + " steps, " + e.discountedReturn(agent.getGamma()) + " discounted return, epsilon: " + decayedEpsilon + extra);
+            } else {
+                System.out.println(i + ": " + e.maxTimeStep() + " steps, " + e.discountedReturn(agent.getGamma()) + " discounted return" + extra);
+            }
+            environment.resetEnvironment();
 //			env.resetEnvironment();
 //			environmentServer.resetEnvironment();
-		}
-		if (plotter != null) {
-			plotter.endTrial();
-		}
+        }
+        if (plotter != null) {
+            plotter.endTrial();
+        }
 
-		Policy tempPolicy = null;
-		if (agent instanceof QLearning) {
-			QLearning ql = (QLearning) agent;
-			tempPolicy = ql.getLearningPolicy();
-			ql.setLearningPolicy(new EpsilonGreedy(ql, 0));
-		} else {
-			throw new RuntimeException("ERROR: learningPolicy setting not implemented for given algo");
-		}
-		Episode e = ((LearningAgent) agent).runLearningEpisode(env, maxEpisodeSize);
-		System.out.println(e.actionSequence);
-		System.out.println( "exploit: " + e.maxTimeStep() + " steps, " + e.discountedReturn(agent.getGamma()) + " discounted return");
-		env.resetEnvironment();
+        Policy tempPolicy = null;
+        if (agent instanceof QLearning) {
+            QLearning ql = (QLearning) agent;
+            tempPolicy = ql.getLearningPolicy();
+            ql.setLearningPolicy(new EpsilonGreedy(ql, 0));
+        } else {
+            throw new RuntimeException("ERROR: learningPolicy setting not implemented for given algo");
+        }
+        Episode e = ((LearningAgent) agent).runLearningEpisode(env, maxEpisodeSize);
+        System.out.println(e.actionSequence);
+        System.out.println("exploit: " + e.maxTimeStep() + " steps, " + e.discountedReturn(agent.getGamma()) + " discounted return");
+        env.resetEnvironment();
 //		environmentServer.resetEnvironment();
 
-		if (agent instanceof QLearning) {
-			QLearning ql = (QLearning) agent;
-			ql.setLearningPolicy(tempPolicy);
-		} else {
-			throw new RuntimeException("ERROR: learningPolicy setting not implemented for given algo");
-		}
-		
-		return filePrepend;
-	}
-	
+        if (agent instanceof QLearning) {
+            QLearning ql = (QLearning) agent;
+            ql.setLearningPolicy(tempPolicy);
+        } else {
+            throw new RuntimeException("ERROR: learningPolicy setting not implemented for given algo");
+        }
+
+        return filePrepend;
+    }
+
 
 }
