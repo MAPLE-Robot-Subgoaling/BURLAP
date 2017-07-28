@@ -23,6 +23,9 @@ import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
+import weka.classifiers.Classifier;
+import weka.classifiers.rules.ZeroR;
+import weka.classifiers.trees.J48;
 
 public class SimulationConfig {
 
@@ -55,13 +58,19 @@ public class SimulationConfig {
 				.registerSubtype(SarsaLam.class, "SarsaLam")
 				.registerSubtype(ValueIteration.class, "ValueIteration")
 			;
-		
+
 		RuntimeTypeAdapterFactory<Policy> adapterPolicy = RuntimeTypeAdapterFactory
 				.of(Policy.class, "type")
 				.registerSubtype(BoltzmannQPolicy.class, "BoltzmannQPolicy")
 				.registerSubtype(EpsilonGreedy.class, "EpsilonGreedy")
 			;
-		
+
+		RuntimeTypeAdapterFactory<Classifier> adapterClassifier = RuntimeTypeAdapterFactory
+				.of(Classifier.class, "type")
+				.registerSubtype(J48.class, "J48")
+				.registerSubtype(ZeroR.class, "ZeroR")
+			;
+
 		RuntimeTypeAdapterFactory<LearningRate> adapterLearningRate = RuntimeTypeAdapterFactory
 				.of(LearningRate.class, "type")
 				.registerSubtype(ExponentialDecayLR.class, "ExponentialDecayLR")
@@ -85,6 +94,7 @@ public class SimulationConfig {
 				.registerTypeAdapterFactory(adapterLearningRate)
 				.registerTypeAdapterFactory(adapterQFunction)
 				.registerTypeAdapterFactory(adapterValueFunction)
+				.registerTypeAdapterFactory(adapterClassifier )
 				.create()
 			;
 	

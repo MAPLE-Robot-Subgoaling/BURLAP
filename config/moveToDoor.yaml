@@ -31,5 +31,8 @@
 			"type"				: "ConstantValueFunction",
 			"value"				: 0.0
 		}
+	},
+	"classifier" : {
+	    "type"                  : "J48"
 	}
 }

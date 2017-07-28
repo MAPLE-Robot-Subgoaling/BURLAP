@@ -1,6 +1,7 @@
 package opoptions;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -23,15 +24,22 @@ import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.State;
 import opoptions.trainers.OPOCleanup;
 import utils.SimulationConfig;
+import weka.classifiers.Classifier;
+import weka.classifiers.Evaluation;
 import weka.core.Instances;
+import weka.core.SerializationHelper;
+import weka.core.converters.ArffLoader;
 import weka.core.converters.ArffSaver;
 import weka.core.converters.CSVLoader;
+import weka.core.converters.ConverterUtils;
 import weka.filters.Filter;
+import weka.filters.supervised.instance.SpreadSubsample;
 import weka.filters.unsupervised.attribute.NumericToNominal;
 
 public class OPODriver {
 
 	public static final int DEBUG_CODE = 513249;
+	private static final int NUM_FOLDS_CROSSVALIDATION = 10;
 
 	public static boolean MOVE_FILE = true;
 	
@@ -188,7 +196,13 @@ public class OPODriver {
 			collectDataset(trainer);
 		}
 	}
-	
+
+	private void buildClassifiers() {
+		for (OPOTrainer trainer : trainers) {
+			buildClassifier(trainer);
+		}
+	}
+
 	private List<OOState> getStates(OPOTrainer trainer) {
 		List<OOState> allStates = new ArrayList<OOState>();
 		List<Episode> episodes = Episode.readEpisodes(trainer.getOutputPath());
@@ -262,6 +276,53 @@ public class OPODriver {
 		}
 	}
 
+	private void buildClassifier(OPOTrainer trainer) {
+		String path = getOutputFilename(trainer);
+		String arffPath = path  + ".arff";
+		try {
+			ConverterUtils.DataSource source = new ConverterUtils.DataSource(arffPath);
+			Instances data;
+			data = source.getDataSet();
+			data.setClassIndex(data.numAttributes() - 1);
+
+//			SpreadSubsample filter = new SpreadSubsample();
+//			String[] options = new String[2];
+//			options[0] = "-M";
+//			options[1] = "1.0";
+//			filter.setOptions(options);
+//			filter.setInputFormat(data);
+//			data = Filter.useFilter(data, filter);
+
+			Classifier classifier = trainer.getClassifier();
+
+			Evaluation evaluation = new Evaluation(data);
+			Random classifierRng = RandomFactory.getMapped(OPOTrainer.DEFAULT_RNG_INDEX);
+			evaluation.crossValidateModel(classifier, data, NUM_FOLDS_CROSSVALIDATION, classifierRng);
+			classifier.buildClassifier(data);
+			log(evaluation.toSummaryString());
+			log(evaluation.toMatrixString());
+			SerializationHelper.write(path + "_" + classifier.getClass().getSimpleName() + ".model", classifier);
+
+		} catch (Exception e) {
+
+		}
+
+//		ArffLoader.ArffReader headerReader = null;
+//		try {
+//			headerReader = new ArffLoader.ArffReader(new FileReader(arffPath));
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//		Instances data = headerReader.getStructure();
+//		data.setClassIndex(data.numAttributes() - 1);
+//
+//
+//		// load the model
+//		model = (Classifier) SerializationHelper.read(path + "_" + model.getClass().getSimpleName() + ".model");
+//
+//
+
+	}
 
 	public static void main(String[] args) {
 		
@@ -288,6 +349,8 @@ public class OPODriver {
 		driver.runTraining();
 		
 		driver.collectDataset();
+
+		driver.buildClassifiers();
 		
 		driver.runVisualizer();
 		

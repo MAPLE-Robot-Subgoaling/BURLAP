@@ -27,13 +27,16 @@ import burlap.statehashing.HashableStateFactory;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import utils.Simulation;
 import utils.SimulationConfig;
+import weka.classifiers.Classifier;
 
 public abstract class OPOTrainer extends SimulationConfig {
 	
 	// by default, use 0 (BURLAP default)
 	// to use different index, subclasses should override the getIndexForRandomFactory method
 	public static final int DEFAULT_RNG_INDEX = 0;
-	
+
+
+	protected Classifier classifier;
 	protected boolean identifierIndependentHashing = true;
 	protected String trainerName = "unsetTrainer";
 	protected String domainName = "unsetDomain";
@@ -105,6 +108,14 @@ public abstract class OPOTrainer extends SimulationConfig {
 	public void setSeed(Long seed) {
 		this.seed = seed;
 		RandomFactory.seedMapped(getIndexForRandomFactory(), this.seed);
+	}
+
+	public Classifier getClassifier() {
+		return classifier;
+	}
+
+	public void setClassifier(Classifier classifier) {
+		this.classifier = classifier;
 	}
 
 	private int getIndexForRandomFactory() {
