@@ -90,7 +90,7 @@ public class SimulationConfig {
 	
 		SimulationConfig config = null;
 		try {
-			config = configJson.fromJson(new FileReader(filename), clasz);
+			config = (SimulationConfig) configJson.fromJson(new FileReader(filename), clasz);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
