@@ -22,6 +22,7 @@
     "writeEvery"                : 1,
     "maxEpisodeSize"            : 1000,
     "outputPath"                : "./out_opos_cleanup/moveToDoor/",
+    "episodeOutputPath"         : "./out_opos_cleanup/moveToDoor/episodes/",
     "agent" : {
         "type"                  : "ValueIteration",
         "gamma"                 : 0.9,

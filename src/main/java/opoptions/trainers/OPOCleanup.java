@@ -74,7 +74,7 @@ public class OPOCleanup extends OPOTrainer {
 	@Override
 	public void runEpisodeVisualizer(String filePrefix) {
 		Visualizer v = CleanupVisualizer.getVisualizer(domainGenerator.getWidth(), domainGenerator.getHeight());
-		EpisodeSequenceVisualizer esv = new EpisodeSequenceVisualizer(v, domain, outputPath + "/" + filePrefix);
+		EpisodeSequenceVisualizer esv = new EpisodeSequenceVisualizer(v, domain, episodeOutputPath + "/" + filePrefix);
 		esv.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	

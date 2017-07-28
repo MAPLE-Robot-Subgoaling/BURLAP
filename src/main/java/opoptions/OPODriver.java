@@ -1,24 +1,16 @@
 package opoptions;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
 import burlap.behavior.singleagent.Episode;
-import burlap.datastructures.AlphanumericSorting;
 import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.State;
@@ -28,12 +20,10 @@ import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.core.Instances;
 import weka.core.SerializationHelper;
-import weka.core.converters.ArffLoader;
 import weka.core.converters.ArffSaver;
 import weka.core.converters.CSVLoader;
 import weka.core.converters.ConverterUtils;
 import weka.filters.Filter;
-import weka.filters.supervised.instance.SpreadSubsample;
 import weka.filters.unsupervised.attribute.NumericToNominal;
 
 public class OPODriver {
@@ -43,23 +33,34 @@ public class OPODriver {
 
 	public static boolean MOVE_FILE = true;
 	
-	private String outputPath;
-	private String outputPrefix;
-	
 	private List<OPOTrainer> trainers;
 	private List<Long> trainingSeeds;
 	private List<Long> evaluationSeeds;
-	
-	public OPODriver(String outputPath, String outputPrefix) {
-		this.outputPath = outputPath;
-		this.outputPrefix = outputPrefix;
+
+	public OPODriver() {
 		trainers = new ArrayList<OPOTrainer>();
 		trainingSeeds = new ArrayList<Long>();
 		evaluationSeeds = new ArrayList<Long>();
 	}
+
+    public static class Transition {
+
+        public OOState state;
+        public Action action;
+        public double reward;
+//        public OOState statePrime;
+
+        public Transition(OOState state, Action action, double reward) { //}, OOState statePrime) {
+            this.state = state;
+            this.action = action;
+            this.reward = reward;
+//            this.statePrime = statePrime;
+        }
+
+    }
 	
 	public String getOutputFilename(OPOTrainer trainer) {
-		return outputPath + outputPrefix + trainer.getTrainerName();
+		return trainer.getOutputPath() + trainer.getTrainerName();
 	}
 
 	public void addTrainer(OPOTrainer trainer) {
@@ -203,23 +204,35 @@ public class OPODriver {
 		}
 	}
 
-	private List<OOState> getStates(OPOTrainer trainer) {
-		List<OOState> allStates = new ArrayList<OOState>();
-		List<Episode> episodes = Episode.readEpisodes(trainer.getOutputPath());
+
+	private List<Transition> getTransitions(OPOTrainer trainer) {
+        List<Transition> transitions = new ArrayList<Transition>();
+		List<Episode> episodes = Episode.readEpisodes(trainer.getEpisodeOutputPath());
 		log(episodes.size());
 		for (Episode episode : episodes) {
 			List<State> states = episode.stateSequence;
-			for (State state : states) {
-				OOState s = (OOState) state;
-				allStates.add(s);
+            List<Action> actions = episode.actionSequence;
+            List<Double> rewards = episode.rewardSequence;
+            for (int i = 0; i < actions.size(); i++) {
+                Action action = actions.get(i);
+                double reward = rewards.get(i);
+                OOState state = (OOState) states.get(i);
+                Transition transition = new Transition(state, action, reward);
+                transitions.add(transition);
 			}
-		}
-		return allStates;
+			// add the final state with no action and dummy reward
+            transitions.add(new Transition((OOState)states.get(states.size()-1), null, 0.0));
+
+        }
+		return transitions;
 	}
 
-	private void writeFeatureVectorHeader(FileWriter writer, OOState state) throws IOException {
+	private void writeFeatureVectorHeader(FileWriter writer, Transition transition) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		String label = "label";
+        String actionName = "actionName";
+        String reward = "reward";
+        OOState state = transition.state;
 		List<ObjectInstance> objects = state.objects();
 		for (ObjectInstance object : objects) {
 			for (Object variableKey : object.variableKeys()) {
@@ -230,13 +243,18 @@ public class OPODriver {
 				sb.append(",");
 			}
 		}
+//        sb.append(actionName);
+//        sb.append(",");
+//        sb.append(reward);
+//        sb.append(",");
 		sb.append(label);
 		sb.append('\n');
 		writer.append(sb.toString());
 	}
 	
-	private void writeFeatureVector(FileWriter writer, OOState state, OPOTrainer trainer) throws IOException {
+	private void writeFeatureVector(FileWriter writer, Transition transition, OPOTrainer trainer) throws IOException {
 		StringBuilder sb = new StringBuilder();
+        OOState state = transition.state;
 		boolean isGoal = trainer.satisfiesGoal(state);
 		String label = isGoal ? "goal" : "internal";
 		List<ObjectInstance> objects = state.objects();
@@ -248,8 +266,15 @@ public class OPODriver {
 				sb.append(",");
 			}
 		}
-		sb.append(label);
-		sb.append('\n');
+        Action action = transition.action;
+        String actionName = action == null ? "null" : action.actionName();
+        double reward = transition.reward;
+//        sb.append(actionName);
+//        sb.append(",");
+//        sb.append(reward);
+//        sb.append(",");
+        sb.append(label);
+        sb.append('\n');
 		writer.append(sb.toString());
 	}
 	
@@ -258,13 +283,13 @@ public class OPODriver {
 			String path = getOutputFilename(trainer);
 			String csvPath = path + ".csv";
 			log("saving to " + csvPath);
-			List<OOState> states = getStates(trainer);
+			List<Transition> transitions = getTransitions(trainer);
 			File file = new File(csvPath);
 			file.getParentFile().mkdirs();
 			FileWriter writer = new FileWriter(file);
-			writeFeatureVectorHeader(writer, states.get(0));
-			for (OOState state : states) {
-				writeFeatureVector(writer, state, trainer);
+			writeFeatureVectorHeader(writer, transitions.get(0));
+			for (Transition transition : transitions) {
+				writeFeatureVector(writer, transition, trainer);
 			}
 			writer.flush();
 			writer.close();
@@ -328,13 +353,10 @@ public class OPODriver {
 		
 		Random rng = new Random();
 		
-		String outputPath = "./opoptions";
-		String outputPrefix = "";
-		
 		boolean debugMode = true;
 		DPrint.toggleCode(DEBUG_CODE, debugMode);
 		
-		OPODriver driver = new OPODriver(outputPath, outputPrefix);
+		OPODriver driver = new OPODriver();
 		long initSeedTraining = rng.nextLong();//2103460911L;
 		int numSeedsTraining = 100;
 		driver.addSeedsTo(driver.getTrainingSeeds(), initSeedTraining, numSeedsTraining);

@@ -36,6 +36,7 @@ public class SimulationConfig {
 	protected boolean useEpsilonDecay;
 	protected double minEpsilonDecay;
 	protected String outputPath;
+	protected String episodeOutputPath;
 	protected MDPSolver agent;
 	protected Planner planner;
 	
@@ -124,6 +125,10 @@ public class SimulationConfig {
 
 	public String getOutputPath() {
 		return outputPath;
+	}
+
+	public String getEpisodeOutputPath() {
+		return episodeOutputPath;
 	}
 
 	public MDPSolver getAgent() {

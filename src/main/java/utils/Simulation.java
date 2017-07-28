@@ -32,7 +32,7 @@ public class Simulation {
 	
 	public static String plan(SimulationConfig config) {
 
-		String outputPath = config.getOutputPath();
+		String episodeOutputPath = config.getEpisodeOutputPath();
 		long seed = config.getSeed();
 		int maxEpisodeSize = config.getMaxEpisodeSize();
 		SADomain domain = config.getDomain();
@@ -52,7 +52,7 @@ public class Simulation {
 		Policy policy = ((Planner) agent).planFromState(initialState);
 		Episode e = PolicyUtils.rollout(policy, env, maxEpisodeSize);
 //		if (plotter != null) { plotter.endEpisode(); }
-		e.write(outputPath +  filePrepend + ".episode");
+		e.write(episodeOutputPath +  filePrepend + ".episode");
 		
 		
 
@@ -65,7 +65,7 @@ public class Simulation {
 		int numEpisodes = config.getNumEpisodes();
 		int maxEpisodeSize = config.getMaxEpisodeSize();
 		int writeEvery = config.getWriteEvery();
-		String outputPath = config.getOutputPath();
+		String episodeOutputPath = config.getEpisodeOutputPath();
 		SADomain domain = config.getDomain();
 		State initialState = config.getInitialState();
 		agent = config.getAgent();
@@ -101,7 +101,7 @@ public class Simulation {
 			Episode e = ((LearningAgent) agent).runLearningEpisode(environment, maxEpisodeSize);
 			if (plotter != null) { plotter.endEpisode(); }
 			if (i % writeEvery == 0) {
-				e.write(outputPath + filePrepend + "/" + i);
+				e.write(episodeOutputPath + filePrepend + "/" + i);
 			}
 			String extra = "";
 			if (config.useEpsilonDecay) {
