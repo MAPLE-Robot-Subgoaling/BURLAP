@@ -135,7 +135,7 @@ public class CleanupVisualizer {
 				pathToImageDir = pathToImageDir + "/";
 			}
 			for(String shapeName : Cleanup.SHAPES){
-				for(String colName : Cleanup.COLORS){
+				for(String colName : Cleanup.COLORS_BLOCKS){
 					String key = this.shapeKey(shapeName, colName);
 					String path = pathToImageDir + shapeName + "/" + key + ".png";
 					try {

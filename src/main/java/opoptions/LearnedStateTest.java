@@ -54,6 +54,10 @@ public class LearnedStateTest implements StateConditionTest {
                 String val = object.get(objectKey).toString();
                 String attributeKey = object.className() + ":" + objectKey;
                 Attribute attribute = instancesStructure.attribute(attributeKey);
+                if (attribute == null) {
+//                    System.err.println("null attribute for key " + attributeKey + ", skipping...");
+                    continue;
+                }
                 if (attribute.isNumeric()) {
                     instance.setValue(attribute, Double.parseDouble(val));
                 } else {
@@ -66,6 +70,10 @@ public class LearnedStateTest implements StateConditionTest {
             for (GroundedProp gpf : gpfs) {
                 String attributeKey = gpf.toString().replace(",", ";").replace(" ", "");
                 Attribute attribute = instancesStructure.attribute(attributeKey);
+                if (attribute == null) {
+//                    System.err.println("null attribute for key " + attributeKey + ", skipping...");
+                    continue;
+                }
                 String value = gpf.isTrue(state) ? "true" : "false";
                 instance.setValue(attribute, value);
             }
@@ -94,4 +102,43 @@ public class LearnedStateTest implements StateConditionTest {
 
     }
 
+    public boolean isIncludePFs() {
+        return includePFs;
+    }
+
+    public void setIncludePFs(boolean includePFs) {
+        this.includePFs = includePFs;
+    }
+
+    public StateFeaturizer getFeaturizer() {
+        return featurizer;
+    }
+
+    public void setFeaturizer(StateFeaturizer featurizer) {
+        this.featurizer = featurizer;
+    }
+
+    public Classifier getClassifier() {
+        return classifier;
+    }
+
+    public void setClassifier(Classifier classifier) {
+        this.classifier = classifier;
+    }
+
+    public Instances getInstancesStructure() {
+        return instancesStructure;
+    }
+
+    public void setInstancesStructure(Instances instancesStructure) {
+        this.instancesStructure = instancesStructure;
+    }
+
+    public String getTargetLabel() {
+        return targetLabel;
+    }
+
+    public void setTargetLabel(String targetLabel) {
+        this.targetLabel = targetLabel;
+    }
 }

@@ -1,6 +1,5 @@
 package cleanup;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,9 +63,13 @@ public class Cleanup implements DomainGenerator {
 	public static final String WALL_EAST = "wallEast";
 	public static final String WALL_WEST = "wallWest";
 
-	public static final String[] COLORS = new String[]{"blue",
+	public static final String[] COLORS_BLOCKS = new String[]{"blue",
 			"green", "magenta",
 			"red", "yellow"};
+	public static final String[] COLORS_ROOMS = new String[]{"blue",
+			"green", "magenta",
+			"red", "yellow",
+			"orange", "cyan", "white"};
 	public static final String COLOR_GRAY = "gray";
 
 	public static final String[] SHAPES = new String[]{"chair", "bag",
@@ -132,7 +135,7 @@ public class Cleanup implements DomainGenerator {
 		pfs.add(new InRegion(PF_AGENT_IN_DOOR, new String[]{CLASS_AGENT, CLASS_DOOR}, true));
 		pfs.add(new InRegion(PF_BLOCK_IN_DOOR, new String[]{CLASS_BLOCK, CLASS_DOOR}, true));
 
-		for(String col : COLORS){
+		for(String col : COLORS_ROOMS){
 			pfs.add(new IsColor(RoomColorName(col), new String[]{CLASS_ROOM}, col));
 			pfs.add(new IsColor(BlockColorName(col), new String[]{CLASS_BLOCK}, col));
 		}

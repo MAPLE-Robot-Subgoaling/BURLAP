@@ -73,7 +73,7 @@ public class Simulation {
             QLearning ql = (QLearning) agent;
             policy = ql.getLearningPolicy();
         } else {
-            throw new RuntimeException("Error: unknown class specified for agent in Simulation.run");
+            throw new RuntimeException("Error: unknown class specified for agent in Simulation.run: " + agent.getClass().getSimpleName());
         }
 
         env = new SimulatedEnvironment(domain, initialState);

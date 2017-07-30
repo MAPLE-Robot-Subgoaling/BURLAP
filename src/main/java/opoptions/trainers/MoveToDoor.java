@@ -19,7 +19,7 @@ import cleanup.state.CleanupState;
 import opoptions.OPODriver;
 import opoptions.OPOTrainer;
 
-public class OPOCleanup extends OPOTrainer {
+public class MoveToDoor extends OPOTrainer {
 	
 	// specified by data file
 	public Cleanup domainGenerator;
@@ -33,7 +33,7 @@ public class OPOCleanup extends OPOTrainer {
 	private CleanupGoal goal;
 	private CleanupGoalDescription[] goalDescriptions;
 	
-	public OPOCleanup() {
+	public MoveToDoor() {
 		// use SimulationConfig to load the trainer, not this constructor
 	}
 
@@ -53,7 +53,7 @@ public class OPOCleanup extends OPOTrainer {
 		CleanupRandomStateGenerator randomCleanup = new CleanupRandomStateGenerator();
 		randomCleanup.setWidth(domainGenerator.getWidth());
 		randomCleanup.setHeight(domainGenerator.getHeight());
-		initialState = (OOState) randomCleanup.generateOneRoomOneDoor(); //generateTaxiInCleanup(1);//.generateCentralRoomWithClosets(1); //cw.getRandomState(domain, rng, numBlocks);
+		initialState = (OOState) randomCleanup.generateCentralRoomWithClosets(0); //generateTaxiInCleanup(1);//.generateCentralRoomWithClosets(1); //cw.getRandomState(domain, rng, numBlocks);
 		return (OOState) initialState;
 	}
 

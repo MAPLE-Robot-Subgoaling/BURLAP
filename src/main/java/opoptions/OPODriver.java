@@ -12,16 +12,15 @@ import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.oo.propositional.GroundedProp;
-import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.oo.OOSADomain;
-import opoptions.trainers.OPOCleanup;
+import opoptions.trainers.MoveToDoor;
 import utils.SimulationConfig;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
+import weka.classifiers.trees.J48;
 import weka.core.Instances;
 import weka.core.SerializationHelper;
 import weka.core.converters.ArffSaver;
@@ -167,7 +166,7 @@ public class OPODriver {
 	}
 
     public void addTrainers() {
-        OPOCleanup moveToDoor = (OPOCleanup) SimulationConfig.load("./config/moveToDoor.yaml", OPOCleanup.class);
+        MoveToDoor moveToDoor = (MoveToDoor) SimulationConfig.load("./config/moveToDoor.yaml", MoveToDoor.class);
         addTrainer(moveToDoor);
     }
 
@@ -186,6 +185,7 @@ public class OPODriver {
     private void buildClassifiers() {
         for (OPOTrainer trainer : trainers) {
             buildClassifier(trainer, "goal");
+            buildClassifier(trainer, "internal");
         }
     }
 
@@ -319,10 +319,11 @@ public class OPODriver {
             classifier.buildClassifier(data);
             log(evaluation.toSummaryString());
             log(evaluation.toMatrixString());
-            SerializationHelper.write(path + "_" + classifier.getClass().getSimpleName() + ".model", classifier);
+            SerializationHelper.write(path + "_" + targetLabel + "_" + classifier.getClass().getSimpleName() + ".model", classifier);
 
             StateFeaturizer featurizer = new StateFeaturizer((OOSADomain)trainer.getDomain());
             LearnedStateTest test = new LearnedStateTest(classifier, data, targetLabel, featurizer, trainer.getIncludePFs());
+            trainer.addLearnedStateTest(test);
 //            List<Transition> transitions = getTransitions(trainer);
 //            for (Transition t : transitions) {
 //                OOState s = t.state;
@@ -346,7 +347,7 @@ public class OPODriver {
 
         OPODriver driver = new OPODriver();
         long initSeedTraining = rng.nextLong();
-        int numSeedsTraining = 2;
+        int numSeedsTraining = 25;
         driver.addSeedsTo(driver.getTrainingSeeds(), initSeedTraining, numSeedsTraining);
         log(initSeedTraining + ": " + driver.getTrainingSeeds());
 		long initSeedEvaluation = rng.nextLong();
@@ -362,9 +363,9 @@ public class OPODriver {
 
         driver.buildClassifiers();
 
-//        driver.runVisualizer();
+        driver.runEvaluation();
 
-		driver.runEvaluation();
+//        driver.runVisualizer();
 
     }
 

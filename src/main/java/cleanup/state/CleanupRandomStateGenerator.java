@@ -1,6 +1,7 @@
 package cleanup.state;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -68,7 +69,7 @@ public class CleanupRandomStateGenerator implements StateGenerator {
 
 		CleanupState s = new CleanupState(width, height, ax, ay, agentDirection, numBlocks, numRooms, numDoors);
 		
-		List<String> colors = new ArrayList<String>(); // Arrays.asList(Cleanup.COLORS);
+		List<String> colors = new ArrayList<String>(); // Arrays.asList(Cleanup.COLORS_BLOCKS);
 		colors.add("green");
 		colors.add("blue");
 		colors.add("yellow");
@@ -116,7 +117,7 @@ public class CleanupRandomStateGenerator implements StateGenerator {
 //			int bY = rng.nextInt(rTop - rBottom) + rBottom;
 //			if (s.isOpen(room, bX, bY)) {
 //				String shape = Cleanup.SHAPES[rng.nextInt(Cleanup.SHAPES.length)];
-//				String color = Cleanup.COLORS[rng.nextInt(Cleanup.COLORS.length)];
+//				String color = Cleanup.COLORS_BLOCKS[rng.nextInt(Cleanup.COLORS_BLOCKS.length)];
 //				DPrint.cl(DEBUG_CODE,"block"+i+": "+ shape + " " + color + " (" + bX + ", " + bY + ") in the " + room.get(Cleanup.ATT_COLOR) + " " + ((CleanupRoom)room).name);
 //				s.addObject(new CleanupBlock(id, bX, bY, shape, color));
 //				i = i + 1;
@@ -142,7 +143,7 @@ public class CleanupRandomStateGenerator implements StateGenerator {
 
 		CleanupState s = new CleanupState(width, height, ax, ay, agentDirection, numBlocks, numRooms, numDoors);
 		
-		List<String> colors = new ArrayList<String>(); // Arrays.asList(Cleanup.COLORS);
+		List<String> colors = new ArrayList<String>(); // Arrays.asList(Cleanup.COLORS_BLOCKS);
 		colors.add("green");
 		colors.add("blue");
 		colors.add("yellow");
@@ -199,7 +200,7 @@ public class CleanupRandomStateGenerator implements StateGenerator {
 
 		CleanupState s = new CleanupState(width, height, ax, ay, agentDirection, numBlocks, numRooms, numDoors);
 		
-		List<String> colors = new ArrayList<String>(); // Arrays.asList(Cleanup.COLORS);
+		List<String> colors = new ArrayList<String>(); // Arrays.asList(Cleanup.COLORS_BLOCKS);
 		colors.add("green");
 		colors.add("blue");
 		colors.add("yellow");
@@ -209,7 +210,7 @@ public class CleanupRandomStateGenerator implements StateGenerator {
 		int mainH = 2;
 		
 		int index = 0;
-		do {
+		while (numBlocks > 0) {
 			int bx = ax + (rng.nextBoolean() ? -1 : 1);
 			int by = ay + (rng.nextBoolean() ? -1 : 1);
 			if (!s.blockAt(bx, by)) {
@@ -229,7 +230,7 @@ public class CleanupRandomStateGenerator implements StateGenerator {
 				numBlocks -= 1;
 				index += 1;
 			}
-		} while (numBlocks > 0);
+		}
 		
 		
 		s.addObject(new CleanupRoom("room0", mx-mainW, mx+mainW, my-mainH, my+mainH, "cyan", Cleanup.SHAPE_ROOM));
@@ -259,7 +260,7 @@ public class CleanupRandomStateGenerator implements StateGenerator {
 //			int bY = rng.nextInt(rTop - rBottom) + rBottom;
 //			if (s.isOpen(room, bX, bY)) {
 //				String shape = Cleanup.SHAPES[rng.nextInt(Cleanup.SHAPES.length)];
-//				String color = Cleanup.COLORS[rng.nextInt(Cleanup.COLORS.length)];
+//				String color = Cleanup.COLORS_BLOCKS[rng.nextInt(Cleanup.COLORS_BLOCKS.length)];
 //				DPrint.cl(DEBUG_CODE,"block"+i+": "+ shape + " " + color + " (" + bX + ", " + bY + ") in the " + room.get(Cleanup.ATT_COLOR) + " " + ((CleanupRoom)room).name);
 //				s.addObject(new CleanupBlock(id, bX, bY, shape, color));
 //				i = i + 1;
@@ -299,10 +300,10 @@ public class CleanupRandomStateGenerator implements StateGenerator {
 		
 //		s.addObject(new CleanupBlock("block0", bx, by, bShape, bColor));
 		
-		s.addObject(new CleanupRoom("room0", x1, x2, 0, y2, Cleanup.COLORS[rng.nextInt(Cleanup.COLORS.length)], Cleanup.SHAPE_ROOM));
-		s.addObject(new CleanupRoom("room1", 0, x1, y1, y2, Cleanup.COLORS[rng.nextInt(Cleanup.COLORS.length)], Cleanup.SHAPE_ROOM));
-		s.addObject(new CleanupRoom("room2", 0, x3, y2, y3, Cleanup.COLORS[rng.nextInt(Cleanup.COLORS.length)], Cleanup.SHAPE_ROOM));
-		s.addObject(new CleanupRoom("room3", x2, x3, 0, y2, Cleanup.COLORS[rng.nextInt(Cleanup.COLORS.length)], Cleanup.SHAPE_ROOM));
+		s.addObject(new CleanupRoom("room0", x1, x2, 0, y2, Cleanup.COLORS_BLOCKS[rng.nextInt(Cleanup.COLORS_BLOCKS.length)], Cleanup.SHAPE_ROOM));
+		s.addObject(new CleanupRoom("room1", 0, x1, y1, y2, Cleanup.COLORS_BLOCKS[rng.nextInt(Cleanup.COLORS_BLOCKS.length)], Cleanup.SHAPE_ROOM));
+		s.addObject(new CleanupRoom("room2", 0, x3, y2, y3, Cleanup.COLORS_BLOCKS[rng.nextInt(Cleanup.COLORS_BLOCKS.length)], Cleanup.SHAPE_ROOM));
+		s.addObject(new CleanupRoom("room3", x2, x3, 0, y2, Cleanup.COLORS_BLOCKS[rng.nextInt(Cleanup.COLORS_BLOCKS.length)], Cleanup.SHAPE_ROOM));
 		
 		s.addObject(new CleanupDoor("door0", x2, x2, 1, 1, Cleanup.LOCKABLE_STATES[0]));
 		s.addObject(new CleanupDoor("door1", x1, x1, 5, 5, Cleanup.LOCKABLE_STATES[0]));
@@ -322,7 +323,7 @@ public class CleanupRandomStateGenerator implements StateGenerator {
 			int bY = rng.nextInt(rTop - rBottom) + rBottom;
 			if (s.isOpen(room, bX, bY)) {
 				String shape = Cleanup.SHAPES[rng.nextInt(Cleanup.SHAPES.length)];
-				String color = Cleanup.COLORS[rng.nextInt(Cleanup.COLORS.length)];
+				String color = Cleanup.COLORS_BLOCKS[rng.nextInt(Cleanup.COLORS_BLOCKS.length)];
 				DPrint.cl(DEBUG_CODE,"block"+i+": "+ shape + " " + color + " (" + bX + ", " + bY + ") in the " + room.get(Cleanup.ATT_COLOR) + " room");
 				s.addObject(new CleanupBlock(id, bX, bY, shape, color));
 				i = i + 1;
@@ -496,19 +497,10 @@ public class CleanupRandomStateGenerator implements StateGenerator {
 		String agentDirection = Cleanup.directions[rng.nextInt(Cleanup.directions.length)];
 		CleanupState s = new CleanupState(width, height, ax, ay, agentDirection, numBlocks, numRooms, numDoors);
 		
-		List<String> blockColors = new ArrayList<String>(); // Arrays.asList(Cleanup.COLORS);
-		blockColors.add("green");
-		blockColors.add("blue");
-		blockColors.add("yellow");
-		blockColors.add("red");
-		blockColors.add("magenta");
-		List<String> roomColors = new ArrayList<String>();
-		roomColors.addAll(blockColors);
-		roomColors.add("cyan");
-		roomColors.add("orange");
-		roomColors.add("white");
-		
-		
+		List<String> blockColors = new ArrayList<String>(Arrays.asList(Cleanup.COLORS_BLOCKS));
+		List<String> roomColors = new ArrayList<String>(Arrays.asList(Cleanup.COLORS_ROOMS));
+
+
 		int index = 0;
 		while (numBlocks > 0) {
 			int bx = ax + (rng.nextBoolean() ? -1 : 1);
