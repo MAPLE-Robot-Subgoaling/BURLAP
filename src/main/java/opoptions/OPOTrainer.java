@@ -35,7 +35,6 @@ public abstract class OPOTrainer extends SimulationConfig {
 	// to use different index, subclasses should override the getIndexForRandomFactory method
 	public static final int DEFAULT_RNG_INDEX = 0;
 
-
 	protected Classifier classifier;
 	protected boolean identifierIndependentHashing = true;
 	protected String trainerName = "unsetTrainer";

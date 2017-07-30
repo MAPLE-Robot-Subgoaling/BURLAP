@@ -11,9 +11,13 @@ import burlap.behavior.singleagent.Episode;
 import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.action.Action;
+import burlap.mdp.core.oo.propositional.GroundedProp;
+import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.oo.OOSADomain;
 import opoptions.trainers.OPOCleanup;
 import utils.SimulationConfig;
 import weka.classifiers.Classifier;
@@ -145,24 +149,6 @@ public class OPODriver {
         saver.writeBatch();
     }
 
-//	public static String setupSerializationFile(String path, boolean moveFile) {
-//		String prepend = path;
-//		String outYaml = prepend + ".yaml";
-//		log("looking for serialization file " + prepend + " and out " + outYaml);
-//		if (moveFile) {
-//			String moveYaml = prepend + "_" + new SimpleDateFormat("yyyyMMddhhmmss").format(new Date()).toString() + ".yaml";
-//			Path filePathSource = Paths.get(outYaml);
-//			Path filePathDestination = Paths.get(moveYaml);
-//			try {
-//				Files.move(filePathSource, filePathDestination);
-//			} catch (IOException e1) {
-//				// do nothing
-//			}
-//		}
-//		String serializationFile = outYaml;
-//		return serializationFile;
-//	}
-
 //	public void runEvaluation(OPOTrainer trainer) {
 //		boolean moveFile = true;
 //		String serializationFile = trainer.setupSerializationFile(trainer.getOutputPath() + trainer.getDomainName(), moveFile);
@@ -200,7 +186,7 @@ public class OPODriver {
 
     private void buildClassifiers() {
         for (OPOTrainer trainer : trainers) {
-            buildClassifier(trainer);
+            buildClassifier(trainer, "goal");
         }
     }
 
@@ -227,7 +213,7 @@ public class OPODriver {
         return transitions;
     }
 
-    private void writeFeatureVectorHeader(FileWriter writer, Transition transition) throws IOException {
+    private void writeFeatureVectorHeader(FileWriter writer, Transition transition, List<GroundedProp> gpfs) throws IOException {
         StringBuilder sb = new StringBuilder();
         String label = "label";
         String actionName = "actionName";
@@ -243,6 +229,10 @@ public class OPODriver {
                 sb.append(",");
             }
         }
+        for (GroundedProp gpf : gpfs) {
+            sb.append(gpf.toString().replace(",",";").replace(" ", ""));
+            sb.append(",");
+        }
 //        sb.append(actionName);
 //        sb.append(",");
 //        sb.append(reward);
@@ -252,25 +242,16 @@ public class OPODriver {
         writer.append(sb.toString());
     }
 
-    public static StringBuilder stateToStringBuilder(StringBuilder sb, OOState state) {
-        List<ObjectInstance> objects = state.objects();
-        for (ObjectInstance object : objects) {
-            for (Object variableKey : object.variableKeys()) {
-                String key = variableKey.toString();
-                String val = object.get(key).toString();
-                sb.append(val);
-                sb.append(",");
-            }
-        }
-        return sb;
-    }
-
-    private void writeFeatureVector(FileWriter writer, Transition transition, OPOTrainer trainer) throws IOException {
+    private void writeFeatureVector(FileWriter writer, Transition transition, OPOTrainer trainer, List<GroundedProp> gpfs) throws IOException {
         StringBuilder sb = new StringBuilder();
         OOState state = transition.state;
         boolean isGoal = trainer.satisfiesGoal(state);
         String label = isGoal ? "goal" : "internal";
-        sb = stateToStringBuilder(sb, state);
+        sb = StateFeaturizer.stateToStringBuilder(sb, state);
+        for (GroundedProp gpf : gpfs) {
+            sb.append(gpf.isTrue(state));
+            sb.append(",");
+        }
         Action action = transition.action;
         String actionName = action == null ? "null" : action.actionName();
         double reward = transition.reward;
@@ -292,9 +273,12 @@ public class OPODriver {
             File file = new File(csvPath);
             file.getParentFile().mkdirs();
             FileWriter writer = new FileWriter(file);
-            writeFeatureVectorHeader(writer, transitions.get(0));
+            Transition exampleTransition = transitions.get(0);
+            OOState exampleState = (OOState) exampleTransition.state;
+            List<GroundedProp> gpfs = StateFeaturizer.getAllGroundedProps(exampleState, (OOSADomain)trainer.getDomain());
+            writeFeatureVectorHeader(writer, exampleTransition, gpfs);
             for (Transition transition : transitions) {
-                writeFeatureVector(writer, transition, trainer);
+                writeFeatureVector(writer, transition, trainer, gpfs);
             }
             writer.flush();
             writer.close();
@@ -306,7 +290,7 @@ public class OPODriver {
         }
     }
 
-    private void buildClassifier(OPOTrainer trainer) {
+    private void buildClassifier(OPOTrainer trainer, String targetLabel) {
         String path = getOutputFilename(trainer);
         String arffPath = path + ".arff";
         try {
@@ -314,6 +298,7 @@ public class OPODriver {
             Instances data;
             data = source.getDataSet();
             data.setClassIndex(data.numAttributes() - 1);
+//            OPODriver.log(data.classAttribute());
 
 //			SpreadSubsample filter = new SpreadSubsample();
 //			String[] options = new String[2];
@@ -333,12 +318,13 @@ public class OPODriver {
             log(evaluation.toMatrixString());
             SerializationHelper.write(path + "_" + classifier.getClass().getSimpleName() + ".model", classifier);
 
-            LearnedStateTest test = new LearnedStateTest(classifier, data);
+            StateFeaturizer featurizer = new StateFeaturizer((OOSADomain)trainer.getDomain());
+            LearnedStateTest test = new LearnedStateTest(classifier, data, featurizer, targetLabel);
             List<Transition> transitions = getTransitions(trainer);
             for (Transition t : transitions) {
                 OOState s = t.state;
                 boolean satisfied = test.satisfies(s);
-                log("state satisfies condition: " + satisfied + ", " + stateToStringBuilder(new StringBuilder(), s));
+                log("classifier satisfied? " + satisfied + ", actual goal? " + trainer.satisfiesGoal(s) + " for state " + StateFeaturizer.stateToStringBuilder(new StringBuilder(), s));
             }
 
         } catch (Exception e) {
@@ -371,7 +357,7 @@ public class OPODriver {
 
         OPODriver driver = new OPODriver();
         long initSeedTraining = rng.nextLong();//2103460911L;
-        int numSeedsTraining = 10;
+        int numSeedsTraining = 100;
         driver.addSeedsTo(driver.getTrainingSeeds(), initSeedTraining, numSeedsTraining);
         log(initSeedTraining + ": " + driver.getTrainingSeeds());
 //		long initSeedEvaluation = rng.nextLong();

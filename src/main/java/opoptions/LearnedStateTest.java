@@ -3,13 +3,16 @@ package opoptions;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 
 import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
+import burlap.mdp.core.oo.propositional.GroundedProp;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.oo.OOSADomain;
 import weka.classifiers.Classifier;
 import weka.core.Attribute;
 import weka.core.FastVector;
@@ -20,24 +23,27 @@ import weka.core.converters.CSVLoader;
 
 public class LearnedStateTest implements StateConditionTest {
 
+    private StateFeaturizer featurizer;
     private Classifier classifier;
     private Instances instancesStructure;
+    private String targetLabel;
 
-    public LearnedStateTest(Classifier classifier, Instances instancesStructure) {
+    public LearnedStateTest(Classifier classifier, Instances instancesStructure, StateFeaturizer featurizer, String targetLabel) {
         this.classifier = classifier;
         this.instancesStructure = instancesStructure;
+        this.featurizer = featurizer;
+        this.targetLabel = targetLabel;
     }
 
-    @Override
-    public boolean satisfies(State s) {
-//        StringBuilder sb = new StringBuilder();
-//        sb = OPODriver.stateToStringBuilder(sb, (OOState)s);
-//
-//        Instance instance = new Instance(1.0, sb);
-
+    protected Instance stateToInstance(State s) {
         int numAttributes = instancesStructure.numAttributes();
         Instance instance = new DenseInstance(numAttributes);
         instance.setDataset(instancesStructure);
+//        Enumeration<Attribute> as = instancesStructure.enumerateAttributes();
+//        while(as.hasMoreElements()) {
+//            Attribute a = as.nextElement();
+//            OPODriver.log(a + " " + a.index());
+//        }
         OOState state = (OOState)s;
         List<ObjectInstance> objects = state.objects();
         for (ObjectInstance object : objects) {
@@ -53,6 +59,20 @@ public class LearnedStateTest implements StateConditionTest {
                 }
             }
         }
+        List<GroundedProp> gpfs = featurizer.getAllGroundedProps(state);
+        for (GroundedProp gpf : gpfs) {
+            String attributeKey = gpf.toString().replace(",",";").replace(" ", "");
+            Attribute attribute = instancesStructure.attribute(attributeKey);
+            String value = gpf.isTrue(state) ? "true" : "false";
+            instance.setValue(attribute, value);
+        }
+//        OPODriver.log(instance.toString());
+        return instance;
+    }
+
+    @Override
+    public boolean satisfies(State s) {
+        Instance instance = stateToInstance(s);
         double output = 0.0;
         try {
             output = classifier.classifyInstance(instance);
@@ -62,7 +82,11 @@ public class LearnedStateTest implements StateConditionTest {
             throw new RuntimeException("not implemented");
         }
 
-        return output > 0;
+        String predictedLabel = instance.classAttribute().value(((Double)output).intValue());
+//        OPODriver.log(StateFeaturizer.stateToStringBuilder(new StringBuilder(), (OOState)s));
+//        OPODriver.log("target: " + targetLabel + ", predicted: " + predictedLabel + " out of " + instance.classAttribute() + ", using output " + output);
+
+        return predictedLabel.equals(targetLabel);
 
     }
 
