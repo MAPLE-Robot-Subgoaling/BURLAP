@@ -149,23 +149,22 @@ public class OPODriver {
         saver.writeBatch();
     }
 
-//	public void runEvaluation(OPOTrainer trainer) {
-//		boolean moveFile = true;
-//		String serializationFile = trainer.setupSerializationFile(trainer.getOutputPath() + trainer.getDomainName(), moveFile);
-//		for (int i = 0; i < evaluationSeeds.size(); i++) {
-//			Long seed = evaluationSeeds.get(i);
-//			log("\nTrainer: " + trainer.getTrainerName() + " (" + trainer.getDomainName() + " domain)");
-//			log("Eval " + (i+1) + " / " + evaluationSeeds.size() + ": " + seed);
-//			trainer.setSeed(seed);
-//			trainer.runEvaluation(serializationFile);
-//		}
-//	}
-//	
-//	public void runEvaluation() {
-//		for (OPOTrainer trainer : trainers) {
-//			runEvaluation(trainer);
-//		}
-//	}
+	public void runEvaluation(OPOTrainer trainer) {
+        log("Beginning " + evaluationSeeds.size() + " evaluations");
+		for (int i = 0; i < evaluationSeeds.size(); i++) {
+			Long seed = evaluationSeeds.get(i);
+			log("\nTrainer: " + trainer.getTrainerName() + " (" + trainer.getDomainName() + " domain)");
+			log("Eval " + (i+1) + " / " + evaluationSeeds.size() + ": " + seed);
+			trainer.setSeed(seed);
+			trainer.runEvaluation(null);
+		}
+	}
+
+	public void runEvaluation() {
+		for (OPOTrainer trainer : trainers) {
+			runEvaluation(trainer);
+		}
+	}
 
     public void addTrainers() {
         OPOCleanup moveToDoor = (OPOCleanup) SimulationConfig.load("./config/moveToDoor.yaml", OPOCleanup.class);
@@ -324,31 +323,17 @@ public class OPODriver {
 
             StateFeaturizer featurizer = new StateFeaturizer((OOSADomain)trainer.getDomain());
             LearnedStateTest test = new LearnedStateTest(classifier, data, targetLabel, featurizer, trainer.getIncludePFs());
-            List<Transition> transitions = getTransitions(trainer);
-            for (Transition t : transitions) {
-                OOState s = t.state;
-                boolean satisfied = test.satisfies(s);
-                log("classifier satisfied? " + satisfied + ", actual goal? " + trainer.satisfiesGoal(s) + " for state " + StateFeaturizer.stateToStringBuilder(new StringBuilder(), s));
-            }
+//            List<Transition> transitions = getTransitions(trainer);
+//            for (Transition t : transitions) {
+//                OOState s = t.state;
+//                boolean satisfied = test.satisfies(s);
+//                log("classifier satisfied? " + satisfied + ", actual goal? " + trainer.satisfiesGoal(s) + " for state " + StateFeaturizer.stateToStringBuilder(new StringBuilder(), s));
+//            }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-//		ArffLoader.ArffReader headerReader = null;
-//		try {
-//			headerReader = new ArffLoader.ArffReader(new FileReader(arffPath));
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//		Instances data = headerReader.getStructure();
-//		data.setClassIndex(data.numAttributes() - 1);
-//
-//
-//		// load the model
-//		model = (Classifier) SerializationHelper.read(path + "_" + model.getClass().getSimpleName() + ".model");
-//
-//
 
     }
 
@@ -360,14 +345,14 @@ public class OPODriver {
         DPrint.toggleCode(DEBUG_CODE, debugMode);
 
         OPODriver driver = new OPODriver();
-        long initSeedTraining = rng.nextLong();//2103460911L;
-        int numSeedsTraining = 100;
+        long initSeedTraining = rng.nextLong();
+        int numSeedsTraining = 2;
         driver.addSeedsTo(driver.getTrainingSeeds(), initSeedTraining, numSeedsTraining);
         log(initSeedTraining + ": " + driver.getTrainingSeeds());
-//		long initSeedEvaluation = rng.nextLong();
-//		int numSeedsEvaluation = 5;
-//		driver.addSeedsTo(driver.getEvaluationSeeds(), initSeedEvaluation, numSeedsEvaluation);
-//		log(initSeedEvaluation + ": " + driver.getEvaluationSeeds());
+		long initSeedEvaluation = rng.nextLong();
+		int numSeedsEvaluation = 1;
+		driver.addSeedsTo(driver.getEvaluationSeeds(), initSeedEvaluation, numSeedsEvaluation);
+		log(initSeedEvaluation + ": " + driver.getEvaluationSeeds());
 
         driver.addTrainers();
 
@@ -377,9 +362,9 @@ public class OPODriver {
 
         driver.buildClassifiers();
 
-        driver.runVisualizer();
+//        driver.runVisualizer();
 
-//		driver.runEvaluation();
+		driver.runEvaluation();
 
     }
 

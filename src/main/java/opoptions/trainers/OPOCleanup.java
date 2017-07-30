@@ -48,6 +48,16 @@ public class OPOCleanup extends OPOTrainer {
 	}
 
 	@Override
+	public OOState setupStateEvaluation() {
+		CleanupRandomStateGenerator.setDebugMode(true);
+		CleanupRandomStateGenerator randomCleanup = new CleanupRandomStateGenerator();
+		randomCleanup.setWidth(domainGenerator.getWidth());
+		randomCleanup.setHeight(domainGenerator.getHeight());
+		initialState = (OOState) randomCleanup.generateOneRoomOneDoor(); //generateTaxiInCleanup(1);//.generateCentralRoomWithClosets(1); //cw.getRandomState(domain, rng, numBlocks);
+		return (OOState) initialState;
+	}
+
+	@Override
 	public OOSADomain setupDomain() {
 		goal = new CleanupGoal();
 		rf = new CleanupRF(goal, rewardGoal, rewardDefault, rewardNoop, rewardPull);

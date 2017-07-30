@@ -1,21 +1,7 @@
 package opoptions;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import burlap.behavior.policy.Policy;
-import burlap.behavior.policy.SolverDerivedPolicy;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.auxiliary.performance.PerformancePlotter;
-import burlap.behavior.singleagent.learning.tdmethods.QLearning;
-import burlap.behavior.singleagent.learning.tdmethods.vfa.ApproximateQLearning;
-import burlap.behavior.singleagent.learning.tdmethods.vfa.GradientDescentSarsaLam;
-import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
@@ -44,8 +30,18 @@ public abstract class OPOTrainer extends SimulationConfig {
 	protected TerminalFunction tf;
 	protected HashableStateFactory hashingFactory;
 	protected Environment env;
-	
-	private String lastTrainingSeedTimestamp = "unsetSeedTimestamp";
+
+    protected String episodeOutputPathEvaluation;
+    protected String lastSeedTimestampTraining = "unsetSeedTimestamp";
+    protected String lastSeedTimestampEvaluation = "unsetSeedTimestamp";
+
+    public String getEpisodeOutputPathEvaluation() {
+        return episodeOutputPathEvaluation;
+    }
+
+    public void setEpisodeOutputPathEvaluation(String episodeOutputPathEvaluation) {
+        this.episodeOutputPathEvaluation = episodeOutputPathEvaluation;
+    }
 
 	public String getTrainerName() {
 		return trainerName;
@@ -101,9 +97,13 @@ public abstract class OPOTrainer extends SimulationConfig {
 		this.hashingFactory = hashingFactory;
 	}
 
-	public String getLastTrainingSeedTimestamp() {
-		return lastTrainingSeedTimestamp;
-	}
+    public String getLastSeedTimestampTraining() {
+        return lastSeedTimestampTraining;
+    }
+
+    public String getLastSeedTimestampEvaluation() {
+        return lastSeedTimestampEvaluation;
+    }
 
 	public void setSeed(Long seed) {
 		this.seed = seed;
@@ -122,7 +122,9 @@ public abstract class OPOTrainer extends SimulationConfig {
 		return DEFAULT_RNG_INDEX;
 	}
 
-	public abstract OOState setupStateTraining();
+    public abstract OOState setupStateTraining();
+
+    public abstract OOState setupStateEvaluation();
 	
 	public abstract OOSADomain setupDomain();
 	
@@ -159,12 +161,23 @@ public abstract class OPOTrainer extends SimulationConfig {
 		
 		// 4. run the simulation
 		String seedTimestamp = planAndRollout(plotter);
-		lastTrainingSeedTimestamp = seedTimestamp;
+		lastSeedTimestampTraining = seedTimestamp;
 		
 	}
 	
-	public void runEvaluation(String serializationFile) {
-		throw new RuntimeException("runEvaluation not implemented");
+	public void runEvaluation(PerformancePlotter plotter) {
+
+        setupStateEvaluation();
+
+        setupDomain();
+
+        setupAgent();
+
+        episodeOutputPath = getEpisodeOutputPathEvaluation();
+        String seedTimestamp = planAndRollout(plotter);
+        lastSeedTimestampEvaluation = seedTimestamp;
+
+//		throw new RuntimeException("runEvaluation not implemented");
 	}
 
     public boolean getIncludePFs() {

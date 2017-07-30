@@ -3,7 +3,7 @@
     "trainerName" : "moveToDoor",
     "shortName" : "m2d",
     "domainName" : "cleanup",
-    "includePFs" : false,
+    "includePFs" : true,
     "domainGenerator" : {
         "minX"                  : 0,
         "minY"                  : 0,
@@ -24,6 +24,7 @@
     "maxEpisodeSize"            : 1000,
     "outputPath"                : "./out_opos_cleanup/moveToDoor/",
     "episodeOutputPath"         : "./out_opos_cleanup/moveToDoor/episodes/",
+    "episodeOutputPathEvaluation":"./out_opos_cleanup/moveToDoor/episodesEval/",
     "agent" : {
         "type"                  : "ValueIteration",
         "gamma"                 : 0.9,
