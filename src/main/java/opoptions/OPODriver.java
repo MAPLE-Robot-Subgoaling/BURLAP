@@ -213,7 +213,7 @@ public class OPODriver {
         return transitions;
     }
 
-    private void writeFeatureVectorHeader(FileWriter writer, Transition transition, List<GroundedProp> gpfs) throws IOException {
+    private static void writeFeatureVectorHeader(FileWriter writer, Transition transition, OPOTrainer trainer, List<GroundedProp> gpfs) throws IOException {
         StringBuilder sb = new StringBuilder();
         String label = "label";
         String actionName = "actionName";
@@ -229,9 +229,11 @@ public class OPODriver {
                 sb.append(",");
             }
         }
-        for (GroundedProp gpf : gpfs) {
-            sb.append(gpf.toString().replace(",",";").replace(" ", ""));
-            sb.append(",");
+        if (trainer.getIncludePFs()) {
+            for (GroundedProp gpf : gpfs) {
+                sb.append(gpf.toString().replace(",",";").replace(" ", ""));
+                sb.append(",");
+            }
         }
 //        sb.append(actionName);
 //        sb.append(",");
@@ -242,15 +244,17 @@ public class OPODriver {
         writer.append(sb.toString());
     }
 
-    private void writeFeatureVector(FileWriter writer, Transition transition, OPOTrainer trainer, List<GroundedProp> gpfs) throws IOException {
+    private static void writeFeatureVector(FileWriter writer, Transition transition, OPOTrainer trainer, List<GroundedProp> gpfs) throws IOException {
         StringBuilder sb = new StringBuilder();
         OOState state = transition.state;
         boolean isGoal = trainer.satisfiesGoal(state);
         String label = isGoal ? "goal" : "internal";
         sb = StateFeaturizer.stateToStringBuilder(sb, state);
-        for (GroundedProp gpf : gpfs) {
-            sb.append(gpf.isTrue(state));
-            sb.append(",");
+        if (trainer.getIncludePFs()) {
+            for (GroundedProp gpf : gpfs) {
+                sb.append(gpf.isTrue(state));
+                sb.append(",");
+            }
         }
         Action action = transition.action;
         String actionName = action == null ? "null" : action.actionName();
@@ -276,7 +280,7 @@ public class OPODriver {
             Transition exampleTransition = transitions.get(0);
             OOState exampleState = (OOState) exampleTransition.state;
             List<GroundedProp> gpfs = StateFeaturizer.getAllGroundedProps(exampleState, (OOSADomain)trainer.getDomain());
-            writeFeatureVectorHeader(writer, exampleTransition, gpfs);
+            writeFeatureVectorHeader(writer, exampleTransition, trainer, gpfs);
             for (Transition transition : transitions) {
                 writeFeatureVector(writer, transition, trainer, gpfs);
             }
@@ -319,7 +323,7 @@ public class OPODriver {
             SerializationHelper.write(path + "_" + classifier.getClass().getSimpleName() + ".model", classifier);
 
             StateFeaturizer featurizer = new StateFeaturizer((OOSADomain)trainer.getDomain());
-            LearnedStateTest test = new LearnedStateTest(classifier, data, featurizer, targetLabel);
+            LearnedStateTest test = new LearnedStateTest(classifier, data, targetLabel, featurizer, trainer.getIncludePFs());
             List<Transition> transitions = getTransitions(trainer);
             for (Transition t : transitions) {
                 OOState s = t.state;

@@ -23,16 +23,18 @@ import weka.core.converters.CSVLoader;
 
 public class LearnedStateTest implements StateConditionTest {
 
+    private boolean includePFs;
     private StateFeaturizer featurizer;
     private Classifier classifier;
     private Instances instancesStructure;
     private String targetLabel;
 
-    public LearnedStateTest(Classifier classifier, Instances instancesStructure, StateFeaturizer featurizer, String targetLabel) {
+    public LearnedStateTest(Classifier classifier, Instances instancesStructure, String targetLabel, StateFeaturizer featurizer, boolean includePFs) {
         this.classifier = classifier;
         this.instancesStructure = instancesStructure;
-        this.featurizer = featurizer;
         this.targetLabel = targetLabel;
+        this.featurizer = featurizer;
+        this.includePFs = includePFs;
     }
 
     protected Instance stateToInstance(State s) {
@@ -59,12 +61,14 @@ public class LearnedStateTest implements StateConditionTest {
                 }
             }
         }
-        List<GroundedProp> gpfs = featurizer.getAllGroundedProps(state);
-        for (GroundedProp gpf : gpfs) {
-            String attributeKey = gpf.toString().replace(",",";").replace(" ", "");
-            Attribute attribute = instancesStructure.attribute(attributeKey);
-            String value = gpf.isTrue(state) ? "true" : "false";
-            instance.setValue(attribute, value);
+        if (includePFs) {
+            List<GroundedProp> gpfs = featurizer.getAllGroundedProps(state);
+            for (GroundedProp gpf : gpfs) {
+                String attributeKey = gpf.toString().replace(",", ";").replace(" ", "");
+                Attribute attribute = instancesStructure.attribute(attributeKey);
+                String value = gpf.isTrue(state) ? "true" : "false";
+                instance.setValue(attribute, value);
+            }
         }
 //        OPODriver.log(instance.toString());
         return instance;

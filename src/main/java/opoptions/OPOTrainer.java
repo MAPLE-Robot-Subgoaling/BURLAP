@@ -37,6 +37,7 @@ public abstract class OPOTrainer extends SimulationConfig {
 
 	protected Classifier classifier;
 	protected boolean identifierIndependentHashing = true;
+	protected boolean includePFs;
 	protected String trainerName = "unsetTrainer";
 	protected String domainName = "unsetDomain";
 	protected RewardFunction rf;
@@ -165,5 +166,13 @@ public abstract class OPOTrainer extends SimulationConfig {
 	public void runEvaluation(String serializationFile) {
 		throw new RuntimeException("runEvaluation not implemented");
 	}
+
+    public boolean getIncludePFs() {
+        return includePFs;
+    }
+
+    public void setIncludePFs(boolean includePFs) {
+        this.includePFs = includePFs;
+    }
 
 }
