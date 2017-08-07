@@ -20,7 +20,6 @@ import opoptions.trainers.MoveToDoor;
 import utils.SimulationConfig;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
-import weka.classifiers.trees.J48;
 import weka.core.Instances;
 import weka.core.SerializationHelper;
 import weka.core.converters.ArffSaver;
@@ -341,6 +340,8 @@ public class OPODriver {
 
     public static void main(String[] args) {
 
+    	Long globalSeed = null;
+    	if (globalSeed != null) { log("using a global seed of " + globalSeed); }
         Random rng = new Random();
 
         boolean debugMode = true;

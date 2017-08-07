@@ -1,29 +1,22 @@
 package opoptions;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
 import burlap.behavior.policy.EpsilonGreedy;
-import burlap.behavior.policy.GreedyQPolicy;
-import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.MDPSolver;
-import burlap.behavior.singleagent.auxiliary.StateReachability;
 import burlap.behavior.singleagent.auxiliary.performance.PerformancePlotter;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.options.OptionType;
-import burlap.behavior.singleagent.options.SubgoalOption;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
-import burlap.mdp.core.state.State;
-import burlap.mdp.core.state.StateUtilities;
 import burlap.mdp.singleagent.common.VisualActionObserver;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
@@ -206,7 +199,7 @@ public abstract class OPOTrainer extends SimulationConfig {
         Set<Option> options = opoption.generateOptions(this);
 
         QLearning ql = new QLearning(domain, 0.9, hashingFactory, 0.0, 0.01);
-        ql.setLearningPolicy(new EpsilonGreedy(ql, 0.75));
+        ql.setLearningPolicy(new EpsilonGreedy(ql, 0.1));
         for (Option option : options) {
             ql.addActionType(new OptionType(option));
         }

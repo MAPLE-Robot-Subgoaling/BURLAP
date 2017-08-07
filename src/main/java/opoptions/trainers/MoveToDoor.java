@@ -5,7 +5,6 @@ import java.util.List;
 import javax.swing.JFrame;
 
 import burlap.behavior.singleagent.Episode;
-import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.auxiliary.EpisodeSequenceVisualizer;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
@@ -17,10 +16,8 @@ import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.common.GoalBasedRF;
 import burlap.mdp.singleagent.model.RewardFunction;
-import burlap.mdp.singleagent.model.SampleModel;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.statehashing.HashableStateFactory;
-import burlap.statehashing.simple.SimpleHashableStateFactory;
 import burlap.visualizer.Visualizer;
 import cleanup.Cleanup;
 import cleanup.CleanupGoal;
