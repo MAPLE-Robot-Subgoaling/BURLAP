@@ -25,6 +25,7 @@ import burlap.mdp.singleagent.environment.extensions.EnvironmentServer;
 import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.statehashing.HashableStateFactory;
+import burlap.statehashing.masked.MaskedHashableStateFactory;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import cleanup.CleanupVisualizer;
 import utils.Simulation;
@@ -243,5 +244,19 @@ public abstract class OPOTrainer extends SimulationConfig {
     }
 
 	public abstract MDPSolverInterface initializeOptionPlanner(StateConditionTest specificGoal);
+
+	public void setTypeSignature(List<String> objectClasses) {
+		MaskedHashableStateFactory mhsf = new MaskedHashableStateFactory();
+		OOSADomain oosaDomain = (OOSADomain)domain;
+		List<String> stateClassNames = oosaDomain.stateClassNames();
+		List<String> maskedClasses = new ArrayList<String>();
+		for (String stateClassName : stateClassNames) {
+			if (!objectClasses.contains(stateClassName)) {
+				maskedClasses.add(stateClassName);
+			}
+		}
+		mhsf.addObjectClassMasks((String[])maskedClasses.toArray(new String[0]));
+		opoption.setTypeSignature(mhsf);
+	}
 
 }

@@ -308,7 +308,7 @@ public class Cleanup implements DomainGenerator {
 		@Override
 		public boolean isTrue(OOState s, String... params) {
 			CleanupState cws = (CleanupState)s;
-			ObjectInstance agent = cws.object(CLASS_AGENT);
+			ObjectInstance agent = cws.objectsOfClass(CLASS_AGENT).get(0);
 			int ax = (Integer)agent.get(ATT_X);
 			int ay = (Integer)agent.get(ATT_Y);
 			ObjectInstance agentRoom = cws.roomContainingPoint(ax, ay);

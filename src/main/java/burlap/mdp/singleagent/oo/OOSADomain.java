@@ -24,6 +24,10 @@ public class OOSADomain extends SADomain implements OODomain {
 	public List<Class<?>> stateClasses() {
 		return new ArrayList<Class<?>>(stateClassesMap.values());
 	}
+	
+	public List<String> stateClassNames() {
+		return new ArrayList<String>(stateClassesMap.keySet());
+	}
 
 	@Override
 	public Class<?> stateClass(String className) {

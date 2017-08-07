@@ -21,6 +21,7 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.model.FullModel;
 import burlap.mdp.singleagent.model.TransitionProb;
 import burlap.mdp.singleagent.oo.OOSADomain;
+import burlap.statehashing.masked.MaskedHashableStateFactory;
 import cat.CATrajectory;
 import cat.CreateActionModels;
 import cat.VariableTree;
@@ -352,6 +353,8 @@ public class OPODriver {
     	}
     }
     
+    // returns the object classes that have any attribute/variable/factor that is checked or changed
+    // e.g., "agent" and "room"
     public void createCATs(OPOTrainer trainer) {
 
     	Set<String> allCheckedChanged = new HashSet<String>();
@@ -377,14 +380,24 @@ public class OPODriver {
 				allCheckedChanged.addAll(changed);
 			}
 		}
+		Set<String> objectNames = new HashSet<String>();
 		for (String variable : allCheckedChanged) {
-			OPODriver.log(variable);
+			String objectName = variable.split(":")[0];
+			objectNames.add(objectName);
 		}
+		OPODriver.log(objectNames);
+		List<String> objectClasses = new ArrayList<String>();
+		for (String objectName : objectNames) {
+			String objectClass = objectName.split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)")[0];
+			objectClasses.add(objectClass);
+		}
+		OPODriver.log(objectClasses);
+		trainer.setTypeSignature(objectClasses);
     }
 
     public static void main(String[] args) {
 
-    	Long globalSeed = null;
+//    	Long globalSeed = null;
 //    	if (globalSeed != null) { log("using a global seed of " + globalSeed); }
         Random rng = new Random();
 
@@ -409,9 +422,9 @@ public class OPODriver {
         
         driver.createCATs();
 
-//        driver.buildClassifiers();
+        driver.buildClassifiers();
 
-//        driver.runEvaluation();
+        driver.runEvaluation();
 
 //        driver.runVisualizer();
 
