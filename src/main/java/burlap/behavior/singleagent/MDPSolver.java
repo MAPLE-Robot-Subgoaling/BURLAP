@@ -46,7 +46,7 @@ public abstract class MDPSolver implements MDPSolverInterface{
 	/**
 	 * The list of actions this solver can use. May include non-domain specified actions like {@link burlap.behavior.singleagent.options.Option}s.
 	 */
-	protected List <ActionType> actionTypes;
+	protected List <ActionType> actionTypes = new ArrayList<ActionType>();
 	
 	/**
 	 * A mapping to internal stored hashed states ({@link burlap.statehashing.HashableState}) that are stored.

@@ -7,6 +7,7 @@ import java.util.Set;
 import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.MDPSolver;
+import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.behavior.singleagent.auxiliary.performance.PerformancePlotter;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.behavior.singleagent.options.Option;
@@ -241,6 +242,6 @@ public abstract class OPOTrainer extends SimulationConfig {
         this.includePFs = includePFs;
     }
 
-	public abstract Planner getOptionPlanner(StateConditionTest specificGoal);
+	public abstract MDPSolverInterface initializeOptionPlanner(StateConditionTest specificGoal);
 
 }

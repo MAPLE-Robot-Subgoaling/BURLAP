@@ -1,10 +1,15 @@
 package opoptions.trainers;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import javax.swing.JFrame;
 
+import org.apache.commons.beanutils.BeanUtils;
+
 import burlap.behavior.singleagent.Episode;
+import burlap.behavior.singleagent.MDPSolver;
+import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.behavior.singleagent.auxiliary.EpisodeSequenceVisualizer;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
@@ -38,6 +43,7 @@ public class MoveToDoor extends OPOTrainer {
 	public double rewardGoal;
 	public double rewardNoop;
 	public double rewardPull;
+	private MDPSolver optionPlanner;
 	
 	// generated in code
 	private CleanupGoal goal;
@@ -104,9 +110,17 @@ public class MoveToDoor extends OPOTrainer {
 		EpisodeSequenceVisualizer esv = new EpisodeSequenceVisualizer(v, domain, episodes);
 		esv.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
+	
+	public MDPSolver getOptionPlanner() {
+		return optionPlanner;
+	}
+
+	public void setOptionPlanner(MDPSolver optionPlanner) {
+		this.optionPlanner = optionPlanner;
+	}
 
 	@Override
-	public Planner getOptionPlanner(StateConditionTest specificGoal) {
+	public MDPSolverInterface initializeOptionPlanner(StateConditionTest specificGoal) {
     	RewardFunction originalRF = domainGenerator.getRf();
     	TerminalFunction originalTF = domainGenerator.getTf();
     	RewardFunction optionRF = new GoalBasedRF(specificGoal);
@@ -121,7 +135,33 @@ public class MoveToDoor extends OPOTrainer {
 		double maxDelta = 0.001;
 		int maxIterations = 1000;
 		ValueIteration vi = new ValueIteration(optionDomain, optionGamma, optionHashingFactory, maxDelta, maxIterations);
+		OPODriver.log("warning: not using OptionPlanner from YAML");
 		return vi;
+//		optionPlanner.setDomain(optionDomain);
+//		optionPlanner.setHashingFactory(optionHashingFactory);
+//		optionPlanner.resetSolver();
+//		return optionPlanner;
+//		Planner planner = new Planner(optionPlanner);
+//		Planner planner = null;
+//		try {
+//			planner = (Planner) BeanUtils.cloneBean(optionPlanner);
+//			planner.setDomain(optionDomain);
+//			planner.setHashingFactory(optionHashingFactory);
+//			planner.resetSolver();
+//		} catch (IllegalAccessException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (InstantiationException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (InvocationTargetException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (NoSuchMethodException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return planner;
 	}
 	
 }

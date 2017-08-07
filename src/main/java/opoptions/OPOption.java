@@ -49,7 +49,7 @@ public class OPOption implements OptionGenerator {
         for (int i = 0; i < endStates.size(); i++) {
         	State endState = endStates.get(i);
         	StateConditionTest specificGoal = new InStateTest(endState);
-        	Planner planner = trainer.getOptionPlanner(specificGoal);
+        	Planner planner = (Planner) trainer.initializeOptionPlanner(specificGoal);
             Policy optionPolicy = planner.planFromState(initialState);
     		SubgoalOption option = new SubgoalOption(NAME_OPOPTION_DEFAULT+i, optionPolicy, initiation, specificGoal);
     		options.add(option);

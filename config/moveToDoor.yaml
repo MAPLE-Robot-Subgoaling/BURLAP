@@ -37,5 +37,15 @@
 	},
 	"classifier" : {
 	    "type"                  : "J48"
-	}
+	},
+    "optionPlanner" : {
+        "type"                  : "ValueIteration",
+        "gamma"                 : 0.9,
+        "maxDelta"              : 0.00001,
+        "maxIterations"         : 10000,
+        "valueInitializer"	    : {
+			"type"				: "ConstantValueFunction",
+			"value"				: 0.0
+		}
+    }
 }

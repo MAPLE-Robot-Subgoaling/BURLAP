@@ -4,8 +4,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import burlap.behavior.singleagent.Episode;
 import burlap.debugtools.DPrint;
@@ -15,7 +18,12 @@ import burlap.mdp.core.oo.propositional.GroundedProp;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.model.FullModel;
+import burlap.mdp.singleagent.model.TransitionProb;
 import burlap.mdp.singleagent.oo.OOSADomain;
+import cat.CATrajectory;
+import cat.CreateActionModels;
+import cat.VariableTree;
 import opoptions.trainers.MoveToDoor;
 import utils.SimulationConfig;
 import weka.classifiers.Classifier;
@@ -337,11 +345,48 @@ public class OPODriver {
 
 
     }
+   
+    public void createCATs() {
+    	for (OPOTrainer trainer : trainers) {
+    		createCATs(trainer);
+    	}
+    }
+    
+    public void createCATs(OPOTrainer trainer) {
+
+    	Set<String> allCheckedChanged = new HashSet<String>();
+		List<Episode> trajectories = Episode.readEpisodes(trainer.getEpisodeOutputPath());
+		Map<String, Map<String, VariableTree>> models = CreateActionModels.createModels(trajectories);
+		List<CATrajectory> caTrajectories = new ArrayList<CATrajectory>();
+		for(Episode trajectory : trajectories){
+			CATrajectory cat = new CATrajectory();
+			cat.annotateTrajectory(trajectory, models, (FullModel)trainer.getDomain().getModel());
+			caTrajectories.add(cat);
+			OPODriver.log(cat);
+			Set<String>[] checkedVariables = cat.getCheckedVariables();
+			Set<String>[] changedVariables = cat.getChangedVariables();
+			List<String> actions = cat.getActions();
+			for(int i = 0; i < actions.size(); i++){
+				String action = actions.get(i);
+				Set<String> checked = checkedVariables[i];
+				Set<String> changed = changedVariables[i]; 
+
+				if(action.equals("START") || action.equals("END")){
+					continue;
+				}
+				allCheckedChanged.addAll(checked);
+				allCheckedChanged.addAll(changed);
+			}
+		}
+		for (String variable : allCheckedChanged) {
+			OPODriver.log(variable);
+		}
+    }
 
     public static void main(String[] args) {
 
     	Long globalSeed = null;
-    	if (globalSeed != null) { log("using a global seed of " + globalSeed); }
+//    	if (globalSeed != null) { log("using a global seed of " + globalSeed); }
         Random rng = new Random();
 
         boolean debugMode = true;
@@ -362,10 +407,12 @@ public class OPODriver {
         driver.runTraining();
 
         driver.collectDataset();
+        
+        driver.createCATs();
 
-        driver.buildClassifiers();
+//        driver.buildClassifiers();
 
-        driver.runEvaluation();
+//        driver.runEvaluation();
 
 //        driver.runVisualizer();
 
