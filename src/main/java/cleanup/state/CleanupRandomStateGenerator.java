@@ -184,6 +184,65 @@ public class CleanupRandomStateGenerator implements StateGenerator {
 		return s;
 	}
 	
+	public State generateCentralRoomWithFourDoors(int numBlocks) {
+
+		Random rng = RandomFactory.getMapped(DEFAULT_RNG_INDEX);
+
+		int numRooms = 1;
+		int numDoors = 4;
+		
+		int mx = width/2;
+		int my = height/2;
+		
+		int ax = mx;
+		int ay = my;
+		String agentDirection = Cleanup.directions[rng.nextInt(Cleanup.directions.length)];
+
+		CleanupState s = new CleanupState(width, height, ax, ay, agentDirection, numBlocks, numRooms, numDoors);
+		
+		List<String> colors = new ArrayList<String>(); // Arrays.asList(Cleanup.COLORS_BLOCKS);
+		colors.add("green");
+		colors.add("blue");
+		colors.add("yellow");
+		colors.add("red");
+		
+		int mainW = 4;
+		int mainH = 4;
+		
+		int index = 0;
+		while (numBlocks > 0) {
+			int bx = ax + (rng.nextBoolean() ? -1 : 1);
+			int by = ay + (rng.nextBoolean() ? -1 : 1);
+			if (!s.blockAt(bx, by)) {
+				String color = "";//colors.get(rng.nextInt(numDoors - 1));
+				boolean fresh = false;
+				while (!fresh) {
+					color = colors.get(rng.nextInt(numDoors - 1));
+					fresh = true;
+					for (CleanupBlock block : s.getBlocks().values()) {
+						if (color.equals(block.get(Cleanup.ATT_COLOR))) {
+							fresh = false;
+							break;
+						}
+					}
+				}
+				s.addObject(new CleanupBlock("block"+index, bx, by, "backpack", color));
+				numBlocks -= 1;
+				index += 1;
+			}
+		}
+		
+		
+		s.addObject(new CleanupRoom("room0", mx-mainW, mx+mainW, my-mainH, my+mainH, "cyan", Cleanup.SHAPE_ROOM));
+		s.addObject(new CleanupDoor("door0", mx-mainW, mx-mainW, my, my, Cleanup.LOCKABLE_STATES[0]));
+		s.addObject(new CleanupDoor("door1", mx+mainW, mx+mainW, my, my, Cleanup.LOCKABLE_STATES[0]));
+		s.addObject(new CleanupDoor("door2", mx, mx, my-mainH, my-mainH, Cleanup.LOCKABLE_STATES[0]));
+		s.addObject(new CleanupDoor("door3", mx, mx, my+mainH, my+mainH, Cleanup.LOCKABLE_STATES[0]));
+		
+		
+		return s;
+	}
+	
 	public State generateCentralRoomWithClosets(int numBlocks) {
 
 		Random rng = RandomFactory.getMapped(DEFAULT_RNG_INDEX);

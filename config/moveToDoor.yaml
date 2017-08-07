@@ -3,7 +3,7 @@
     "trainerName" : "moveToDoor",
     "shortName" : "m2d",
     "domainName" : "cleanup",
-    "includePFs" : false,
+    "includePFs" : true,
     "domainGenerator" : {
         "minX"                  : 0,
         "minY"                  : 0,

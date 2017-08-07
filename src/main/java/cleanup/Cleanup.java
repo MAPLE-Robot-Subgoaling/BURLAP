@@ -694,4 +694,8 @@ public class Cleanup implements DomainGenerator {
 //		EpisodeSequenceVisualizer esv = new EpisodeSequenceVisualizer(v, domain, outputPath);
 //		esv.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
+
+	public TerminalFunction getTf() {
+		return tf;
+	}
 }

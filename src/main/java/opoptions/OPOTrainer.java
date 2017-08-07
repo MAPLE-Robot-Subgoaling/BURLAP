@@ -1,8 +1,11 @@
 package opoptions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
+import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.Episode;
@@ -10,6 +13,7 @@ import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.auxiliary.StateReachability;
 import burlap.behavior.singleagent.auxiliary.performance.PerformancePlotter;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
+import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.options.OptionType;
 import burlap.behavior.singleagent.options.SubgoalOption;
 import burlap.behavior.singleagent.planning.Planner;
@@ -53,8 +57,8 @@ public abstract class OPOTrainer extends SimulationConfig {
     protected String lastSeedTimestampTraining = "unsetSeedTimestamp";
     protected String lastSeedTimestampEvaluation = "unsetSeedTimestamp";
 
-    protected List<LearnedStateTest> tests = new ArrayList<>();
-
+    protected OPOption opoption = new OPOption();
+    
     public String getEpisodeOutputPathEvaluation() {
         return episodeOutputPathEvaluation;
     }
@@ -163,6 +167,8 @@ public abstract class OPOTrainer extends SimulationConfig {
 
 	public abstract void runEpisodeVisualizer(String filePrefix);
 	
+	public abstract void runEpisodeVisualizer(List<Episode> episodes);
+	
 	public void runTraining(PerformancePlotter plotter) {
 
 		// 1. setup the state
@@ -186,7 +192,7 @@ public abstract class OPOTrainer extends SimulationConfig {
 	}
 
 	public void addLearnedStateTest(LearnedStateTest test) {
-        tests.add(test);
+        opoption.addLearnedStateTest(test);
     }
 	
 	public void runEvaluation(PerformancePlotter plotter) {
@@ -197,26 +203,27 @@ public abstract class OPOTrainer extends SimulationConfig {
 
         setupAgent();
 
-        List<State> states = StateReachability.getReachableStates(initialState, domain, hashingFactory);
-
-        StateConditionTest initiation = tests.get(1);
-        StateConditionTest goal = tests.get(0);
-        Policy optionPolicy = ((Planner)agent).planFromState(initialState);
-        SubgoalOption option = new SubgoalOption("optionOne", optionPolicy, initiation, goal);
+        Set<Option> options = opoption.generateOptions(this);
 
         QLearning ql = new QLearning(domain, 0.9, hashingFactory, 0.0, 0.01);
-        ql.addActionType(new OptionType(option));
+        ql.setLearningPolicy(new EpsilonGreedy(ql, 0.75));
+        for (Option option : options) {
+            ql.addActionType(new OptionType(option));
+        }
         VisualActionObserver observer = new VisualActionObserver((OOSADomain)domain, CleanupVisualizer.getVisualizer(9, 9));
         observer.initGUI();
         env = new SimulatedEnvironment(domain, initialState);
         env = new EnvironmentServer(env, observer);
         int numEpisodes = 100;
         int maxEpisodeSize = 100;
+        List<Episode> episodes = new ArrayList<Episode>();
         for(int i = 0; i < numEpisodes; i++) {
-            Episode ea = ql.runLearningEpisode(env, maxEpisodeSize);
-            System.out.println(i + ": " + ea.maxTimeStep() + " " + ea.actionSequence.toString());
+            Episode e = ql.runLearningEpisode(env, maxEpisodeSize);
+            OPODriver.log(i + ": " + e.maxTimeStep() + " " + e.actionSequence.toString());
+            episodes.add(e);
             env.resetEnvironment();
         }
+        runEpisodeVisualizer(episodes);
 //        for (LearnedStateTest test : tests) {
 //            OPODriver.log("learnedStateTest for " + test.getTargetLabel());
 //            OPODriver.log("predicted / actual: ");
@@ -240,5 +247,7 @@ public abstract class OPOTrainer extends SimulationConfig {
     public void setIncludePFs(boolean includePFs) {
         this.includePFs = includePFs;
     }
+
+	public abstract Planner getOptionPlanner(StateConditionTest specificGoal);
 
 }

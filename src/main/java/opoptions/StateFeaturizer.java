@@ -31,7 +31,7 @@ public class StateFeaturizer {
     }
 
     public static List<GroundedProp> getAllGroundedProps(OOState state, OOSADomain domain) {
-        List<GroundedProp> all = new ArrayList<>();
+        List<GroundedProp> all = new ArrayList<GroundedProp>();
         List<PropositionalFunction> pfs = domain.propFunctions();
         for (PropositionalFunction pf : pfs) {
             List<GroundedProp> gpfs = pf.allGroundings(state);

@@ -184,8 +184,8 @@ public class OPODriver {
 
     private void buildClassifiers() {
         for (OPOTrainer trainer : trainers) {
-            buildClassifier(trainer, "goal");
-            buildClassifier(trainer, "internal");
+            buildClassifier(trainer, OPOption.NAME_STATE_TEST_GOAL);
+            buildClassifier(trainer, OPOption.NAME_STATE_TEST_INTERNAL);
         }
     }
 
@@ -247,7 +247,7 @@ public class OPODriver {
         StringBuilder sb = new StringBuilder();
         OOState state = transition.state;
         boolean isGoal = trainer.satisfiesGoal(state);
-        String label = isGoal ? "goal" : "internal";
+        String label = isGoal ? OPOption.NAME_STATE_TEST_GOAL : OPOption.NAME_STATE_TEST_INTERNAL;
         sb = StateFeaturizer.stateToStringBuilder(sb, state);
         if (trainer.getIncludePFs()) {
             for (GroundedProp gpf : gpfs) {
@@ -322,7 +322,8 @@ public class OPODriver {
             SerializationHelper.write(path + "_" + targetLabel + "_" + classifier.getClass().getSimpleName() + ".model", classifier);
 
             StateFeaturizer featurizer = new StateFeaturizer((OOSADomain)trainer.getDomain());
-            LearnedStateTest test = new LearnedStateTest(classifier, data, targetLabel, featurizer, trainer.getIncludePFs());
+            String name = targetLabel.equals(OPOption.NAME_STATE_TEST_GOAL) ? targetLabel : OPOption.NAME_STATE_TEST_INTERNAL;
+            LearnedStateTest test = new LearnedStateTest(name, classifier, data, targetLabel, featurizer, trainer.getIncludePFs());
             trainer.addLearnedStateTest(test);
 //            List<Transition> transitions = getTransitions(trainer);
 //            for (Transition t : transitions) {

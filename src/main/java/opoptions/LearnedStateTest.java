@@ -28,13 +28,19 @@ public class LearnedStateTest implements StateConditionTest {
     private Classifier classifier;
     private Instances instancesStructure;
     private String targetLabel;
+    private String name;
 
-    public LearnedStateTest(Classifier classifier, Instances instancesStructure, String targetLabel, StateFeaturizer featurizer, boolean includePFs) {
+    public LearnedStateTest(String name, Classifier classifier, Instances instancesStructure, String targetLabel, StateFeaturizer featurizer, boolean includePFs) {
+    	this.name = name;
         this.classifier = classifier;
         this.instancesStructure = instancesStructure;
         this.targetLabel = targetLabel;
         this.featurizer = featurizer;
         this.includePFs = includePFs;
+    }
+    
+    public String getName() {
+    	return name;
     }
 
     protected Instance stateToInstance(State s) {
@@ -55,7 +61,7 @@ public class LearnedStateTest implements StateConditionTest {
                 String attributeKey = object.className() + ":" + objectKey;
                 Attribute attribute = instancesStructure.attribute(attributeKey);
                 if (attribute == null) {
-//                    System.err.println("null attribute for key " + attributeKey + ", skipping...");
+//                    OPODriver.log("null attribute for key " + attributeKey + ", skipping...");
                     continue;
                 }
                 if (attribute.isNumeric()) {
@@ -71,7 +77,7 @@ public class LearnedStateTest implements StateConditionTest {
                 String attributeKey = gpf.toString().replace(",", ";").replace(" ", "");
                 Attribute attribute = instancesStructure.attribute(attributeKey);
                 if (attribute == null) {
-//                    System.err.println("null attribute for key " + attributeKey + ", skipping...");
+//                    OPODriver.log("null attribute for key " + attributeKey + ", skipping...");
                     continue;
                 }
                 String value = gpf.isTrue(state) ? "true" : "false";

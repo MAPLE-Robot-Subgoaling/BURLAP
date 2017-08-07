@@ -1,13 +1,26 @@
 package opoptions.trainers;
 
+import java.util.List;
+
 import javax.swing.JFrame;
 
+import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.auxiliary.EpisodeSequenceVisualizer;
+import burlap.behavior.singleagent.planning.Planner;
+import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
 import burlap.mdp.auxiliary.common.GoalConditionTF;
+import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
+import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.common.GoalBasedRF;
+import burlap.mdp.singleagent.model.RewardFunction;
+import burlap.mdp.singleagent.model.SampleModel;
 import burlap.mdp.singleagent.oo.OOSADomain;
+import burlap.statehashing.HashableStateFactory;
+import burlap.statehashing.simple.SimpleHashableStateFactory;
 import burlap.visualizer.Visualizer;
 import cleanup.Cleanup;
 import cleanup.CleanupGoal;
@@ -53,7 +66,7 @@ public class MoveToDoor extends OPOTrainer {
 		CleanupRandomStateGenerator randomCleanup = new CleanupRandomStateGenerator();
 		randomCleanup.setWidth(domainGenerator.getWidth());
 		randomCleanup.setHeight(domainGenerator.getHeight());
-		initialState = (OOState) randomCleanup.generateCentralRoomWithClosets(0); //generateTaxiInCleanup(1);//.generateCentralRoomWithClosets(1); //cw.getRandomState(domain, rng, numBlocks);
+		initialState = (OOState) randomCleanup.generateCentralRoomWithFourDoors(0); //generateTaxiInCleanup(1);//.generateCentralRoomWithClosets(1); //cw.getRandomState(domain, rng, numBlocks);
 		return (OOState) initialState;
 	}
 
@@ -86,6 +99,32 @@ public class MoveToDoor extends OPOTrainer {
 		Visualizer v = CleanupVisualizer.getVisualizer(domainGenerator.getWidth(), domainGenerator.getHeight());
 		EpisodeSequenceVisualizer esv = new EpisodeSequenceVisualizer(v, domain, episodeOutputPath + "/" + filePrefix);
 		esv.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+	
+	@Override
+	public void runEpisodeVisualizer(List<Episode> episodes) {
+		Visualizer v = CleanupVisualizer.getVisualizer(domainGenerator.getWidth(), domainGenerator.getHeight());
+		EpisodeSequenceVisualizer esv = new EpisodeSequenceVisualizer(v, domain, episodes);
+		esv.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+
+	@Override
+	public Planner getOptionPlanner(StateConditionTest specificGoal) {
+    	RewardFunction originalRF = domainGenerator.getRf();
+    	TerminalFunction originalTF = domainGenerator.getTf();
+    	RewardFunction optionRF = new GoalBasedRF(specificGoal);
+    	TerminalFunction optionTF = new GoalConditionTF(specificGoal);
+		domainGenerator.setRf(optionRF);
+		domainGenerator.setTf(optionTF);
+		SADomain optionDomain = (SADomain) domainGenerator.generateDomain();
+		domainGenerator.setRf(originalRF);
+		domainGenerator.setTf(originalTF);
+		double optionGamma = 0.1;
+		HashableStateFactory optionHashingFactory = hashingFactory; 
+		double maxDelta = 0.001;
+		int maxIterations = 1000;
+		ValueIteration vi = new ValueIteration(optionDomain, optionGamma, optionHashingFactory, maxDelta, maxIterations);
+		return vi;
 	}
 	
 }
