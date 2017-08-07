@@ -28,9 +28,13 @@ public class CleanupAgent extends MutableObject {
 			Cleanup.ATT_SHAPE,
 			Cleanup.ATT_COLOR
 	);
+	
+	public static String getDefaultName() {
+		return Cleanup.CLASS_AGENT + "0";
+	}
 
 	public CleanupAgent(int x, int y, String direction) {
-		this(Cleanup.CLASS_AGENT, x, y, direction, Cleanup.SHAPE_AGENT, Cleanup.COLOR_GRAY);
+		this(getDefaultName(), x, y, direction, Cleanup.SHAPE_AGENT, Cleanup.COLOR_GRAY);
 	}
 	
 	public CleanupAgent(String name, int x, int y, String direction, String shape, String color) {

@@ -29,9 +29,13 @@ public class CleanupDoor extends MutableObject {
 			Cleanup.ATT_SHAPE,
 			Cleanup.ATT_COLOR
 	);
+	
+	public static String getDefaultName() {
+		return Cleanup.CLASS_DOOR + "0";
+	}
 
 	public CleanupDoor(int x, int y) {
-		this(Cleanup.CLASS_DOOR, x, x, y, y, Cleanup.LOCKABLE_STATES[0], Cleanup.SHAPE_DOOR, Cleanup.COLOR_GRAY);
+		this(getDefaultName(), x, x, y, y, Cleanup.LOCKABLE_STATES[0], Cleanup.SHAPE_DOOR, Cleanup.COLOR_GRAY);
 	}
 	
 	public CleanupDoor(String name, int left, int right, int bottom, int top, String locked) {

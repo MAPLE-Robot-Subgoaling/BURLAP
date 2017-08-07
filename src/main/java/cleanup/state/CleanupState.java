@@ -236,12 +236,7 @@ public class CleanupState implements MutableOOState {
 		if (x < 0 || x >= width || y < 0 || y >= height) {
 			return true;
 		}
-		Integer top = null;
-		try {
-			top = (Integer)r.get(Cleanup.ATT_TOP);
-		} catch (Exception e) {
-			System.out.println("stop");
-		}
+		int top = (Integer)r.get(Cleanup.ATT_TOP);
 		int left = (Integer)r.get(Cleanup.ATT_LEFT);
 		int bottom = (Integer)r.get(Cleanup.ATT_BOTTOM);
 		int right = (Integer)r.get(Cleanup.ATT_RIGHT);

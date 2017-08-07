@@ -44,7 +44,6 @@ public class Cleanup implements DomainGenerator {
 	public static final String CLASS_BLOCK = "block";
 	public static final String CLASS_ROOM = "room";
 	public static final String CLASS_DOOR = "door";
-	public static final String CLASS_MAP = "map";
                                
 	public static final String ACTION_NORTH = "north";
 	public static final String ACTION_SOUTH = "south";

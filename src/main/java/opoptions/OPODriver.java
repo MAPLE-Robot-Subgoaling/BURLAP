@@ -370,7 +370,6 @@ public class OPODriver {
 				String action = actions.get(i);
 				Set<String> checked = checkedVariables[i];
 				Set<String> changed = changedVariables[i]; 
-
 				if(action.equals("START") || action.equals("END")){
 					continue;
 				}
