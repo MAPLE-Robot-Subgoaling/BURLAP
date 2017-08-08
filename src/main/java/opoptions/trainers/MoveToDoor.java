@@ -35,108 +35,108 @@ import opoptions.OPODriver;
 import opoptions.OPOTrainer;
 
 public class MoveToDoor extends OPOTrainer {
-	
-	// specified by data file
-	public Cleanup domainGenerator;
-	public int numGoals;
-	public double rewardDefault;
-	public double rewardGoal;
-	public double rewardNoop;
-	public double rewardPull;
-	private MDPSolver optionPlanner;
-	
-	// generated in code
-	private CleanupGoal goal;
-	private CleanupGoalDescription[] goalDescriptions;
-	
-	public MoveToDoor() {
-		// use SimulationConfig to load the trainer, not this constructor
-	}
 
-	@Override
-	public OOState setupStateTraining() {
-		CleanupRandomStateGenerator.setDebugMode(true);
-		CleanupRandomStateGenerator randomCleanup = new CleanupRandomStateGenerator();
-		randomCleanup.setWidth(domainGenerator.getWidth());
-		randomCleanup.setHeight(domainGenerator.getHeight());
-		initialState = (OOState) randomCleanup.generateOneRoomOneDoor(); //generateTaxiInCleanup(1);//.generateCentralRoomWithClosets(1); //cw.getRandomState(domain, rng, numBlocks);
-		return (OOState) initialState;
-	}
+    // specified by data file
+    public Cleanup domainGenerator;
+    public int numGoals;
+    public double rewardDefault;
+    public double rewardGoal;
+    public double rewardNoop;
+    public double rewardPull;
+    private MDPSolver optionPlanner;
 
-	@Override
-	public OOState setupStateEvaluation() {
-		CleanupRandomStateGenerator.setDebugMode(true);
-		CleanupRandomStateGenerator randomCleanup = new CleanupRandomStateGenerator();
-		randomCleanup.setWidth(domainGenerator.getWidth());
-		randomCleanup.setHeight(domainGenerator.getHeight());
-		initialState = (OOState) randomCleanup.generateCentralRoomWithFourDoors(0); //generateTaxiInCleanup(1);//.generateCentralRoomWithClosets(1); //cw.getRandomState(domain, rng, numBlocks);
-		return (OOState) initialState;
-	}
+    // generated in code
+    private CleanupGoal goal;
+    private CleanupGoalDescription[] goalDescriptions;
 
-	@Override
-	public OOSADomain setupDomain() {
-		goal = new CleanupGoal();
-		rf = new CleanupRF(goal, rewardGoal, rewardDefault, rewardNoop, rewardPull);
-		tf = new GoalConditionTF(goal);
+    public MoveToDoor() {
+        // use SimulationConfig to load the trainer, not this constructor
+    }
+
+    @Override
+    public OOState setupStateTraining() {
+        CleanupRandomStateGenerator.setDebugMode(true);
+        CleanupRandomStateGenerator randomCleanup = new CleanupRandomStateGenerator();
+        randomCleanup.setWidth(domainGenerator.getWidth());
+        randomCleanup.setHeight(domainGenerator.getHeight());
+        initialState = (OOState) randomCleanup.generateOneRoomOneDoor(); //generateTaxiInCleanup(1);//.generateCentralRoomWithClosets(1); //cw.getRandomState(domain, rng, numBlocks);
+        return (OOState) initialState;
+    }
+
+    @Override
+    public OOState setupStateEvaluation() {
+        CleanupRandomStateGenerator.setDebugMode(true);
+        CleanupRandomStateGenerator randomCleanup = new CleanupRandomStateGenerator();
+        randomCleanup.setWidth(domainGenerator.getWidth());
+        randomCleanup.setHeight(domainGenerator.getHeight());
+        initialState = (OOState) randomCleanup.generateCentralRoomWithFourDoors(0); //generateTaxiInCleanup(1);//.generateCentralRoomWithClosets(1); //cw.getRandomState(domain, rng, numBlocks);
+        return (OOState) initialState;
+    }
+
+    @Override
+    public OOSADomain setupDomain() {
+        goal = new CleanupGoal();
+        rf = new CleanupRF(goal, rewardGoal, rewardDefault, rewardNoop, rewardPull);
+        tf = new GoalConditionTF(goal);
 //		tf = new NullTermination();
-		domainGenerator.setRf(rf);
-		domainGenerator.setTf(tf);
-		domain = (OOSADomain) domainGenerator.generateDomain();
-		
-		// setup the goal
-		PropositionalFunction agentInDoor = getGoalPF();
-		goalDescriptions = CleanupRandomStateGenerator.getRandomGoalDescription((CleanupState) initialState, numGoals, agentInDoor);
-		goal.setGoals(goalDescriptions);
-		OPODriver.log("Goal is: " + goalDescriptions[0]);
-		
-		return (OOSADomain) domain;
-	}
-	
-	public PropositionalFunction getGoalPF() {
-		PropositionalFunction goalPF = ((OOSADomain) domain).propFunction(Cleanup.PF_AGENT_IN_DOOR);
-		return goalPF;
-	}
+        domainGenerator.setRf(rf);
+        domainGenerator.setTf(tf);
+        domain = (OOSADomain) domainGenerator.generateDomain();
 
-	@Override
-	public void runEpisodeVisualizer(String filePrefix) {
-		Visualizer v = CleanupVisualizer.getVisualizer(domainGenerator.getWidth(), domainGenerator.getHeight());
-		EpisodeSequenceVisualizer esv = new EpisodeSequenceVisualizer(v, domain, episodeOutputPath + "/" + filePrefix);
-		esv.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
-	
-	@Override
-	public void runEpisodeVisualizer(List<Episode> episodes) {
-		Visualizer v = CleanupVisualizer.getVisualizer(domainGenerator.getWidth(), domainGenerator.getHeight());
-		EpisodeSequenceVisualizer esv = new EpisodeSequenceVisualizer(v, domain, episodes);
-		esv.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
-	
-	public MDPSolver getOptionPlanner() {
-		return optionPlanner;
-	}
+        // setup the goal
+        PropositionalFunction agentInDoor = getGoalPF();
+        goalDescriptions = CleanupRandomStateGenerator.getRandomGoalDescription((CleanupState) initialState, numGoals, agentInDoor);
+        goal.setGoals(goalDescriptions);
+        OPODriver.log("Goal is: " + goalDescriptions[0]);
 
-	public void setOptionPlanner(MDPSolver optionPlanner) {
-		this.optionPlanner = optionPlanner;
-	}
+        return (OOSADomain) domain;
+    }
 
-	@Override
-	public MDPSolverInterface initializeOptionPlanner(StateConditionTest specificGoal) {
-    	RewardFunction originalRF = domainGenerator.getRf();
-    	TerminalFunction originalTF = domainGenerator.getTf();
-    	RewardFunction optionRF = new GoalBasedRF(specificGoal);
-    	TerminalFunction optionTF = new GoalConditionTF(specificGoal);
-		domainGenerator.setRf(optionRF);
-		domainGenerator.setTf(optionTF);
-		SADomain optionDomain = (SADomain) domainGenerator.generateDomain();
-		domainGenerator.setRf(originalRF);
-		domainGenerator.setTf(originalTF);
-		double optionGamma = 0.1;
-		HashableStateFactory optionHashingFactory = hashingFactory; 
-		double maxDelta = 0.001;
-		int maxIterations = 1000;
-		ValueIteration vi = new ValueIteration(optionDomain, optionGamma, optionHashingFactory, maxDelta, maxIterations);
-		OPODriver.log("warning: not using OptionPlanner from YAML");
-		return vi;
+    public PropositionalFunction getGoalPF() {
+        PropositionalFunction goalPF = ((OOSADomain) domain).propFunction(Cleanup.PF_AGENT_IN_DOOR);
+        return goalPF;
+    }
+
+    @Override
+    public void runEpisodeVisualizer(String filePrefix) {
+        Visualizer v = CleanupVisualizer.getVisualizer(domainGenerator.getWidth(), domainGenerator.getHeight());
+        EpisodeSequenceVisualizer esv = new EpisodeSequenceVisualizer(v, domain, episodeOutputPath + "/" + filePrefix);
+        esv.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    @Override
+    public void runEpisodeVisualizer(List<Episode> episodes) {
+        Visualizer v = CleanupVisualizer.getVisualizer(domainGenerator.getWidth(), domainGenerator.getHeight());
+        EpisodeSequenceVisualizer esv = new EpisodeSequenceVisualizer(v, domain, episodes);
+        esv.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    public MDPSolver getOptionPlanner() {
+        return optionPlanner;
+    }
+
+    public void setOptionPlanner(MDPSolver optionPlanner) {
+        this.optionPlanner = optionPlanner;
+    }
+
+    @Override
+    public MDPSolverInterface initializeOptionPlanner(StateConditionTest specificGoal) {
+        RewardFunction originalRF = domainGenerator.getRf();
+        TerminalFunction originalTF = domainGenerator.getTf();
+        RewardFunction optionRF = new GoalBasedRF(specificGoal);
+        TerminalFunction optionTF = new GoalConditionTF(specificGoal);
+        domainGenerator.setRf(optionRF);
+        domainGenerator.setTf(optionTF);
+        SADomain optionDomain = (SADomain) domainGenerator.generateDomain();
+        domainGenerator.setRf(originalRF);
+        domainGenerator.setTf(originalTF);
+        double optionGamma = 0.1;
+        HashableStateFactory optionHashingFactory = hashingFactory;
+        double maxDelta = 0.001;
+        int maxIterations = 1000;
+        ValueIteration vi = new ValueIteration(optionDomain, optionGamma, optionHashingFactory, maxDelta, maxIterations);
+        OPODriver.log("warning: not using OptionPlanner from YAML");
+        return vi;
 //		optionPlanner.setDomain(optionDomain);
 //		optionPlanner.setHashingFactory(optionHashingFactory);
 //		optionPlanner.resetSolver();
@@ -162,6 +162,6 @@ public class MoveToDoor extends OPOTrainer {
 //			e.printStackTrace();
 //		}
 //		return planner;
-	}
-	
+    }
+
 }

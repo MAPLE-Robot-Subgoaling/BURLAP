@@ -7,18 +7,18 @@ import burlap.statehashing.masked.MaskedHashableStateFactory;
 
 public class InMaskedStateTest implements StateConditionTest {
 
-	private MaskedHashableStateFactory mhsf;
-	private HashableState state;
-	
-	public InMaskedStateTest(MaskedHashableStateFactory mhsf, HashableState state) {
-		this.mhsf = mhsf;
-		this.state = state;
-	}
-	
-	@Override
-	public boolean satisfies(State s) {
-		HashableState hs = mhsf.hashState(s);
-		return state.equals(hs);
-	}
+    private MaskedHashableStateFactory mhsf;
+    private HashableState state;
+
+    public InMaskedStateTest(MaskedHashableStateFactory mhsf, HashableState state) {
+        this.mhsf = mhsf;
+        this.state = state;
+    }
+
+    @Override
+    public boolean satisfies(State s) {
+        HashableState hs = mhsf.hashState(s);
+        return state.equals(hs);
+    }
 
 }

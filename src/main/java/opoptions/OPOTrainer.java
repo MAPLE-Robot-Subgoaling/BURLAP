@@ -33,27 +33,27 @@ import utils.SimulationConfig;
 import weka.classifiers.Classifier;
 
 public abstract class OPOTrainer extends SimulationConfig {
-	
-	// by default, use 0 (BURLAP default)
-	// to use different index, subclasses should override the getIndexForRandomFactory method
-	public static final int DEFAULT_RNG_INDEX = 0;
 
-	protected Classifier classifier;
-	protected boolean identifierIndependentHashing = true;
-	protected boolean includePFs;
-	protected String trainerName = "unsetTrainer";
-	protected String domainName = "unsetDomain";
-	protected RewardFunction rf;
-	protected TerminalFunction tf;
-	protected HashableStateFactory hashingFactory;
-	protected Environment env;
+    // by default, use 0 (BURLAP default)
+    // to use different index, subclasses should override the getIndexForRandomFactory method
+    public static final int DEFAULT_RNG_INDEX = 0;
+
+    protected Classifier classifier;
+    protected boolean identifierIndependentHashing = true;
+    protected boolean includePFs;
+    protected String trainerName = "unsetTrainer";
+    protected String domainName = "unsetDomain";
+    protected RewardFunction rf;
+    protected TerminalFunction tf;
+    protected HashableStateFactory hashingFactory;
+    protected Environment env;
 
     protected String episodeOutputPathEvaluation;
     protected String lastSeedTimestampTraining = "unsetSeedTimestamp";
     protected String lastSeedTimestampEvaluation = "unsetSeedTimestamp";
 
     protected OPOption opoption = new OPOption();
-    
+
     public String getEpisodeOutputPathEvaluation() {
         return episodeOutputPathEvaluation;
     }
@@ -62,59 +62,59 @@ public abstract class OPOTrainer extends SimulationConfig {
         this.episodeOutputPathEvaluation = episodeOutputPathEvaluation;
     }
 
-	public String getTrainerName() {
-		return trainerName;
-	}
-	
-	public void setTrainerName(String trainerName) {
-		this.trainerName = trainerName;
-	}
-	
-	public String getDomainName() {
-		return domainName;
-	}
+    public String getTrainerName() {
+        return trainerName;
+    }
 
-	public void setDomainName(String domainName) {
-		this.domainName = domainName;
-	}
-	
-	public boolean isIdentifierIndependentHashing() {
-		return identifierIndependentHashing;
-	}
+    public void setTrainerName(String trainerName) {
+        this.trainerName = trainerName;
+    }
 
-	public void setIdentifierIndependentHashing(boolean identifierIndependentHashing) {
-		this.identifierIndependentHashing = identifierIndependentHashing;
-	}
-	
-	public abstract PropositionalFunction getGoalPF();
-	
-	public boolean satisfiesGoal(OOState s) {
-		return getGoalPF().someGroundingIsTrue(s);
-	}
+    public String getDomainName() {
+        return domainName;
+    }
 
-	public RewardFunction getRf() {
-		return rf;
-	}
+    public void setDomainName(String domainName) {
+        this.domainName = domainName;
+    }
 
-	public void setRf(RewardFunction rf) {
-		this.rf = rf;
-	}
+    public boolean isIdentifierIndependentHashing() {
+        return identifierIndependentHashing;
+    }
 
-	public TerminalFunction getTf() {
-		return tf;
-	}
+    public void setIdentifierIndependentHashing(boolean identifierIndependentHashing) {
+        this.identifierIndependentHashing = identifierIndependentHashing;
+    }
 
-	public void setTf(TerminalFunction tf) {
-		this.tf = tf;
-	}
+    public abstract PropositionalFunction getGoalPF();
 
-	public HashableStateFactory getHashingFactory() {
-		return hashingFactory;
-	}
+    public boolean satisfiesGoal(OOState s) {
+        return getGoalPF().someGroundingIsTrue(s);
+    }
 
-	public void setHashingFactory(HashableStateFactory hashingFactory) {
-		this.hashingFactory = hashingFactory;
-	}
+    public RewardFunction getRf() {
+        return rf;
+    }
+
+    public void setRf(RewardFunction rf) {
+        this.rf = rf;
+    }
+
+    public TerminalFunction getTf() {
+        return tf;
+    }
+
+    public void setTf(TerminalFunction tf) {
+        this.tf = tf;
+    }
+
+    public HashableStateFactory getHashingFactory() {
+        return hashingFactory;
+    }
+
+    public void setHashingFactory(HashableStateFactory hashingFactory) {
+        this.hashingFactory = hashingFactory;
+    }
 
     public String getLastSeedTimestampTraining() {
         return lastSeedTimestampTraining;
@@ -124,73 +124,73 @@ public abstract class OPOTrainer extends SimulationConfig {
         return lastSeedTimestampEvaluation;
     }
 
-	public void setSeed(Long seed) {
-		this.seed = seed;
-		RandomFactory.seedMapped(getIndexForRandomFactory(), this.seed);
-	}
+    public void setSeed(Long seed) {
+        this.seed = seed;
+        RandomFactory.seedMapped(getIndexForRandomFactory(), this.seed);
+    }
 
-	public Classifier getClassifier() {
-		return classifier;
-	}
+    public Classifier getClassifier() {
+        return classifier;
+    }
 
-	public void setClassifier(Classifier classifier) {
-		this.classifier = classifier;
-	}
+    public void setClassifier(Classifier classifier) {
+        this.classifier = classifier;
+    }
 
-	private int getIndexForRandomFactory() {
-		return DEFAULT_RNG_INDEX;
-	}
+    private int getIndexForRandomFactory() {
+        return DEFAULT_RNG_INDEX;
+    }
 
     public abstract OOState setupStateTraining();
 
     public abstract OOState setupStateEvaluation();
-	
-	public abstract OOSADomain setupDomain();
-	
-	public MDPSolver setupAgent() {
-		agent.resetSolver();
-		agent.setDomain(domain);
-		hashingFactory = new SimpleHashableStateFactory(identifierIndependentHashing);
-		agent.setHashingFactory(hashingFactory);
-		return agent;
-	}
-	
-	public String planAndRollout(PerformancePlotter plotter) {
-		String seedTimestamp = Simulation.plan(this);
-		return seedTimestamp;
-	}
 
-	public abstract void runEpisodeVisualizer(String filePrefix);
-	
-	public abstract void runEpisodeVisualizer(List<Episode> episodes);
-	
-	public void runTraining(PerformancePlotter plotter) {
+    public abstract OOSADomain setupDomain();
 
-		// 1. setup the state
-		// 2. setup the domain
-		// 3. setup the agent
-		// 4. run the simulation
-		
-		// 1. setup the state
-		setupStateTraining();
-		
-		// 2. setup the domain
-		setupDomain();
-		
-		// 3. setup the agent
-		setupAgent();
-		
-		// 4. run the simulation
-		String seedTimestamp = planAndRollout(plotter);
-		lastSeedTimestampTraining = seedTimestamp;
-		
-	}
+    public MDPSolver setupAgent() {
+        agent.resetSolver();
+        agent.setDomain(domain);
+        hashingFactory = new SimpleHashableStateFactory(identifierIndependentHashing);
+        agent.setHashingFactory(hashingFactory);
+        return agent;
+    }
 
-	public void addLearnedStateTest(LearnedStateTest test) {
+    public String planAndRollout(PerformancePlotter plotter) {
+        String seedTimestamp = Simulation.plan(this);
+        return seedTimestamp;
+    }
+
+    public abstract void runEpisodeVisualizer(String filePrefix);
+
+    public abstract void runEpisodeVisualizer(List<Episode> episodes);
+
+    public void runTraining(PerformancePlotter plotter) {
+
+        // 1. setup the state
+        // 2. setup the domain
+        // 3. setup the agent
+        // 4. run the simulation
+
+        // 1. setup the state
+        setupStateTraining();
+
+        // 2. setup the domain
+        setupDomain();
+
+        // 3. setup the agent
+        setupAgent();
+
+        // 4. run the simulation
+        String seedTimestamp = planAndRollout(plotter);
+        lastSeedTimestampTraining = seedTimestamp;
+
+    }
+
+    public void addLearnedStateTest(LearnedStateTest test) {
         opoption.addLearnedStateTest(test);
     }
-	
-	public void runEvaluation(PerformancePlotter plotter) {
+
+    public void runEvaluation(PerformancePlotter plotter) {
 
         setupStateEvaluation();
 
@@ -205,14 +205,14 @@ public abstract class OPOTrainer extends SimulationConfig {
         for (Option option : options) {
             ql.addActionType(new OptionType(option));
         }
-        VisualActionObserver observer = new VisualActionObserver((OOSADomain)domain, CleanupVisualizer.getVisualizer(9, 9));
+        VisualActionObserver observer = new VisualActionObserver((OOSADomain) domain, CleanupVisualizer.getVisualizer(9, 9));
         observer.initGUI();
         env = new SimulatedEnvironment(domain, initialState);
         env = new EnvironmentServer(env, observer);
         int numEpisodes = 100;
         int maxEpisodeSize = 100;
         List<Episode> episodes = new ArrayList<Episode>();
-        for(int i = 0; i < numEpisodes; i++) {
+        for (int i = 0; i < numEpisodes; i++) {
             Episode e = ql.runLearningEpisode(env, maxEpisodeSize);
             OPODriver.log(i + ": " + e.maxTimeStep() + " " + e.actionSequence.toString());
             episodes.add(e);
@@ -233,7 +233,7 @@ public abstract class OPOTrainer extends SimulationConfig {
 //        String seedTimestamp = planAndRollout(plotter);
 //        lastSeedTimestampEvaluation = seedTimestamp;
 
-	}
+    }
 
     public boolean getIncludePFs() {
         return includePFs;
@@ -243,20 +243,20 @@ public abstract class OPOTrainer extends SimulationConfig {
         this.includePFs = includePFs;
     }
 
-	public abstract MDPSolverInterface initializeOptionPlanner(StateConditionTest specificGoal);
+    public abstract MDPSolverInterface initializeOptionPlanner(StateConditionTest specificGoal);
 
-	public void setTypeSignature(List<String> objectClasses) {
-		MaskedHashableStateFactory mhsf = new MaskedHashableStateFactory();
-		OOSADomain oosaDomain = (OOSADomain)domain;
-		List<String> stateClassNames = oosaDomain.stateClassNames();
-		List<String> maskedClasses = new ArrayList<String>();
-		for (String stateClassName : stateClassNames) {
-			if (!objectClasses.contains(stateClassName)) {
-				maskedClasses.add(stateClassName);
-			}
-		}
-		mhsf.addObjectClassMasks((String[])maskedClasses.toArray(new String[0]));
-		opoption.setTypeSignature(mhsf);
-	}
+    public void setTypeSignature(List<String> objectClasses) {
+        MaskedHashableStateFactory mhsf = new MaskedHashableStateFactory();
+        OOSADomain oosaDomain = (OOSADomain) domain;
+        List<String> stateClassNames = oosaDomain.stateClassNames();
+        List<String> maskedClasses = new ArrayList<String>();
+        for (String stateClassName : stateClassNames) {
+            if (!objectClasses.contains(stateClassName)) {
+                maskedClasses.add(stateClassName);
+            }
+        }
+        mhsf.addObjectClassMasks((String[]) maskedClasses.toArray(new String[0]));
+        opoption.setTypeSignature(mhsf);
+    }
 
 }

@@ -31,16 +31,16 @@ public class LearnedStateTest implements StateConditionTest {
     private String name;
 
     public LearnedStateTest(String name, Classifier classifier, Instances instancesStructure, String targetLabel, StateFeaturizer featurizer, boolean includePFs) {
-    	this.name = name;
+        this.name = name;
         this.classifier = classifier;
         this.instancesStructure = instancesStructure;
         this.targetLabel = targetLabel;
         this.featurizer = featurizer;
         this.includePFs = includePFs;
     }
-    
+
     public String getName() {
-    	return name;
+        return name;
     }
 
     protected Instance stateToInstance(State s) {
@@ -52,7 +52,7 @@ public class LearnedStateTest implements StateConditionTest {
 //            Attribute a = as.nextElement();
 //            OPODriver.log(a + " " + a.index());
 //        }
-        OOState state = (OOState)s;
+        OOState state = (OOState) s;
         List<ObjectInstance> objects = state.objects();
         for (ObjectInstance object : objects) {
             for (Object variableKey : object.variableKeys()) {
@@ -100,7 +100,7 @@ public class LearnedStateTest implements StateConditionTest {
             throw new RuntimeException("not implemented");
         }
 
-        String predictedLabel = instance.classAttribute().value(((Double)output).intValue());
+        String predictedLabel = instance.classAttribute().value(((Double) output).intValue());
 //        OPODriver.log(StateFeaturizer.stateToStringBuilder(new StringBuilder(), (OOState)s));
 //        OPODriver.log("target: " + targetLabel + ", predicted: " + predictedLabel + " out of " + instance.classAttribute() + ", using output " + output);
 

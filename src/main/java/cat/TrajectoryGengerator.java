@@ -17,34 +17,34 @@ import java.util.List;
 
 public class TrajectoryGengerator {
 
-	public static List<Episode> generateQLearnedTrajectories(StateGenerator stateGen, int numTrajectories,
-															 SADomain domain, double gamma, HashableStateFactory hashingFactory){
+    public static List<Episode> generateQLearnedTrajectories(StateGenerator stateGen, int numTrajectories,
+                                                             SADomain domain, double gamma, HashableStateFactory hashingFactory) {
 
-		LearningAgent qlearner = new QLearning(domain,gamma, hashingFactory, 0,0.01);
-		SimulatedEnvironment env = new SimulatedEnvironment(domain, stateGen);
-		List<Episode> episodes = new ArrayList<Episode>();
-		for(int i = 0; i < numTrajectories; i++){
-			Episode e = qlearner.runLearningEpisode(env);
-			episodes.add(e);
-			env.resetEnvironment();
-		}
-		
-		return episodes;
-	}
+        LearningAgent qlearner = new QLearning(domain, gamma, hashingFactory, 0, 0.01);
+        SimulatedEnvironment env = new SimulatedEnvironment(domain, stateGen);
+        List<Episode> episodes = new ArrayList<Episode>();
+        for (int i = 0; i < numTrajectories; i++) {
+            Episode e = qlearner.runLearningEpisode(env);
+            episodes.add(e);
+            env.resetEnvironment();
+        }
 
-	public static List<Episode> generateVIPlannedTrajectories(StateGenerator stateGen, int numTrajectories,
-															  SADomain domain, double gamma, HashableStateFactory hashingFactory,
-															  double maxDelta, int maxIterations){
-		List<Episode> trajectories = new ArrayList<Episode>();
+        return episodes;
+    }
 
-		ValueIteration vi = new ValueIteration(domain, gamma, hashingFactory, maxDelta, maxIterations);
+    public static List<Episode> generateVIPlannedTrajectories(StateGenerator stateGen, int numTrajectories,
+                                                              SADomain domain, double gamma, HashableStateFactory hashingFactory,
+                                                              double maxDelta, int maxIterations) {
+        List<Episode> trajectories = new ArrayList<Episode>();
 
-		for (int i = 0; i < numTrajectories; i++){
-			State s = stateGen.generateState();
-			Policy p = vi.planFromState(s);
-			Episode e = PolicyUtils.rollout(p, s, domain.getModel());
-			trajectories.add(e);
-		}
-		return trajectories;
-	}
+        ValueIteration vi = new ValueIteration(domain, gamma, hashingFactory, maxDelta, maxIterations);
+
+        for (int i = 0; i < numTrajectories; i++) {
+            State s = stateGen.generateState();
+            Policy p = vi.planFromState(s);
+            Episode e = PolicyUtils.rollout(p, s, domain.getModel());
+            trajectories.add(e);
+        }
+        return trajectories;
+    }
 }

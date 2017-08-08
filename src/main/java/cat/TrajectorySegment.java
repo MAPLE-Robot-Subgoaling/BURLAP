@@ -2,26 +2,26 @@ package cat;
 
 import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
 
-public class TrajectorySegment{
-	
-	private int start, end;
-	private StateConditionTest goal;
-	
-	public TrajectorySegment(int start, int end, StateConditionTest goal) {
-		this.start = start;
-		this.end = end;
-		this.goal = goal;
-	}
+public class TrajectorySegment {
 
-	public int getStart() {
-		return start;
-	}
+    private int start, end;
+    private StateConditionTest goal;
 
-	public int getEnd() {
-		return end;
-	}
+    public TrajectorySegment(int start, int end, StateConditionTest goal) {
+        this.start = start;
+        this.end = end;
+        this.goal = goal;
+    }
 
-	public StateConditionTest getGoal() {
-		return goal;
-	}
+    public int getStart() {
+        return start;
+    }
+
+    public int getEnd() {
+        return end;
+    }
+
+    public StateConditionTest getGoal() {
+        return goal;
+    }
 }

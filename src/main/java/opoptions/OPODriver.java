@@ -156,22 +156,22 @@ public class OPODriver {
         saver.writeBatch();
     }
 
-	public void runEvaluation(OPOTrainer trainer) {
+    public void runEvaluation(OPOTrainer trainer) {
         log("Beginning " + evaluationSeeds.size() + " evaluations");
-		for (int i = 0; i < evaluationSeeds.size(); i++) {
-			Long seed = evaluationSeeds.get(i);
-			log("\nTrainer: " + trainer.getTrainerName() + " (" + trainer.getDomainName() + " domain)");
-			log("Eval " + (i+1) + " / " + evaluationSeeds.size() + ": " + seed);
-			trainer.setSeed(seed);
-			trainer.runEvaluation(null);
-		}
-	}
+        for (int i = 0; i < evaluationSeeds.size(); i++) {
+            Long seed = evaluationSeeds.get(i);
+            log("\nTrainer: " + trainer.getTrainerName() + " (" + trainer.getDomainName() + " domain)");
+            log("Eval " + (i + 1) + " / " + evaluationSeeds.size() + ": " + seed);
+            trainer.setSeed(seed);
+            trainer.runEvaluation(null);
+        }
+    }
 
-	public void runEvaluation() {
-		for (OPOTrainer trainer : trainers) {
-			runEvaluation(trainer);
-		}
-	}
+    public void runEvaluation() {
+        for (OPOTrainer trainer : trainers) {
+            runEvaluation(trainer);
+        }
+    }
 
     public void addTrainers() {
         MoveToDoor moveToDoor = (MoveToDoor) SimulationConfig.load("./config/moveToDoor.yaml", MoveToDoor.class);
@@ -238,7 +238,7 @@ public class OPODriver {
         }
         if (trainer.getIncludePFs()) {
             for (GroundedProp gpf : gpfs) {
-                sb.append(gpf.toString().replace(",",";").replace(" ", ""));
+                sb.append(gpf.toString().replace(",", ";").replace(" ", ""));
                 sb.append(",");
             }
         }
@@ -286,7 +286,7 @@ public class OPODriver {
             FileWriter writer = new FileWriter(file);
             Transition exampleTransition = transitions.get(0);
             OOState exampleState = (OOState) exampleTransition.state;
-            List<GroundedProp> gpfs = StateFeaturizer.getAllGroundedProps(exampleState, (OOSADomain)trainer.getDomain());
+            List<GroundedProp> gpfs = StateFeaturizer.getAllGroundedProps(exampleState, (OOSADomain) trainer.getDomain());
             writeFeatureVectorHeader(writer, exampleTransition, trainer, gpfs);
             for (Transition transition : transitions) {
                 writeFeatureVector(writer, transition, trainer, gpfs);
@@ -329,7 +329,7 @@ public class OPODriver {
             log(evaluation.toMatrixString());
             SerializationHelper.write(path + "_" + targetLabel + "_" + classifier.getClass().getSimpleName() + ".model", classifier);
 
-            StateFeaturizer featurizer = new StateFeaturizer((OOSADomain)trainer.getDomain());
+            StateFeaturizer featurizer = new StateFeaturizer((OOSADomain) trainer.getDomain());
             String name = targetLabel.equals(OPOption.NAME_STATE_TEST_GOAL) ? targetLabel : OPOption.NAME_STATE_TEST_INTERNAL;
             LearnedStateTest test = new LearnedStateTest(name, classifier, data, targetLabel, featurizer, trainer.getIncludePFs());
             trainer.addLearnedStateTest(test);
@@ -346,53 +346,53 @@ public class OPODriver {
 
 
     }
-   
+
     public void createCATs() {
-    	for (OPOTrainer trainer : trainers) {
-    		createCATs(trainer);
-    	}
+        for (OPOTrainer trainer : trainers) {
+            createCATs(trainer);
+        }
     }
-    
+
     // returns the object classes that have any attribute/variable/factor that is checked or changed
     // e.g., "agent" and "room"
     public void createCATs(OPOTrainer trainer) {
 
-    	Set<String> allCheckedChanged = new HashSet<String>();
-		List<Episode> trajectories = Episode.readEpisodes(trainer.getEpisodeOutputPath());
-		Map<String, Map<String, VariableTree>> models = CreateActionModels.createModels(trajectories);
-		List<CATrajectory> caTrajectories = new ArrayList<CATrajectory>();
-		for(Episode trajectory : trajectories){
-			CATrajectory cat = new CATrajectory();
-			cat.annotateTrajectory(trajectory, models, (FullModel)trainer.getDomain().getModel());
-			caTrajectories.add(cat);
-			OPODriver.log(cat);
-			Set<String>[] checkedVariables = cat.getCheckedVariables();
-			Set<String>[] changedVariables = cat.getChangedVariables();
-			List<String> actions = cat.getActions();
-			for(int i = 0; i < actions.size(); i++){
-				String action = actions.get(i);
-				Set<String> checked = checkedVariables[i];
-				Set<String> changed = changedVariables[i]; 
-				if(action.equals("START") || action.equals("END")){
-					continue;
-				}
-				allCheckedChanged.addAll(checked);
-				allCheckedChanged.addAll(changed);
-			}
-		}
-		Set<String> objectNames = new HashSet<String>();
-		for (String variable : allCheckedChanged) {
-			String objectName = variable.split(":")[0];
-			objectNames.add(objectName);
-		}
-		OPODriver.log(objectNames);
-		List<String> objectClasses = new ArrayList<String>();
-		for (String objectName : objectNames) {
-			String objectClass = objectName.split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)")[0];
-			objectClasses.add(objectClass);
-		}
-		OPODriver.log(objectClasses);
-		trainer.setTypeSignature(objectClasses);
+        Set<String> allCheckedChanged = new HashSet<String>();
+        List<Episode> trajectories = Episode.readEpisodes(trainer.getEpisodeOutputPath());
+        Map<String, Map<String, VariableTree>> models = CreateActionModels.createModels(trajectories);
+        List<CATrajectory> caTrajectories = new ArrayList<CATrajectory>();
+        for (Episode trajectory : trajectories) {
+            CATrajectory cat = new CATrajectory();
+            cat.annotateTrajectory(trajectory, models, (FullModel) trainer.getDomain().getModel());
+            caTrajectories.add(cat);
+            OPODriver.log(cat);
+            Set<String>[] checkedVariables = cat.getCheckedVariables();
+            Set<String>[] changedVariables = cat.getChangedVariables();
+            List<String> actions = cat.getActions();
+            for (int i = 0; i < actions.size(); i++) {
+                String action = actions.get(i);
+                Set<String> checked = checkedVariables[i];
+                Set<String> changed = changedVariables[i];
+                if (action.equals("START") || action.equals("END")) {
+                    continue;
+                }
+                allCheckedChanged.addAll(checked);
+                allCheckedChanged.addAll(changed);
+            }
+        }
+        Set<String> objectNames = new HashSet<String>();
+        for (String variable : allCheckedChanged) {
+            String objectName = variable.split(":")[0];
+            objectNames.add(objectName);
+        }
+        OPODriver.log(objectNames);
+        List<String> objectClasses = new ArrayList<String>();
+        for (String objectName : objectNames) {
+            String objectClass = objectName.split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)")[0];
+            objectClasses.add(objectClass);
+        }
+        OPODriver.log(objectClasses);
+        trainer.setTypeSignature(objectClasses);
     }
 
     public static void main(String[] args) {
@@ -409,17 +409,17 @@ public class OPODriver {
         int numSeedsTraining = 25;
         driver.addSeedsTo(driver.getTrainingSeeds(), initSeedTraining, numSeedsTraining);
         log(initSeedTraining + ": " + driver.getTrainingSeeds());
-		long initSeedEvaluation = rng.nextLong();
-		int numSeedsEvaluation = 1;
-		driver.addSeedsTo(driver.getEvaluationSeeds(), initSeedEvaluation, numSeedsEvaluation);
-		log(initSeedEvaluation + ": " + driver.getEvaluationSeeds());
+        long initSeedEvaluation = rng.nextLong();
+        int numSeedsEvaluation = 1;
+        driver.addSeedsTo(driver.getEvaluationSeeds(), initSeedEvaluation, numSeedsEvaluation);
+        log(initSeedEvaluation + ": " + driver.getEvaluationSeeds());
 
         driver.addTrainers();
 
         driver.runTraining();
 
         driver.collectDataset();
-        
+
         driver.createCATs();
 
         driver.buildClassifiers();

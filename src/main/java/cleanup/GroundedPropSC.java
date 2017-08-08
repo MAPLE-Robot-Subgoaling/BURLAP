@@ -8,21 +8,20 @@ import burlap.mdp.core.state.State;
 
 /**
  * Checks a Grounded Proposition function for certain grounded conditions in states. They can
- * be used in planners to specify a 
- * @author James MacGlashan.
+ * be used in planners to specify a
  *
+ * @author James MacGlashan.
  */
 public class GroundedPropSC implements StateConditionTest {
 
-	public GroundedProp gp;
+    public GroundedProp gp;
 
-	public GroundedPropSC(GroundedProp gp) {
-		this.gp = gp;
-	}
+    public GroundedPropSC(GroundedProp gp) {
+        this.gp = gp;
+    }
 
-	@Override
-	public boolean satisfies(State s) {
-		return gp.isTrue((OOState) s);
-	}
+    @Override
+    public boolean satisfies(State s) {
+        return gp.isTrue((OOState) s);
+    }
 }
-	
