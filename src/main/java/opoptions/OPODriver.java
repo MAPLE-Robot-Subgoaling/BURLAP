@@ -19,9 +19,7 @@ import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.model.FullModel;
-import burlap.mdp.singleagent.model.TransitionProb;
 import burlap.mdp.singleagent.oo.OOSADomain;
-import burlap.statehashing.masked.MaskedHashableStateFactory;
 import cat.CATrajectory;
 import cat.CreateActionModels;
 import cat.VariableTree;
@@ -376,23 +374,14 @@ public class OPODriver {
                 if (action.equals("START") || action.equals("END")) {
                     continue;
                 }
+//                OPODriver.log("checked " + checked);
+//                OPODriver.log("changed " + changed);
                 allCheckedChanged.addAll(checked);
                 allCheckedChanged.addAll(changed);
             }
         }
-        Set<String> objectNames = new HashSet<String>();
-        for (String variable : allCheckedChanged) {
-            String objectName = variable.split(":")[0];
-            objectNames.add(objectName);
-        }
-        OPODriver.log(objectNames);
-        List<String> objectClasses = new ArrayList<String>();
-        for (String objectName : objectNames) {
-            String objectClass = objectName.split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)")[0];
-            objectClasses.add(objectClass);
-        }
-        OPODriver.log(objectClasses);
-        trainer.setTypeSignature(objectClasses);
+        List<String> attributeWhitelist = new ArrayList<String>(allCheckedChanged);
+        trainer.initializeTypeSignature(attributeWhitelist);
     }
 
     public static void main(String[] args) {

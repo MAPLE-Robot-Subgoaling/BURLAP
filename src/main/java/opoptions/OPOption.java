@@ -16,7 +16,6 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.statehashing.HashableState;
 import burlap.statehashing.HashableStateFactory;
-import burlap.statehashing.masked.MaskedHashableStateFactory;
 
 public class OPOption implements OptionGenerator {
 
@@ -25,7 +24,7 @@ public class OPOption implements OptionGenerator {
     public static final String NAME_OPOPTION_DEFAULT = "option_";
 
     protected HashMap<String, LearnedStateTest> nameToStateTest = new HashMap<String, LearnedStateTest>();
-    protected MaskedHashableStateFactory typeSignature;
+    protected SelectedHashableStateFactory typeSignature;
 
     public Set<Option> generateOptions(OPOTrainer trainer) {
 
@@ -63,7 +62,7 @@ public class OPOption implements OptionGenerator {
         for (HashableState hs : hashedStates) {
 //        	State endState = endStates.get(i);
 //        	StateConditionTest specificGoal = new InStateTest(endState);
-            StateConditionTest specificGoal = new InMaskedStateTest(typeSignature, hs);
+            StateConditionTest specificGoal = new InSelectedStateTest(typeSignature, hs);
             Planner planner = (Planner) trainer.initializeOptionPlanner(specificGoal);
             Policy optionPolicy = planner.planFromState(initialState);
             SubgoalOption option = new SubgoalOption(NAME_OPOPTION_DEFAULT + i, optionPolicy, initiation, specificGoal);
@@ -79,7 +78,7 @@ public class OPOption implements OptionGenerator {
         nameToStateTest.put(test.getName(), test);
     }
 
-    public void setTypeSignature(MaskedHashableStateFactory typeSignature) {
+    public void setTypeSignature(SelectedHashableStateFactory typeSignature) {
         this.typeSignature = typeSignature;
     }
 
