@@ -194,7 +194,9 @@ public class CreateActionModels {
             System.out.println("Tree created for " + action + " and " + variable);
             String out = getCleanTreeString(tree);
 
-            BufferedWriter write = new BufferedWriter(new FileWriter(fname));
+            File file = new File(fname);
+            file.getParentFile().mkdirs();
+            BufferedWriter write = new BufferedWriter(new FileWriter(file));
             write.write(out);
             write.flush();
             write.close();
