@@ -1,7 +1,5 @@
 package cleanup;
 
-import java.util.List;
-
 import burlap.mdp.core.StateTransitionProb;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
@@ -10,6 +8,8 @@ import cleanup.state.CleanupAgent;
 import cleanup.state.CleanupBlock;
 import cleanup.state.CleanupRoom;
 import cleanup.state.CleanupState;
+
+import java.util.List;
 
 public class CleanupModel implements FullStateModel {
 

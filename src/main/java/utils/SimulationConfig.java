@@ -1,12 +1,5 @@
 package utils;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
-
 import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.ExponentialDecayLR;
 import burlap.behavior.learningrate.LearningRate;
@@ -23,9 +16,15 @@ import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
 import weka.classifiers.Classifier;
 import weka.classifiers.rules.ZeroR;
 import weka.classifiers.trees.J48;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 
 public class SimulationConfig {
 

@@ -3,7 +3,6 @@ package opoptions;
 import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.mdp.core.state.State;
 import burlap.statehashing.HashableState;
-import burlap.statehashing.masked.MaskedHashableStateFactory;
 
 public class InSelectedStateTest implements StateConditionTest {
 

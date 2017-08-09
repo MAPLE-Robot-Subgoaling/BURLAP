@@ -1,25 +1,17 @@
 package opoptions;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-
 import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.mdp.core.oo.propositional.GroundedProp;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.oo.OOSADomain;
 import weka.classifiers.Classifier;
 import weka.core.Attribute;
-import weka.core.FastVector;
-import weka.core.Instance;
 import weka.core.DenseInstance;
+import weka.core.Instance;
 import weka.core.Instances;
-import weka.core.converters.CSVLoader;
+
+import java.util.List;
 
 public class LearnedStateTest implements StateConditionTest {
 

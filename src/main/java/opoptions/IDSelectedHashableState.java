@@ -1,18 +1,16 @@
 package opoptions;
 
+import burlap.mdp.core.oo.state.OOState;
+import burlap.mdp.core.oo.state.OOStateUtilities;
+import burlap.mdp.core.oo.state.ObjectInstance;
+import burlap.mdp.core.state.State;
+import burlap.statehashing.simple.IDSimpleHashableState;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import burlap.mdp.core.oo.state.OOState;
-import burlap.mdp.core.oo.state.OOStateUtilities;
-import burlap.mdp.core.oo.state.ObjectInstance;
-import burlap.mdp.core.state.State;
-import burlap.statehashing.HashableState;
-import burlap.statehashing.simple.IDSimpleHashableState;
 
 public class IDSelectedHashableState extends IDSimpleHashableState {
 
@@ -38,7 +36,7 @@ public class IDSelectedHashableState extends IDSimpleHashableState {
         for (int i = 0; i < s.numObjects(); i++) {
             ObjectInstance o = objects.get(i);
             // if the objectInstance belongs to a selected objectClass, include it
-            if(config.getSelectedObjectClasses().contains(o.className())) {
+            if (config.getSelectedObjectClasses().contains(o.className())) {
                 int oHash = this.computeFlatHashCode(o);
                 int classNameHash = o.className().hashCode();
                 int nameHash = o.name().hashCode();
@@ -60,7 +58,7 @@ public class IDSelectedHashableState extends IDSimpleHashableState {
     }
 
     @Override
-    protected int computeFlatHashCode(State s){
+    protected int computeFlatHashCode(State s) {
 
         // s should be an object in the OOState
         ObjectInstance objectInstance = (ObjectInstance) s;
@@ -69,10 +67,10 @@ public class IDSelectedHashableState extends IDSimpleHashableState {
         HashCodeBuilder hashCodeBuilder = new HashCodeBuilder(17, 31);
 
         List<Object> keys = s.variableKeys();
-        for(Object key : keys){
+        for (Object key : keys) {
             Object value = s.get(key);
             //only consider variables that have been selected
-            if(config.getSelectedVariables(objectClass).contains(key)) {
+            if (config.getSelectedVariables(objectClass).contains(key)) {
                 this.appendHashCodeForValue(hashCodeBuilder, key, value);
             }
         }
@@ -97,7 +95,7 @@ public class IDSelectedHashableState extends IDSimpleHashableState {
             String oclass = e1.getKey();
 
             // skip it if it is not a selected object class
-            if(!config.getSelectedObjectClasses().contains(oclass)){
+            if (!config.getSelectedObjectClasses().contains(oclass)) {
                 continue;
             }
 
@@ -121,9 +119,9 @@ public class IDSelectedHashableState extends IDSimpleHashableState {
     }
 
     @Override
-    protected boolean flatStatesEqual(State s1, State s2){
+    protected boolean flatStatesEqual(State s1, State s2) {
 
-        if(s1 == s2){
+        if (s1 == s2) {
             return true;
         }
 
@@ -140,15 +138,15 @@ public class IDSelectedHashableState extends IDSimpleHashableState {
         List<Object> keys1 = s1.variableKeys();
         List<Object> keys2 = s2.variableKeys();
 
-        if(keys1.size() != keys2.size()){
+        if (keys1.size() != keys2.size()) {
             return false;
         }
 
-        for(Object key : keys1){
+        for (Object key : keys1) {
             Object v1 = s1.get(key);
             Object v2 = s2.get(key);
             // if it is a selected variable, then test equality (otherwise, trivially true)
-            if(config.getSelectedVariables(objectClass1).contains(key)) {
+            if (config.getSelectedVariables(objectClass1).contains(key)) {
                 if (!this.valuesEqual(key, v1, v2)) {
                     return false;
                 }

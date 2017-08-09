@@ -1,11 +1,5 @@
 package opoptions;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.auxiliary.StateReachability;
 import burlap.behavior.singleagent.options.Option;
@@ -16,6 +10,8 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.statehashing.HashableState;
 import burlap.statehashing.HashableStateFactory;
+
+import java.util.*;
 
 public class OPOption implements OptionGenerator {
 

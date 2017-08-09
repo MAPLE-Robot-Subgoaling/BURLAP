@@ -1,9 +1,5 @@
 package opoptions;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.MDPSolver;
@@ -12,7 +8,6 @@ import burlap.behavior.singleagent.auxiliary.performance.PerformancePlotter;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.options.OptionType;
-import burlap.behavior.singleagent.planning.Planner;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.mdp.core.TerminalFunction;
@@ -25,12 +20,15 @@ import burlap.mdp.singleagent.environment.extensions.EnvironmentServer;
 import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.statehashing.HashableStateFactory;
-import burlap.statehashing.masked.MaskedHashableStateFactory;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import cleanup.CleanupVisualizer;
 import utils.Simulation;
 import utils.SimulationConfig;
 import weka.classifiers.Classifier;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public abstract class OPOTrainer extends SimulationConfig {
 

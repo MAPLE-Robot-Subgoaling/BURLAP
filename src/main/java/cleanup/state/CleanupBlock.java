@@ -1,13 +1,12 @@
 package cleanup.state;
 
-import java.util.Arrays;
-import java.util.List;
-
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.annotations.DeepCopyState;
 import cleanup.Cleanup;
 import utils.MutableObject;
-import utils.MutableObjectInstance;
+
+import java.util.Arrays;
+import java.util.List;
 
 @DeepCopyState
 public class CleanupBlock extends MutableObject {

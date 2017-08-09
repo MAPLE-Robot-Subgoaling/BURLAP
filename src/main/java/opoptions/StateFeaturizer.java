@@ -1,13 +1,13 @@
 package opoptions;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import burlap.mdp.core.oo.propositional.GroundedProp;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.singleagent.oo.OOSADomain;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class StateFeaturizer {
 

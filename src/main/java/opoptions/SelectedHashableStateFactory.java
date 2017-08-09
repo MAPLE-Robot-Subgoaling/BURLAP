@@ -1,13 +1,13 @@
 package opoptions;
 
 
-import java.util.List;
-
 import burlap.mdp.core.state.State;
 import burlap.statehashing.HashableState;
 import burlap.statehashing.simple.IDSimpleHashableState;
 import burlap.statehashing.simple.IISimpleHashableState;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
+
+import java.util.List;
 
 public class SelectedHashableStateFactory extends SimpleHashableStateFactory {
 
@@ -36,10 +36,10 @@ public class SelectedHashableStateFactory extends SimpleHashableStateFactory {
 
     @Override
     public HashableState hashState(State s) {
-        if(s instanceof IISimpleHashableState || s instanceof IDSimpleHashableState){
-            return (HashableState)s;
+        if (s instanceof IISimpleHashableState || s instanceof IDSimpleHashableState) {
+            return (HashableState) s;
         }
-        if(identifierIndependent){
+        if (identifierIndependent) {
             return new IISelectedHashableState(s, config);
         }
         return new IDSelectedHashableState(s, config);

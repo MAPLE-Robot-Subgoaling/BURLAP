@@ -1,9 +1,7 @@
 package cleanup;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import burlap.behavior.valuefunction.ValueFunction;
+import burlap.debugtools.RandomFactory;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.auxiliary.common.NullTermination;
 import burlap.mdp.core.Domain;
@@ -18,11 +16,11 @@ import burlap.mdp.singleagent.common.UniformCostRF;
 import burlap.mdp.singleagent.model.FactoredModel;
 import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.oo.OOSADomain;
-import cleanup.state.CleanupAgent;
-import cleanup.state.CleanupBlock;
-import cleanup.state.CleanupDoor;
-import cleanup.state.CleanupRoom;
-import cleanup.state.CleanupState;
+import cleanup.state.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 
 public class Cleanup implements DomainGenerator {
@@ -352,7 +350,7 @@ public class Cleanup implements DomainGenerator {
     }
 
 	/*
-	public class PullActionType extends ObjectParameterizedActionType {
+    public class PullActionType extends ObjectParameterizedActionType {
 
 		public PullActionType(String name){
 			super(name,new String[]{Cleanup.CLASS_AGENT, Cleanup.CLASS_BLOCK});
@@ -626,6 +624,30 @@ public class Cleanup implements DomainGenerator {
 
 
     public static void main(String[] args) {
+
+        RandomFactory.seedMapped(0, 210333L);
+        Random rng = RandomFactory.getMapped(0);
+
+        Cleanup cleanup = new Cleanup();
+        OOSADomain domain = (OOSADomain) cleanup.generateDomain();
+        CleanupRandomStateGenerator gen = new CleanupRandomStateGenerator();
+        State state1 = gen.generateCentralRoomWithFourDoors(0);
+        State state2 = gen.generateCentralRoomWithFourDoors(0);
+
+        System.out.println(state1);
+        System.out.println(state2);
+
+
+//      Visualizer v = CleanupVisualizer.getVisualizer(13, 13);
+//		VisualExplorer exp = new VisualExplorer(domain, v, state1);
+//		exp.addKeyAction("w", ACTION_NORTH, "");
+//		exp.addKeyAction("s", ACTION_SOUTH, "");
+//		exp.addKeyAction("d", ACTION_EAST, "");
+//		exp.addKeyAction("a", ACTION_WEST, "");
+//		exp.addKeyAction("r", ACTION_PULL, "");
+//		exp.initGUI();
+//		exp.requestFocus();
+//		exp.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 //		OOSADomain domain;
 //		RewardFunction rf;

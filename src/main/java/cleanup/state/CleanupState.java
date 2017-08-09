@@ -1,11 +1,5 @@
 package cleanup.state;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import burlap.mdp.core.oo.state.MutableOOState;
 import burlap.mdp.core.oo.state.OOStateUtilities;
 import burlap.mdp.core.oo.state.OOVariableKey;
@@ -13,6 +7,8 @@ import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.annotations.ShallowCopyState;
 import cleanup.Cleanup;
+
+import java.util.*;
 
 @ShallowCopyState
 public class CleanupState implements MutableOOState {

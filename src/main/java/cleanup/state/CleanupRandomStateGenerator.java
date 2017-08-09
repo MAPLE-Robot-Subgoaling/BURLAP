@@ -1,11 +1,5 @@
 package cleanup.state;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-
 import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.auxiliary.StateGenerator;
@@ -13,8 +7,10 @@ import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.State;
-import cleanup.CleanupGoalDescription;
 import cleanup.Cleanup;
+import cleanup.CleanupGoalDescription;
+
+import java.util.*;
 
 public class CleanupRandomStateGenerator implements StateGenerator {
 

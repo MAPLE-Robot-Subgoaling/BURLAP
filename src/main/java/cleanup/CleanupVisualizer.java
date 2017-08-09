@@ -1,8 +1,15 @@
 package cleanup;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Image;
+import burlap.mdp.core.oo.state.OOState;
+import burlap.mdp.core.oo.state.ObjectInstance;
+import burlap.visualizer.OOStatePainter;
+import burlap.visualizer.ObjectPainter;
+import burlap.visualizer.StateRenderLayer;
+import burlap.visualizer.Visualizer;
+import cleanup.state.CleanupState;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
@@ -11,16 +18,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.imageio.ImageIO;
-
-import burlap.mdp.core.oo.state.OOState;
-import burlap.mdp.core.oo.state.ObjectInstance;
-import burlap.visualizer.OOStatePainter;
-import burlap.visualizer.ObjectPainter;
-import burlap.visualizer.StateRenderLayer;
-import burlap.visualizer.Visualizer;
-import cleanup.state.CleanupState;
 
 public class CleanupVisualizer {
 

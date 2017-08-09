@@ -1,8 +1,7 @@
 package cleanup;
 
-import org.apache.commons.lang3.StringUtils;
-
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
+import org.apache.commons.lang3.StringUtils;
 
 public class CleanupGoalDescription {
 

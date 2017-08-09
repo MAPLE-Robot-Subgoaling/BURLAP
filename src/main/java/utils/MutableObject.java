@@ -27,17 +27,20 @@ public abstract class MutableObject implements MutableObjectInstance, Serializab
     public String toString() {
         StringBuilder buf = new StringBuilder();
         buf.append(className()).append(":").append(name());
-        buf.append(" {\n");
+//        buf.append(" {\n");
+        buf.append(" {");
         List<Object> keys = this.variableKeys();
         for (Object key : keys) {
             Object value = this.get(key);
-            buf.append("\t").append(key.toString()).append(": {");
+//            buf.append("\t").append(key.toString()).append(": {");
+            buf.append(key.toString()).append(": {");
             if (value == null) {
                 buf.append("unset");
             } else {
                 buf.append(value.toString());
             }
-            buf.append("}\n");
+//            buf.append("}\n");
+            buf.append("},");
         }
         buf.append("}");
         return buf.toString();

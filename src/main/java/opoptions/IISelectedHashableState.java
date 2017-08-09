@@ -1,20 +1,13 @@
 package opoptions;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.OOStateUtilities;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.State;
-import burlap.statehashing.HashableState;
 import burlap.statehashing.simple.IISimpleHashableState;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import java.util.*;
 
 public class IISelectedHashableState extends IISimpleHashableState {
 
@@ -37,10 +30,10 @@ public class IISelectedHashableState extends IISimpleHashableState {
     protected int computeOOHashCode(OOState s) {
         List<Integer> hashCodes = new ArrayList<Integer>(s.numObjects());
         List<ObjectInstance> objects = s.objects();
-        for(int i = 0; i < s.numObjects(); i++){
+        for (int i = 0; i < s.numObjects(); i++) {
             ObjectInstance o = objects.get(i);
             // if the objectInstance belongs to a selected objectClass, include it
-            if(config.getSelectedObjectClasses().contains(o.className())) {
+            if (config.getSelectedObjectClasses().contains(o.className())) {
                 int oHash = this.computeFlatHashCode(o);
                 int classNameHash = o.className().hashCode();
                 int totalHash = oHash + 31 * classNameHash;
@@ -53,7 +46,7 @@ public class IISelectedHashableState extends IISimpleHashableState {
 
         //combine
         HashCodeBuilder hashCodeBuilder = new HashCodeBuilder(17, 31);
-        for(int hashCode : hashCodes){
+        for (int hashCode : hashCodes) {
             hashCodeBuilder.append(hashCode);
         }
 
@@ -61,7 +54,7 @@ public class IISelectedHashableState extends IISimpleHashableState {
     }
 
     @Override
-    protected int computeFlatHashCode(State s){
+    protected int computeFlatHashCode(State s) {
 
         // s should be an object in the OOState
         ObjectInstance objectInstance = (ObjectInstance) s;
@@ -70,10 +63,10 @@ public class IISelectedHashableState extends IISimpleHashableState {
         HashCodeBuilder hashCodeBuilder = new HashCodeBuilder(17, 31);
 
         List<Object> keys = s.variableKeys();
-        for(Object key : keys){
+        for (Object key : keys) {
             Object value = s.get(key);
             //only consider variables that have been selected
-            if(config.getSelectedVariables(objectClass).contains(key)) {
+            if (config.getSelectedVariables(objectClass).contains(key)) {
                 this.appendHashCodeForValue(hashCodeBuilder, key, value);
             }
         }
@@ -89,41 +82,41 @@ public class IISelectedHashableState extends IISimpleHashableState {
 
     @Override
     protected boolean ooStatesEqual(OOState s1, OOState s2) {
-        if(s1 == s2){
+        if (s1 == s2) {
             return true;
         }
 
         Set<String> matchedObjects = new HashSet<String>();
-        for(Map.Entry<String, List<ObjectInstance>> e1 : OOStateUtilities.objectsByClass(s1).entrySet()){
+        for (Map.Entry<String, List<ObjectInstance>> e1 : OOStateUtilities.objectsByClass(s1).entrySet()) {
 
             String oclass = e1.getKey();
 
             // skip it if it is not a selected object class
-            if(!config.getSelectedObjectClasses().contains(oclass)){
+            if (!config.getSelectedObjectClasses().contains(oclass)) {
                 continue;
             }
 
             List<ObjectInstance> objects = e1.getValue();
 
             List<ObjectInstance> oobjects = s2.objectsOfClass(oclass);
-            if(objects.size() != oobjects.size()){
+            if (objects.size() != oobjects.size()) {
                 return false;
             }
 
-            for(ObjectInstance o : objects){
+            for (ObjectInstance o : objects) {
                 boolean foundMatch = false;
-                for(ObjectInstance oo : oobjects){
+                for (ObjectInstance oo : oobjects) {
                     String ooname = oo.name();
-                    if(matchedObjects.contains(ooname)){
+                    if (matchedObjects.contains(ooname)) {
                         continue;
                     }
-                    if(flatStatesEqual(o, oo)){
+                    if (flatStatesEqual(o, oo)) {
                         foundMatch = true;
                         matchedObjects.add(ooname);
                         break;
                     }
                 }
-                if(!foundMatch){
+                if (!foundMatch) {
                     return false;
                 }
             }
@@ -135,9 +128,9 @@ public class IISelectedHashableState extends IISimpleHashableState {
 
 
     @Override
-    protected boolean flatStatesEqual(State s1, State s2){
+    protected boolean flatStatesEqual(State s1, State s2) {
 
-        if(s1 == s2){
+        if (s1 == s2) {
             return true;
         }
 
@@ -154,15 +147,15 @@ public class IISelectedHashableState extends IISimpleHashableState {
         List<Object> keys1 = s1.variableKeys();
         List<Object> keys2 = s2.variableKeys();
 
-        if(keys1.size() != keys2.size()){
+        if (keys1.size() != keys2.size()) {
             return false;
         }
 
-        for(Object key : keys1){
+        for (Object key : keys1) {
             Object v1 = s1.get(key);
             Object v2 = s2.get(key);
             // if it is a selected variable, then test equality (otherwise, trivially true)
-            if(config.getSelectedVariables(objectClass1).contains(key)) {
+            if (config.getSelectedVariables(objectClass1).contains(key)) {
                 if (!this.valuesEqual(key, v1, v2)) {
                     return false;
                 }

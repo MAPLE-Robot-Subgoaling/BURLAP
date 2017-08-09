@@ -1,23 +1,16 @@
 package opoptions;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import burlap.mdp.core.state.State;
+import java.util.*;
 
 public class SelectedConfig {
 
-    private Map<String,Set<String>> objectClassToSelectedVariables;
+    private Map<String, Set<String>> objectClassToSelectedVariables;
 
     public SelectedConfig() {
-        this(new HashMap<String,Set<String>>());
+        this(new HashMap<String, Set<String>>());
     }
 
-    public SelectedConfig(Map<String,Set<String>> objectClassToSelectedVariables) {
+    public SelectedConfig(Map<String, Set<String>> objectClassToSelectedVariables) {
         this.objectClassToSelectedVariables = objectClassToSelectedVariables;
     }
 
@@ -39,14 +32,14 @@ public class SelectedConfig {
             objectClassToSelectedVariables.get(objectClass).add(attributeName);
         }
 
-        for(String objectClass : objectClassToSelectedVariables.keySet()) {
+        for (String objectClass : objectClassToSelectedVariables.keySet()) {
             OPODriver.log(objectClass);
             OPODriver.log(objectClassToSelectedVariables.get(objectClass));
         }
     }
 
-    public SelectedConfig copy(){
-        return new SelectedConfig(new HashMap<String,Set<String>>(objectClassToSelectedVariables));
+    public SelectedConfig copy() {
+        return new SelectedConfig(new HashMap<String, Set<String>>(objectClassToSelectedVariables));
     }
 
     public Set<String> getSelectedObjectClasses() {

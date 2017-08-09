@@ -1,15 +1,5 @@
 package opoptions;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-
 import burlap.behavior.singleagent.Episode;
 import burlap.debugtools.DPrint;
 import burlap.debugtools.RandomFactory;
@@ -34,6 +24,11 @@ import weka.core.converters.CSVLoader;
 import weka.core.converters.ConverterUtils;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.NumericToNominal;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.*;
 
 public class OPODriver {
 

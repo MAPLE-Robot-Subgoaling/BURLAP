@@ -1,8 +1,8 @@
 package opoptions;
 
 
-import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
+import burlap.mdp.core.oo.state.OOState;
 
 public class OPOGoalPF extends PropositionalFunction {
 

@@ -1,8 +1,8 @@
 package opoptions;
 
-import java.util.Set;
-
 import burlap.behavior.singleagent.options.Option;
+
+import java.util.Set;
 
 public interface OptionGenerator {
 

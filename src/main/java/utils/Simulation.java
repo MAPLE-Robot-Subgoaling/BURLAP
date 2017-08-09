@@ -1,11 +1,5 @@
 package utils;
 
-import java.io.FileWriter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import org.apache.commons.lang3.StringUtils;
-
 import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.PolicyUtils;
@@ -14,15 +8,15 @@ import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.auxiliary.performance.PerformancePlotter;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
-import burlap.behavior.singleagent.learning.tdmethods.SarsaLam;
-import burlap.behavior.singleagent.learning.tdmethods.vfa.ApproximateQLearning;
-import burlap.behavior.singleagent.learning.tdmethods.vfa.GradientDescentSarsaLam;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.mdp.singleagent.environment.extensions.EnvironmentServer;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Simulation {
 
