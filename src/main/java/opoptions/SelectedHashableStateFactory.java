@@ -22,6 +22,7 @@ public class SelectedHashableStateFactory extends SimpleHashableStateFactory {
         config = new SelectedConfig();
     }
 
+    // assumes all objectAttributes given in form "objectClass#:attributeName", e.g. "door1:y"
     public void setSelection(List<String> objectAttributes) {
         config.setSelection(objectAttributes);
     }

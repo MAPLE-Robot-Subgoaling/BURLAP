@@ -16,7 +16,9 @@ import burlap.mdp.singleagent.common.UniformCostRF;
 import burlap.mdp.singleagent.model.FactoredModel;
 import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.oo.OOSADomain;
+import burlap.statehashing.HashableState;
 import cleanup.state.*;
+import opoptions.SelectedHashableStateFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -628,6 +630,7 @@ public class Cleanup implements DomainGenerator {
         RandomFactory.seedMapped(0, 210333L);
         Random rng = RandomFactory.getMapped(0);
 
+        List<String> objectAttributes = new ArrayList<String>();
         Cleanup cleanup = new Cleanup();
         OOSADomain domain = (OOSADomain) cleanup.generateDomain();
         CleanupRandomStateGenerator gen = new CleanupRandomStateGenerator();
@@ -636,6 +639,34 @@ public class Cleanup implements DomainGenerator {
 
         System.out.println(state1);
         System.out.println(state2);
+
+        SelectedHashableStateFactory shsf = new SelectedHashableStateFactory();
+        HashableState hs1 = shsf.hashState(state1);
+        HashableState hs2 = shsf.hashState(state2);
+
+        System.out.println(state1.equals(state1));
+        System.out.println(state2.equals(state2));
+        System.out.println(state1.equals(state2));
+
+        // select no objectAttributes
+        System.out.println(hs1.equals(hs1));
+        System.out.println(hs2.equals(hs2));
+        System.out.println(hs1.equals(hs2));
+
+        objectAttributes.clear();
+        objectAttributes.add("agent0:left");
+        shsf.setSelection(objectAttributes);
+        System.out.println(hs1.equals(hs1));
+        System.out.println(hs2.equals(hs2));
+        System.out.println(hs1.equals(hs2));
+
+        objectAttributes.clear();
+        objectAttributes.add("agent0:direction");
+        shsf.setSelection(objectAttributes);
+        System.out.println(hs1.equals(hs1));
+        System.out.println(hs2.equals(hs2));
+        System.out.println(hs1.equals(hs2));
+
 
 
 //      Visualizer v = CleanupVisualizer.getVisualizer(13, 13);

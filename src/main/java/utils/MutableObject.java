@@ -30,7 +30,12 @@ public abstract class MutableObject implements MutableObjectInstance, Serializab
 //        buf.append(" {\n");
         buf.append(" {");
         List<Object> keys = this.variableKeys();
+        boolean first = true;
         for (Object key : keys) {
+            if(!first) {
+                buf.append(", ");
+            }
+            first = false;
             Object value = this.get(key);
 //            buf.append("\t").append(key.toString()).append(": {");
             buf.append(key.toString()).append(": {");
@@ -40,7 +45,7 @@ public abstract class MutableObject implements MutableObjectInstance, Serializab
                 buf.append(value.toString());
             }
 //            buf.append("}\n");
-            buf.append("},");
+            buf.append("}");
         }
         buf.append("}");
         return buf.toString();
