@@ -244,19 +244,13 @@ public abstract class OPOTrainer extends SimulationConfig {
     public abstract MDPSolverInterface initializeOptionPlanner(StateConditionTest specificGoal);
 
     public void initializeTypeSignature(List<String> attributeWhitelist) {
-//        MaskedHashableStateFactory mhsf = new MaskedHashableStateFactory();
         SelectedHashableStateFactory shsf = new SelectedHashableStateFactory();
         shsf.setSelection(attributeWhitelist);
-//        OOSADomain oosaDomain = (OOSADomain) domain;
-//        List<String> stateClassNames = oosaDomain.stateClassNames();
-//        List<String> maskedClasses = new ArrayList<String>();
-//        for (String stateClassName : stateClassNames) {
-//            if (!objectClasses.contains(stateClassName)) {
-//                maskedClasses.add(stateClassName);
-//            }
-//        }
-//        mhsf.addObjectClassMasks((String[]) maskedClasses.toArray(new String[0]));
         opoption.setTypeSignature(shsf);
+
+        // create the OPOGoalPF
+//         getGoalPF()
+
     }
 
 }

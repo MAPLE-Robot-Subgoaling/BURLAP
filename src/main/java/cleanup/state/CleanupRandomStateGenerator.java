@@ -600,4 +600,16 @@ public class CleanupRandomStateGenerator implements StateGenerator {
     }
 
 
+    public State getStateFor(String stateType) {
+        State state = null;
+        if (stateType.equals("oneRoomOneDoor")) {
+            state = generateOneRoomOneDoor();
+        } else if (stateType.equals("oneRoomFourDoors")) {
+            int numBlocks = 0;
+            state = generateCentralRoomWithFourDoors(numBlocks);
+        } else {
+            throw new RuntimeException("Error: unknown name for generating a random Cleanup state");
+        }
+        return state;
+    }
 }

@@ -1,51 +1,44 @@
 {
     
-    "trainerName" : "moveToDoor",
-    "shortName" : "m2d",
-    "domainName" : "cleanup",
-    "includePFs" : false,
+    "trainerName"                   : "moveToDoor",
+    "shortName"                     : "m2d",
+    "domainName"                    : "cleanup",
+    "nameTrainingGoalPF"            : "agentInDoor",
+    "nameTrainingStateType"         : "oneRoomOneDoor",
+    "nameEvaluationStateType"       : "oneRoomFourDoors",
+    "includePFs"                    : false,
     "domainGenerator" : {
-        "minX"                  : 0,
-        "minY"                  : 0,
-        "maxX"                  : 9,
-        "maxY"                  : 9
+        "minX"                      : 0,
+        "minY"                      : 0,
+        "maxX"                      : 9,
+        "maxY"                      : 9
 	},
-    "numGoals" : 1,
-	"useEpsilonDecay" : true,
-	"minEpsilonDecay" : 0.00,
+    "numGoals"                      : 1,
+	"useEpsilonDecay"               : true,
+	"minEpsilonDecay"               : 0.00,
 	
-	"rewardDefault"				: 0.0,
-	"rewardGoal"				: 100.0,
-	"rewardNoop"				: -1.0,
-	"rewardPull"				: 0,
+	"rewardDefault"				    : 0.0,
+	"rewardGoal"				    : 100.0,
+	"rewardNoop"				    : -1.0,
+	"rewardPull"				    : 0,
     
-    "numEpisodes"               : 200,
-    "writeEvery"                : 1,
-    "maxEpisodeSize"            : 1000,
-    "outputPath"                : "./out_opos_cleanup/moveToDoor/",
-    "episodeOutputPath"         : "./out_opos_cleanup/moveToDoor/episodes/",
-    "episodeOutputPathEvaluation":"./out_opos_cleanup/moveToDoor/episodesEval/",
+    "numEpisodes"                   : 200,
+    "writeEvery"                    : 1,
+    "maxEpisodeSize"                : 1000,
+    "outputPath"                    : "./out_opos_cleanup/moveToDoor/",
+    "episodeOutputPath"             : "./out_opos_cleanup/moveToDoor/episodes/",
+    "episodeOutputPathEvaluation"   :"./out_opos_cleanup/moveToDoor/episodesEval/",
     "agent" : {
-        "type"                  : "ValueIteration",
-        "gamma"                 : 0.9,
-        "maxDelta"              : 0.00001,
-        "maxIterations"         : 10000,
-        "valueInitializer"	    : {
-			"type"				: "ConstantValueFunction",
-			"value"				: 0.0
+        "type"                      : "ValueIteration",
+        "gamma"                     : 0.9,
+        "maxDelta"                  : 0.00001,
+        "maxIterations"             : 10000,
+        "valueInitializer"	        : {
+			"type"				    : "ConstantValueFunction",
+			"value"				    : 0.0
 		}
 	},
 	"classifier" : {
-	    "type"                  : "J48"
-	},
-    "optionPlanner" : {
-        "type"                  : "ValueIteration",
-        "gamma"                 : 0.9,
-        "maxDelta"              : 0.00001,
-        "maxIterations"         : 10000,
-        "valueInitializer"	    : {
-			"type"				: "ConstantValueFunction",
-			"value"				: 0.0
-		}
-    }
+	    "type"                      : "J48"
+	}
 }

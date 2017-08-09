@@ -13,7 +13,7 @@ import burlap.mdp.singleagent.oo.OOSADomain;
 import cat.CATrajectory;
 import cat.CreateActionModels;
 import cat.VariableTree;
-import opoptions.trainers.MoveToDoor;
+import opoptions.trainers.CleanupTrainer;
 import utils.SimulationConfig;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
@@ -167,7 +167,7 @@ public class OPODriver {
     }
 
     public void addTrainers() {
-        MoveToDoor moveToDoor = (MoveToDoor) SimulationConfig.load("./config/moveToDoor.yaml", MoveToDoor.class);
+        CleanupTrainer moveToDoor = (CleanupTrainer) SimulationConfig.load("./config/moveToDoor.yaml", CleanupTrainer.class);
         addTrainer(moveToDoor);
     }
 
@@ -336,7 +336,6 @@ public class OPODriver {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
 
     }
 

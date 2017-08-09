@@ -34,11 +34,14 @@ import cleanup.state.CleanupState;
 import opoptions.OPODriver;
 import opoptions.OPOTrainer;
 
-public class MoveToDoor extends OPOTrainer {
+public class CleanupTrainer extends OPOTrainer {
 
     // specified by data file
     public Cleanup domainGenerator;
     public int numGoals;
+    public String nameTrainingGoalPF;
+    public String nameTrainingStateType;
+    public String nameEvaluationStateType;
     public double rewardDefault;
     public double rewardGoal;
     public double rewardNoop;
@@ -49,7 +52,7 @@ public class MoveToDoor extends OPOTrainer {
     private CleanupGoal goal;
     private CleanupGoalDescription[] goalDescriptions;
 
-    public MoveToDoor() {
+    public CleanupTrainer() {
         // use SimulationConfig to load the trainer, not this constructor
     }
 
@@ -59,7 +62,7 @@ public class MoveToDoor extends OPOTrainer {
         CleanupRandomStateGenerator randomCleanup = new CleanupRandomStateGenerator();
         randomCleanup.setWidth(domainGenerator.getWidth());
         randomCleanup.setHeight(domainGenerator.getHeight());
-        initialState = (OOState) randomCleanup.generateOneRoomOneDoor(); //generateTaxiInCleanup(1);//.generateCentralRoomWithClosets(1); //cw.getRandomState(domain, rng, numBlocks);
+        initialState = (OOState) randomCleanup.getStateFor(nameTrainingStateType);  //randomCleanup.generateOneRoomOneDoor(); // generateTaxiInCleanup(1);//.generateCentralRoomWithClosets(1); //cw.getRandomState(domain, rng, numBlocks);
         return (OOState) initialState;
     }
 
@@ -69,7 +72,7 @@ public class MoveToDoor extends OPOTrainer {
         CleanupRandomStateGenerator randomCleanup = new CleanupRandomStateGenerator();
         randomCleanup.setWidth(domainGenerator.getWidth());
         randomCleanup.setHeight(domainGenerator.getHeight());
-        initialState = (OOState) randomCleanup.generateCentralRoomWithFourDoors(0); //generateTaxiInCleanup(1);//.generateCentralRoomWithClosets(1); //cw.getRandomState(domain, rng, numBlocks);
+        initialState = (OOState) randomCleanup.getStateFor(nameEvaluationStateType);  // randomCleanup.generateCentralRoomWithFourDoors(0); //generateTaxiInCleanup(1);//.generateCentralRoomWithClosets(1); //cw.getRandomState(domain, rng, numBlocks);
         return (OOState) initialState;
     }
 
@@ -84,8 +87,8 @@ public class MoveToDoor extends OPOTrainer {
         domain = (OOSADomain) domainGenerator.generateDomain();
 
         // setup the goal
-        PropositionalFunction agentInDoor = getGoalPF();
-        goalDescriptions = CleanupRandomStateGenerator.getRandomGoalDescription((CleanupState) initialState, numGoals, agentInDoor);
+        PropositionalFunction goalPF = getGoalPF();
+        goalDescriptions = CleanupRandomStateGenerator.getRandomGoalDescription((CleanupState) initialState, numGoals, goalPF);
         goal.setGoals(goalDescriptions);
         OPODriver.log("Goal is: " + goalDescriptions[0]);
 
@@ -93,7 +96,7 @@ public class MoveToDoor extends OPOTrainer {
     }
 
     public PropositionalFunction getGoalPF() {
-        PropositionalFunction goalPF = ((OOSADomain) domain).propFunction(Cleanup.PF_AGENT_IN_DOOR);
+        PropositionalFunction goalPF = ((OOSADomain) domain).propFunction(nameTrainingGoalPF);
         return goalPF;
     }
 
