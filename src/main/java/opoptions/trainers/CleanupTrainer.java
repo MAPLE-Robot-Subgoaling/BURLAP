@@ -1,17 +1,12 @@
 package opoptions.trainers;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import javax.swing.JFrame;
 
-import org.apache.commons.beanutils.BeanUtils;
-
 import burlap.behavior.singleagent.Episode;
-import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.MDPSolverInterface;
 import burlap.behavior.singleagent.auxiliary.EpisodeSequenceVisualizer;
-import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
 import burlap.mdp.auxiliary.common.GoalConditionTF;
 import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
@@ -89,15 +84,15 @@ public class CleanupTrainer extends OPOTrainer {
         domain = (OOSADomain) domainGenerator.generateDomain();
 
         // setup the goal
-        PropositionalFunction goalPF = getGoalPF();
-        goalDescriptions = CleanupRandomStateGenerator.getRandomGoalDescription((CleanupState) initialState, numGoals, goalPF);
+        PropositionalFunction trainingGoalPF = getTrainingGoalPF();
+        goalDescriptions = CleanupRandomStateGenerator.getRandomGoalDescription((CleanupState) initialState, numGoals, trainingGoalPF);
         goal.setGoals(goalDescriptions);
         OPODriver.log("Goal is: " + goalDescriptions[0]);
 
         return (OOSADomain) domain;
     }
 
-    public PropositionalFunction getGoalPF() {
+    public PropositionalFunction getTrainingGoalPF() {
         PropositionalFunction goalPF = ((OOSADomain) domain).propFunction(nameTrainingGoalPF);
         return goalPF;
     }

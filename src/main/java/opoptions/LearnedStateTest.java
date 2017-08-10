@@ -44,6 +44,8 @@ public class LearnedStateTest implements StateConditionTest {
 //            Attribute a = as.nextElement();
 //            OPODriver.log(a + " " + a.index());
 //        }
+
+        boolean printWarning = false;
         OOState state = (OOState) s;
         List<ObjectInstance> objects = state.objects();
         for (ObjectInstance object : objects) {
@@ -51,14 +53,14 @@ public class LearnedStateTest implements StateConditionTest {
                 String objectKey = variableKey.toString();
                 String val = object.get(objectKey).toString();
 
-                
 //                OPODriver.log("WARNING: need to fix this to handle any permutation of object name");
                 // one idea is to create an instance for all possible permutations of objectclass / name
                 // basically to make this test identifier-independent
                 String attributeKey = object.name() + ":" + objectKey;
                 Attribute attribute = instancesStructure.attribute(attributeKey);
                 if (attribute == null) {
-                    OPODriver.log("null attribute for key " + attributeKey + ", skipping...");
+//                    OPODriver.log("null attribute for key " + attributeKey + ", skipping...");
+                    printWarning = true;
                     continue;
                 }
                 if (attribute.isNumeric()) {
@@ -68,6 +70,12 @@ public class LearnedStateTest implements StateConditionTest {
                 }
             }
         }
+
+        if (printWarning) {
+            System.err.println("WARNING: at least one null attribute was found, meaning it was unused in the test");
+            System.err.println("likely due to target state including class/attributes not in the training domain");
+        }
+
         if (includePFs) {
             List<GroundedProp> gpfs = featurizer.getAllGroundedProps(state);
             for (GroundedProp gpf : gpfs) {

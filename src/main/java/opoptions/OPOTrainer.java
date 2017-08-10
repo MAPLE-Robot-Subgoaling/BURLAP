@@ -26,9 +26,7 @@ import utils.Simulation;
 import utils.SimulationConfig;
 import weka.classifiers.Classifier;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public abstract class OPOTrainer extends SimulationConfig {
 
@@ -84,10 +82,10 @@ public abstract class OPOTrainer extends SimulationConfig {
         this.identifierIndependentHashing = identifierIndependentHashing;
     }
 
-    public abstract PropositionalFunction getGoalPF();
+    public abstract PropositionalFunction getTrainingGoalPF();
 
-    public boolean satisfiesGoal(OOState s) {
-        return getGoalPF().someGroundingIsTrue(s);
+    public boolean satisfiesTrainingGoal(OOState s) {
+        return getTrainingGoalPF().someGroundingIsTrue(s);
     }
 
     public RewardFunction getRf() {
@@ -223,7 +221,7 @@ public abstract class OPOTrainer extends SimulationConfig {
 //            for (State state : states) {
 //                OOState s = (OOState) state;
 //                boolean satisfied = test.satisfies(s);
-//                OPODriver.log(satisfied + " / " + satisfiesGoal(s) + ", for state " + StateFeaturizer.stateToStringBuilder(new StringBuilder(), s));
+//                OPODriver.log(satisfied + " / " + satisfiesTrainingGoal(s) + ", for state " + StateFeaturizer.stateToStringBuilder(new StringBuilder(), s));
 //            }
 //        }
 
@@ -249,7 +247,26 @@ public abstract class OPOTrainer extends SimulationConfig {
         opoption.setTypeSignature(shsf);
 
         // create the OPOGoalPF
-//         getGoalPF()
+        String name = "pf_" + domainName + "_" + trainerName;
+        // get the object counts
+        Map<String, Integer> objectClassCounts = SelectedConfig.getObjectCounts(attributeWhitelist);
+        String[] parameterClasses = SelectedConfig.getParameterClasses(objectClassCounts);
+//        String[] parameterOrders = ((OOSADomain)domain).stateClassNames().toArray(new String[0]);
+        String [] parameterOrderGroup = new String[parameterClasses.length];
+        int groupNumber = 0;
+        String lastClass = "default/unset";
+        Map<String, Integer> objectClassToOrderNumber = new HashMap<String,Integer>();
+        for (String parameterClass : parameterClasses) {
+            if (!objectClassToOrderNumber.containsKey(parameterClass)) {
+                objectClassToOrderNumber.put(parameterClass, groupNumber);
+                groupNumber++;
+            }
+        }
+        for(int i = 0; i < parameterOrderGroup.length; i++){
+            parameterOrderGroup[i] = name + ".P" + objectClassToOrderNumber.get(parameterClasses[i]);
+        }
+        OPOGoalPF opoGoalPF = new OPOGoalPF(name, parameterClasses, parameterOrderGroup);
+        opoption.setGoalPF(opoGoalPF);
 
     }
 

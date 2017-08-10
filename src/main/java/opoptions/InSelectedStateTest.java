@@ -6,17 +6,17 @@ import burlap.statehashing.HashableState;
 
 public class InSelectedStateTest implements StateConditionTest {
 
-    private SelectedHashableStateFactory mhsf;
+    private SelectedHashableStateFactory shsf;
     private HashableState state;
 
-    public InSelectedStateTest(SelectedHashableStateFactory mhsf, HashableState state) {
-        this.mhsf = mhsf;
+    public InSelectedStateTest(SelectedHashableStateFactory shsf, HashableState state) {
+        this.shsf = shsf;
         this.state = state;
     }
 
     @Override
     public boolean satisfies(State s) {
-        HashableState hs = mhsf.hashState(s);
+        HashableState hs = shsf.hashState(s);
         return state.equals(hs);
     }
 

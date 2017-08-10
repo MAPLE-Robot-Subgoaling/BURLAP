@@ -7,6 +7,8 @@ import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.options.SubgoalOption;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
+import burlap.mdp.core.oo.propositional.GroundedProp;
+import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.statehashing.HashableState;
@@ -22,6 +24,7 @@ public class OPOption implements OptionGenerator {
 
     protected HashMap<String, LearnedStateTest> nameToStateTest = new HashMap<String, LearnedStateTest>();
     protected SelectedHashableStateFactory typeSignature;
+    protected OPOGoalPF opoGoalPF;
 
     public Set<Option> generateOptions(OPOTrainer trainer) {
 
@@ -31,57 +34,70 @@ public class OPOption implements OptionGenerator {
         SADomain domain = trainer.getDomain();
         HashableStateFactory hashingFactory = trainer.getHashingFactory();
 
-        StateConditionTest initiation = nameToStateTest.get(OPOption.NAME_STATE_TEST_INTERNAL);
-        StateConditionTest goal = nameToStateTest.get(OPOption.NAME_STATE_TEST_GOAL);
-        List<State> endStates = new ArrayList<State>();
+        LearnedStateTest initiation = nameToStateTest.get(OPOption.NAME_STATE_TEST_INTERNAL);
+        LearnedStateTest goal = nameToStateTest.get(OPOption.NAME_STATE_TEST_GOAL);
+        List<State> states = StateReachability.getReachableStates(initialState, domain, hashingFactory);
 
-        // temp debug
-//        List<Episode> episodes = Episode.readEpisodes(trainer.getEpisodeOutputPath());
-//        for (Episode episode : episodes) {
-//            List<State> states = episode.stateSequence;
-//            for (int i = 0; i < states.size(); i++) {
-//                State state = states.get(i);
-//                if (goal.satisfies(state)) {
-//                    endStates.add(state);
-//                }
+        List<GroundedProp> gps = opoGoalPF.allGroundings((OOState)initialState);
+        OPODriver.log(gps.size());
+
+        System.exit(-1);
+
+        /*
+
+
+        List<State> endStates = new ArrayList<State>();
+//        for (int i = 0; i < states.size(); i++) {
+//            State state = states.get(i);
+//            if (goal.satisfies(state)) {
+//                endStates.add(state);
 //            }
 //        }
-//        OPODriver.log(endStates.size());
-//        System.exit(-1);
+//        OPODriver.log("found " + states.size() + " states and " + endStates.size() + " endStates");
+        opoGoalPF.setGoalTest(goal);
+        List<GroundedProp> trueGPs = new ArrayList<GroundedProp>();
+        for (State state : states) {
+            OOState s = (OOState) state;
+            if (opoGoalPF.someGroundingIsTrue(s)) {
+                OPODriver.log(state);
+                List<GroundedProp> gps = opoGoalPF.allGroundings(s);
+                for (GroundedProp gp : gps) {
+                    if (gp.isTrue(s)) {
+                        OPODriver.log(gp);
+                        trueGPs.add(gp);
+                    }
+                }
 
-        List<State> states = StateReachability.getReachableStates(initialState, domain, hashingFactory);
-//        List<State> endStates = new ArrayList<State>();
-        for (int i = 0; i < states.size(); i++) {
-            State state = states.get(i);
-            if (goal.satisfies(state)) {
-                endStates.add(state);
             }
         }
-        OPODriver.log("found " + states.size() + " states and " + endStates.size() + " endStates");
+        OPODriver.log(trueGPs.size() + " true gps");
+        OPODriver.log("done");
 
-//		for () // use the type signature / MaskedHashableStateFactory
-        // to reduce the number of options that are about to be created
-        Set<HashableState> hashedStates = new HashSet<HashableState>();
-        for (int i = 0; i < endStates.size(); i++) {
-            State state = endStates.get(i);
-            HashableState hs = typeSignature.hashState(state);
-            hashedStates.add(hs);
-        }
-        OPODriver.log("made " + hashedStates.size() + " hashedStates");
+//
+//
+////		// use the type signature / MaskedHashableStateFactory
+//        // to reduce the number of options that are about to be created
+//        Set<HashableState> hashedStates = new HashSet<HashableState>();
+//        for (int i = 0; i < endStates.size(); i++) {
+//            State state = endStates.get(i);
+//            HashableState hs = typeSignature.hashState(state);
+//            hashedStates.add(hs);
+//        }
+//        OPODriver.log("made " + hashedStates.size() + " hashedStates");
+//
 
+        */
         HashSet<Option> options = new HashSet<Option>();
-        int i = 0;
-        for (HashableState hs : hashedStates) {
-//        	State endState = endStates.get(i);
-//        	StateConditionTest specificGoal = new InStateTest(endState);
-            StateConditionTest specificGoal = new InSelectedStateTest(typeSignature, hs);
-            Planner planner = (Planner) trainer.initializeOptionPlanner(specificGoal);
-            Policy optionPolicy = planner.planFromState(initialState);
-            SubgoalOption option = new SubgoalOption(NAME_OPOPTION_DEFAULT + i, optionPolicy, initiation, specificGoal);
-            options.add(option);
-            i++;
-        }
-        OPODriver.log("made " + options.size() + " options");
+//        int i = 0;
+//        for (HashableState hs : hashedStates) {
+//            StateConditionTest specificGoal = new InSelectedStateTest(typeSignature, hs);
+//            Planner planner = (Planner) trainer.initializeOptionPlanner(specificGoal);
+//            Policy optionPolicy = planner.planFromState(initialState);
+//            SubgoalOption option = new SubgoalOption(NAME_OPOPTION_DEFAULT + i, optionPolicy, initiation, specificGoal);
+//            options.add(option);
+//            i++;
+//        }
+//        OPODriver.log("made " + options.size() + " options");
 
         return options;
     }
@@ -94,4 +110,11 @@ public class OPOption implements OptionGenerator {
         this.typeSignature = typeSignature;
     }
 
+    public SelectedHashableStateFactory getTypeSignature() {
+        return typeSignature;
+    }
+
+    public void setGoalPF(OPOGoalPF opoGoalPF) {
+        this.opoGoalPF = opoGoalPF;
+    }
 }
