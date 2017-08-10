@@ -1,6 +1,7 @@
 package opoptions;
 
 import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.auxiliary.StateReachability;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.options.SubgoalOption;
@@ -32,9 +33,24 @@ public class OPOption implements OptionGenerator {
 
         StateConditionTest initiation = nameToStateTest.get(OPOption.NAME_STATE_TEST_INTERNAL);
         StateConditionTest goal = nameToStateTest.get(OPOption.NAME_STATE_TEST_GOAL);
+        List<State> endStates = new ArrayList<State>();
+
+        // temp debug
+//        List<Episode> episodes = Episode.readEpisodes(trainer.getEpisodeOutputPath());
+//        for (Episode episode : episodes) {
+//            List<State> states = episode.stateSequence;
+//            for (int i = 0; i < states.size(); i++) {
+//                State state = states.get(i);
+//                if (goal.satisfies(state)) {
+//                    endStates.add(state);
+//                }
+//            }
+//        }
+//        OPODriver.log(endStates.size());
+//        System.exit(-1);
 
         List<State> states = StateReachability.getReachableStates(initialState, domain, hashingFactory);
-        List<State> endStates = new ArrayList<State>();
+//        List<State> endStates = new ArrayList<State>();
         for (int i = 0; i < states.size(); i++) {
             State state = states.get(i);
             if (goal.satisfies(state)) {

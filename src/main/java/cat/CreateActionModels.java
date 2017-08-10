@@ -3,6 +3,7 @@ package cat;
 import burlap.behavior.singleagent.Episode;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
+import opoptions.OPODriver;
 import utils.MurmurHash;
 import weka.classifiers.trees.J48;
 import weka.core.Attribute;
@@ -149,8 +150,6 @@ public class CreateActionModels {
                 dataPoint.setValue(counter++, MurmurHash.hash32(value.toString()));
             }
         }
-//		System.out.println(dataPoint);
-//		System.out.println();
     }
 
 
@@ -194,7 +193,7 @@ public class CreateActionModels {
     private static void writeTreeToFile(String action, String variable, J48 tree) {
         String fname = "trees/" + action + "_" + variable.replace(":", "_") + ".txt";
         try {
-            System.out.println("Tree created for " + action + " and " + variable);
+//            OPODriver.log("Tree created for " + action + " and " + variable);
             String out = getCleanTreeString(tree);
 
             File file = new File(fname);

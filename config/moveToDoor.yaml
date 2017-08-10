@@ -6,6 +6,8 @@
     "nameTrainingGoalPF"            : "agentInDoor",
     "nameTrainingStateType"         : "oneRoomOneDoor",
     "nameEvaluationStateType"       : "oneRoomFourDoors",
+    "numBlocksTraining"             : 0,
+    "numBlocksEvaluation"           : 0,
     "includePFs"                    : false,
     "domainGenerator" : {
         "minX"                      : 0,
@@ -27,7 +29,7 @@
     "maxEpisodeSize"                : 1000,
     "outputPath"                    : "./out_opos_cleanup/moveToDoor/",
     "episodeOutputPath"             : "./out_opos_cleanup/moveToDoor/episodes/",
-    "episodeOutputPathEvaluation"   :"./out_opos_cleanup/moveToDoor/episodesEval/",
+    "episodeOutputPathEvaluation"   : "./out_opos_cleanup/moveToDoor/episodesEval/",
     "agent" : {
         "type"                      : "ValueIteration",
         "gamma"                     : 0.9,

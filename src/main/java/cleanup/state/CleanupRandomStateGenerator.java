@@ -202,8 +202,10 @@ public class CleanupRandomStateGenerator implements StateGenerator {
         colors.add("yellow");
         colors.add("red");
 
-        int mainW = 4;
-        int mainH = 4;
+        List<String> shapes = Arrays.asList(Cleanup.SHAPES);
+
+        int mainW = 2+rng.nextInt(3); // 4
+        int mainH = 2+rng.nextInt(3); // 4;
 
         int index = 0;
         while (numBlocks > 0) {
@@ -211,9 +213,11 @@ public class CleanupRandomStateGenerator implements StateGenerator {
             int by = ay + (rng.nextBoolean() ? -1 : 1);
             if (!s.blockAt(bx, by)) {
                 String color = "";//colors.get(rng.nextInt(numDoors - 1));
+                String shape = "";
                 boolean fresh = false;
                 while (!fresh) {
                     color = colors.get(rng.nextInt(numDoors - 1));
+                    shape = shapes.get(rng.nextInt(shapes.size()));
                     fresh = true;
                     for (CleanupBlock block : s.getBlocks().values()) {
                         if (color.equals(block.get(Cleanup.ATT_COLOR))) {
@@ -222,19 +226,30 @@ public class CleanupRandomStateGenerator implements StateGenerator {
                         }
                     }
                 }
-                s.addObject(new CleanupBlock("block" + index, bx, by, "backpack", color));
+                s.addObject(new CleanupBlock("block" + index, bx, by, shape, color));
                 numBlocks -= 1;
                 index += 1;
             }
         }
 
 
-        s.addObject(new CleanupRoom("room0", mx - mainW, mx + mainW, my - mainH, my + mainH, "cyan", Cleanup.SHAPE_ROOM));
-        s.addObject(new CleanupDoor("door0", mx - mainW, mx - mainW, my, my, Cleanup.LOCKABLE_STATES[0]));
-        s.addObject(new CleanupDoor("door1", mx + mainW, mx + mainW, my, my, Cleanup.LOCKABLE_STATES[0]));
-        s.addObject(new CleanupDoor("door2", mx, mx, my - mainH, my - mainH, Cleanup.LOCKABLE_STATES[0]));
-        s.addObject(new CleanupDoor("door3", mx, mx, my + mainH, my + mainH, Cleanup.LOCKABLE_STATES[0]));
+        // align all the doors in the middle x/y of the room
+        int door0y = my;
+        int door1y = my;
+        int door2x = mx;
+        int door3x = mx;
+        // offset all the doors randomly along their wall
+        door0y += rng.nextInt(mainH) * (rng.nextBoolean() ? 1 : -1);
+        door1y += rng.nextInt(mainH) * (rng.nextBoolean() ? 1 : -1);
+        door2x += rng.nextInt(mainW) * (rng.nextBoolean() ? 1 : -1);
+        door3x += rng.nextInt(mainW) * (rng.nextBoolean() ? 1 : -1);
 
+        String roomColor = Cleanup.COLORS_ROOMS[rng.nextInt(Cleanup.COLORS_ROOMS.length)];
+        s.addObject(new CleanupRoom("room0", mx - mainW, mx + mainW, my - mainH, my + mainH, roomColor, Cleanup.SHAPE_ROOM));
+        s.addObject(new CleanupDoor("door0", mx - mainW, mx - mainW, door0y, door0y, Cleanup.LOCKABLE_STATES[0]));
+        s.addObject(new CleanupDoor("door1", mx + mainW, mx + mainW, door1y, door1y, Cleanup.LOCKABLE_STATES[0]));
+        s.addObject(new CleanupDoor("door2", door2x, door2x, my - mainH, my - mainH, Cleanup.LOCKABLE_STATES[0]));
+        s.addObject(new CleanupDoor("door3", door3x, door3x, my + mainH, my + mainH, Cleanup.LOCKABLE_STATES[0]));
 
         return s;
     }
@@ -286,8 +301,6 @@ public class CleanupRandomStateGenerator implements StateGenerator {
                 index += 1;
             }
         }
-
-
         s.addObject(new CleanupRoom("room0", mx - mainW, mx + mainW, my - mainH, my + mainH, "cyan", Cleanup.SHAPE_ROOM));
         s.addObject(new CleanupDoor("door0", mx - mainW, mx - mainW, my, my, Cleanup.LOCKABLE_STATES[0]));
         s.addObject(new CleanupDoor("door1", mx + mainW, mx + mainW, my, my, Cleanup.LOCKABLE_STATES[0]));
@@ -600,12 +613,11 @@ public class CleanupRandomStateGenerator implements StateGenerator {
     }
 
 
-    public State getStateFor(String stateType) {
+    public State getStateFor(String stateType, int numBlocks) {
         State state = null;
         if (stateType.equals("oneRoomOneDoor")) {
             state = generateOneRoomOneDoor();
         } else if (stateType.equals("oneRoomFourDoors")) {
-            int numBlocks = 0;
             state = generateCentralRoomWithFourDoors(numBlocks);
         } else {
             throw new RuntimeException("Error: unknown name for generating a random Cleanup state");

@@ -14,16 +14,22 @@ import cat.CATrajectory;
 import cat.CreateActionModels;
 import cat.VariableTree;
 import opoptions.trainers.CleanupTrainer;
+import org.apache.commons.lang3.StringUtils;
 import utils.SimulationConfig;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
+import weka.core.Attribute;
+import weka.core.AttributeStats;
 import weka.core.Instances;
 import weka.core.SerializationHelper;
 import weka.core.converters.ArffSaver;
 import weka.core.converters.CSVLoader;
 import weka.core.converters.ConverterUtils;
 import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.AddValues;
+import weka.filters.unsupervised.attribute.NominalToString;
 import weka.filters.unsupervised.attribute.NumericToNominal;
+import weka.filters.unsupervised.attribute.StringToNominal;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -132,15 +138,38 @@ public class OPODriver {
         CSVLoader loader = new CSVLoader();
         loader.setSource(new File(filenamePrefix + ".csv"));
         Instances data = loader.getDataSet();
-        NumericToNominal nm = new NumericToNominal();
-        nm.setInputFormat(data);
-        String[] args = new String[2];
-        args[0] = "-R";
-//	    //args[1] = trainer.getFirstPropositionalFunctionIndex() + "-last";
-//	    //args[1] = "3-last";
-        args[1] = "last";
-        nm.setOptions(args);
-        data = Filter.useFilter(data, nm);
+        // post process to make sure all boolean attributes have a true and a false
+//        List<Integer> booleanAttributeIndexes = new ArrayList<Integer>();
+//        for (int i = 0; i < data.numAttributes(); i++) {
+//            // Weka is terrible and uses column indexes that start at 1 instead of 0
+//            int actualWekaIndex = i + 1;
+//            Attribute attribute = data.attribute(i);
+//            String value = attribute.value(0);
+//            if (attribute.numValues() < 2) {
+//                if (value.equals("true")) {
+//                    booleanAttributeIndexes.add(actualWekaIndex);
+////                    attribute.addStringValue("false") ;
+//                } else if (value.equals("false")) {
+//                    booleanAttributeIndexes.add(actualWekaIndex);
+////                    attribute.addStringValue("true");
+//                } else {
+//                    // do nothing
+//                }
+//            }
+//        }
+//        for (Integer index : booleanAttributeIndexes) {
+//            AddValues filter = new AddValues();
+//            String[] args = new String[5];
+//            args[0] = "-S";
+//            args[1] = "-C";
+//            args[2] = index.toString();
+//            args[3] = "-L";
+//            args[4] = "true,false";
+//            filter.setOptions(args);
+//            filter.setInputFormat(data);
+//            Instances newData = Filter.useFilter(data, filter);
+//            data = newData;
+//        }
 
         // save ARFF
         ArffSaver saver = new ArffSaver();
@@ -169,6 +198,8 @@ public class OPODriver {
     public void addTrainers() {
         CleanupTrainer moveToDoor = (CleanupTrainer) SimulationConfig.load("./config/moveToDoor.yaml", CleanupTrainer.class);
         addTrainer(moveToDoor);
+//        CleanupTrainer blockToDoor = (CleanupTrainer) SimulationConfig.load("./config/blockToDoor.yaml", CleanupTrainer.class);
+//        addTrainer(blockToDoor);
     }
 
     private void runVisualizer() {
@@ -223,7 +254,7 @@ public class OPODriver {
         for (ObjectInstance object : objects) {
             for (Object variableKey : object.variableKeys()) {
                 String key = variableKey.toString();
-                sb.append(object.className());
+                sb.append(object.name());
                 sb.append(":");
                 sb.append(key);
                 sb.append(",");
@@ -289,8 +320,10 @@ public class OPODriver {
             csvToArff(path);
         } catch (IOException e) {
             e.printStackTrace();
+            System.exit(-1);
         } catch (Exception e) {
             e.printStackTrace();
+            System.exit(-1);
         }
     }
 
@@ -357,7 +390,7 @@ public class OPODriver {
             CATrajectory cat = new CATrajectory();
             cat.annotateTrajectory(trajectory, models, (FullModel) trainer.getDomain().getModel());
             caTrajectories.add(cat);
-            OPODriver.log(cat);
+//            OPODriver.log(cat);
             Set<String>[] checkedVariables = cat.getCheckedVariables();
             Set<String>[] changedVariables = cat.getChangedVariables();
             List<String> actions = cat.getActions();

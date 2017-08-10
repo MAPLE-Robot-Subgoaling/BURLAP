@@ -50,10 +50,15 @@ public class LearnedStateTest implements StateConditionTest {
             for (Object variableKey : object.variableKeys()) {
                 String objectKey = variableKey.toString();
                 String val = object.get(objectKey).toString();
-                String attributeKey = object.className() + ":" + objectKey;
+
+                
+//                OPODriver.log("WARNING: need to fix this to handle any permutation of object name");
+                // one idea is to create an instance for all possible permutations of objectclass / name
+                // basically to make this test identifier-independent
+                String attributeKey = object.name() + ":" + objectKey;
                 Attribute attribute = instancesStructure.attribute(attributeKey);
                 if (attribute == null) {
-//                    OPODriver.log("null attribute for key " + attributeKey + ", skipping...");
+                    OPODriver.log("null attribute for key " + attributeKey + ", skipping...");
                     continue;
                 }
                 if (attribute.isNumeric()) {

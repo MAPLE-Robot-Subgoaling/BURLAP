@@ -39,6 +39,8 @@ public class CleanupTrainer extends OPOTrainer {
     // specified by data file
     public Cleanup domainGenerator;
     public int numGoals;
+    public int numBlocksTraining;
+    public int numBlocksEvaluation;
     public String nameTrainingGoalPF;
     public String nameTrainingStateType;
     public String nameEvaluationStateType;
@@ -46,7 +48,7 @@ public class CleanupTrainer extends OPOTrainer {
     public double rewardGoal;
     public double rewardNoop;
     public double rewardPull;
-    private MDPSolver optionPlanner;
+//    private MDPSolver optionPlanner;
 
     // generated in code
     private CleanupGoal goal;
@@ -62,7 +64,7 @@ public class CleanupTrainer extends OPOTrainer {
         CleanupRandomStateGenerator randomCleanup = new CleanupRandomStateGenerator();
         randomCleanup.setWidth(domainGenerator.getWidth());
         randomCleanup.setHeight(domainGenerator.getHeight());
-        initialState = (OOState) randomCleanup.getStateFor(nameTrainingStateType);  //randomCleanup.generateOneRoomOneDoor(); // generateTaxiInCleanup(1);//.generateCentralRoomWithClosets(1); //cw.getRandomState(domain, rng, numBlocks);
+        initialState = (OOState) randomCleanup.getStateFor(nameTrainingStateType, numBlocksTraining);  //randomCleanup.generateOneRoomOneDoor(); // generateTaxiInCleanup(1);//.generateCentralRoomWithClosets(1); //cw.getRandomState(domain, rng, numBlocks);
         return (OOState) initialState;
     }
 
@@ -72,7 +74,7 @@ public class CleanupTrainer extends OPOTrainer {
         CleanupRandomStateGenerator randomCleanup = new CleanupRandomStateGenerator();
         randomCleanup.setWidth(domainGenerator.getWidth());
         randomCleanup.setHeight(domainGenerator.getHeight());
-        initialState = (OOState) randomCleanup.getStateFor(nameEvaluationStateType);  // randomCleanup.generateCentralRoomWithFourDoors(0); //generateTaxiInCleanup(1);//.generateCentralRoomWithClosets(1); //cw.getRandomState(domain, rng, numBlocks);
+        initialState = (OOState) randomCleanup.getStateFor(nameEvaluationStateType, numBlocksEvaluation);  // randomCleanup.generateCentralRoomWithFourDoors(0); //generateTaxiInCleanup(1);//.generateCentralRoomWithClosets(1); //cw.getRandomState(domain, rng, numBlocks);
         return (OOState) initialState;
     }
 
@@ -114,13 +116,13 @@ public class CleanupTrainer extends OPOTrainer {
         esv.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    public MDPSolver getOptionPlanner() {
-        return optionPlanner;
-    }
-
-    public void setOptionPlanner(MDPSolver optionPlanner) {
-        this.optionPlanner = optionPlanner;
-    }
+//    public MDPSolver getOptionPlanner() {
+//        return optionPlanner;
+//    }
+//
+//    public void setOptionPlanner(MDPSolver optionPlanner) {
+//        this.optionPlanner = optionPlanner;
+//    }
 
     @Override
     public MDPSolverInterface initializeOptionPlanner(StateConditionTest specificGoal) {
@@ -133,12 +135,11 @@ public class CleanupTrainer extends OPOTrainer {
         SADomain optionDomain = (SADomain) domainGenerator.generateDomain();
         domainGenerator.setRf(originalRF);
         domainGenerator.setTf(originalTF);
-        double optionGamma = 0.1;
+        double optionGamma = 0.95;
         HashableStateFactory optionHashingFactory = hashingFactory;
-        double maxDelta = 0.001;
-        int maxIterations = 1000;
+        double maxDelta = 0.0001;
+        int maxIterations = 10000;
         ValueIteration vi = new ValueIteration(optionDomain, optionGamma, optionHashingFactory, maxDelta, maxIterations);
-        OPODriver.log("warning: not using OptionPlanner from YAML");
         return vi;
 //		optionPlanner.setDomain(optionDomain);
 //		optionPlanner.setHashingFactory(optionHashingFactory);

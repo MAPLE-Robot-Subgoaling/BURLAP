@@ -29,7 +29,6 @@ public class VariableTree {
             String tree = new String(Files.readAllBytes(file.toPath()));
             treeStr = tree;
             return read();
-//            System.out.println(tree);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

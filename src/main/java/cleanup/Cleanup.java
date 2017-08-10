@@ -16,10 +16,13 @@ import burlap.mdp.singleagent.common.UniformCostRF;
 import burlap.mdp.singleagent.model.FactoredModel;
 import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.oo.OOSADomain;
+import burlap.shell.visual.VisualExplorer;
 import burlap.statehashing.HashableState;
+import burlap.visualizer.Visualizer;
 import cleanup.state.*;
 import opoptions.SelectedHashableStateFactory;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -71,8 +74,7 @@ public class Cleanup implements DomainGenerator {
             "orange", "cyan", "white"};
     public static final String COLOR_GRAY = "gray";
 
-    public static final String[] SHAPES = new String[]{"chair", "bag",
-            "backpack", "basket"};
+    public static final String[] SHAPES = new String[]{"chair", "bag", "backpack", "basket"};
 
     public static final String SHAPE_ROOM = "shapeRoom";
     public static final String SHAPE_DOOR = "shapeDoor";
@@ -627,15 +629,19 @@ public class Cleanup implements DomainGenerator {
 
     public static void main(String[] args) {
 
-        RandomFactory.seedMapped(0, 210333L);
-        Random rng = RandomFactory.getMapped(0);
+//        RandomFactory.seedMapped(0, 575L);
+//        Random rng = RandomFactory.getMapped(0);
 
         List<String> objectAttributes = new ArrayList<String>();
         Cleanup cleanup = new Cleanup();
         OOSADomain domain = (OOSADomain) cleanup.generateDomain();
         CleanupRandomStateGenerator gen = new CleanupRandomStateGenerator();
-        State state1 = gen.generateCentralRoomWithFourDoors(0);
-        State state2 = gen.generateCentralRoomWithFourDoors(0);
+        gen.setWidth(9);
+        gen.setHeight(9);
+        int numBlocks1 = 1;
+        int numBlocks2 = 2;
+        State state1 = gen.generateCentralRoomWithFourDoors(numBlocks1);
+        State state2 = gen.generateCentralRoomWithFourDoors(numBlocks2);
 
         System.out.println(state1);
         System.out.println(state2);
@@ -668,17 +674,16 @@ public class Cleanup implements DomainGenerator {
         System.out.println(hs1.equals(hs2));
 
 
-
-//      Visualizer v = CleanupVisualizer.getVisualizer(13, 13);
-//		VisualExplorer exp = new VisualExplorer(domain, v, state1);
-//		exp.addKeyAction("w", ACTION_NORTH, "");
-//		exp.addKeyAction("s", ACTION_SOUTH, "");
-//		exp.addKeyAction("d", ACTION_EAST, "");
-//		exp.addKeyAction("a", ACTION_WEST, "");
-//		exp.addKeyAction("r", ACTION_PULL, "");
-//		exp.initGUI();
-//		exp.requestFocus();
-//		exp.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        Visualizer v = CleanupVisualizer.getVisualizer(9, 9);
+		VisualExplorer exp = new VisualExplorer(domain, v, state2);
+		exp.addKeyAction("w", ACTION_NORTH, "");
+		exp.addKeyAction("s", ACTION_SOUTH, "");
+		exp.addKeyAction("d", ACTION_EAST, "");
+		exp.addKeyAction("a", ACTION_WEST, "");
+		exp.addKeyAction("r", ACTION_PULL, "");
+		exp.initGUI();
+		exp.requestFocus();
+		exp.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 //		OOSADomain domain;
 //		RewardFunction rf;

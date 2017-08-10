@@ -15,7 +15,7 @@ import burlap.statehashing.HashableStateFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TrajectoryGengerator {
+public class TrajectoryGenerator {
 
     public static List<Episode> generateQLearnedTrajectories(StateGenerator stateGen, int numTrajectories,
                                                              SADomain domain, double gamma, HashableStateFactory hashingFactory) {
