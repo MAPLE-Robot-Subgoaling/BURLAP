@@ -38,14 +38,13 @@ public class OPOption implements OptionGenerator {
         LearnedStateTest goal = nameToStateTest.get(OPOption.NAME_STATE_TEST_GOAL);
         List<State> states = StateReachability.getReachableStates(initialState, domain, hashingFactory);
 
-        List<GroundedProp> gps = opoGoalPF.allGroundings((OOState)initialState);
-        OPODriver.log(gps.size());
+        opoGoalPF.setGoalTest(goal);
 
-        System.exit(-1);
+        List<GroundedProp> gps = opoGoalPF.allGroundings((OOState)initialState);
+        int numberPossibleOptions = gps.size();
+        OPODriver.log(numberPossibleOptions + " gps found, so there are that many possible grounded options");
 
         /*
-
-
         List<State> endStates = new ArrayList<State>();
 //        for (int i = 0; i < states.size(); i++) {
 //            State state = states.get(i);
@@ -54,14 +53,13 @@ public class OPOption implements OptionGenerator {
 //            }
 //        }
 //        OPODriver.log("found " + states.size() + " states and " + endStates.size() + " endStates");
-        opoGoalPF.setGoalTest(goal);
         List<GroundedProp> trueGPs = new ArrayList<GroundedProp>();
         for (State state : states) {
             OOState s = (OOState) state;
             if (opoGoalPF.someGroundingIsTrue(s)) {
                 OPODriver.log(state);
-                List<GroundedProp> gps = opoGoalPF.allGroundings(s);
-                for (GroundedProp gp : gps) {
+                List<GroundedProp> allGroundings = opoGoalPF.allGroundings(s);
+                for (GroundedProp gp : allGroundings) {
                     if (gp.isTrue(s)) {
                         OPODriver.log(gp);
                         trueGPs.add(gp);
@@ -72,6 +70,7 @@ public class OPOption implements OptionGenerator {
         }
         OPODriver.log(trueGPs.size() + " true gps");
         OPODriver.log("done");
+        */
 
 //
 //
@@ -86,7 +85,6 @@ public class OPOption implements OptionGenerator {
 //        OPODriver.log("made " + hashedStates.size() + " hashedStates");
 //
 
-        */
         HashSet<Option> options = new HashSet<Option>();
 //        int i = 0;
 //        for (HashableState hs : hashedStates) {

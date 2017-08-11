@@ -191,10 +191,10 @@ public class OPODriver {
     }
 
     public void addTrainers() {
-//        CleanupTrainer moveToDoor = (CleanupTrainer) SimulationConfig.load("./config/moveToDoor.yaml", CleanupTrainer.class);
-//        addTrainer(moveToDoor);
-        CleanupTrainer blockToDoor = (CleanupTrainer) SimulationConfig.load("./config/blockToDoor.yaml", CleanupTrainer.class);
-        addTrainer(blockToDoor);
+        CleanupTrainer moveToDoor = (CleanupTrainer) SimulationConfig.load("./config/moveToDoor.yaml", CleanupTrainer.class);
+        addTrainer(moveToDoor);
+//        CleanupTrainer blockToDoor = (CleanupTrainer) SimulationConfig.load("./config/blockToDoor.yaml", CleanupTrainer.class);
+//        addTrainer(blockToDoor);
     }
 
     private void runVisualizer() {
