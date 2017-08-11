@@ -221,7 +221,17 @@ public class CleanupState implements MutableOOState {
         return getBlockAtPoint(x, y) != null;
     }
 
-    public boolean wallAt(ObjectInstance r, int x, int y) {
+    public boolean wallAt(int x, int y) {
+        // check if any room has a wall at x,y
+        for (CleanupRoom room : rooms.values()) {
+            if (wallAt(room, x, y)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean wallAt(ObjectInstance r, int x, int y) {
         if (r == null) {
 //			System.err.println("null room at " + x + ", " + y + ", treating as wall");
             return true;
@@ -242,6 +252,20 @@ public class CleanupState implements MutableOOState {
             }
         }
         return false;
+    }
+
+    public boolean isOpen(int x, int y) {
+        // must be open in all rooms
+        for (CleanupRoom room : rooms.values()) {
+            if (!isOpen(room, x, y)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isOpen(CleanupRoom room, int nx, int ny) {
+        return !(isBlocked(room, nx, ny));
     }
 
     public ObjectInstance roomContainingPoint(int x, int y) {
@@ -289,10 +313,6 @@ public class CleanupState implements MutableOOState {
 
     public boolean isBlocked(CleanupRoom room, int nx, int ny) {
         return wallAt(room, nx, ny) || blockAt(nx, ny);
-    }
-
-    public boolean isOpen(CleanupRoom room, int nx, int ny) {
-        return !(isBlocked(room, nx, ny));
     }
 
     @Override

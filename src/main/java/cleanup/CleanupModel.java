@@ -144,10 +144,9 @@ public class CleanupModel implements FullStateModel {
 
         boolean agentCanMove = false;
         boolean blockCanMove = false;
-        CleanupRoom roomContaining = cws.roomContainingPointIncludingBorder(nx, ny);
         CleanupBlock pushedBlock = cws.getBlockAtPoint(nx, ny);
         if (pushedBlock == null) {
-            if (!cws.wallAt(roomContaining, nx, ny)) {
+            if (!cws.wallAt(nx, ny)) {
                 agentCanMove = true;
             }
         } else {
@@ -155,7 +154,7 @@ public class CleanupModel implements FullStateModel {
             int by = (Integer) pushedBlock.get(Cleanup.ATT_Y);
             nbx = bx + xdelta;
             nby = by + ydelta;
-            if (cws.isOpen(roomContaining, nbx, nby)) {
+            if (cws.isOpen(nbx, nby)) {
                 blockCanMove = true;
                 agentCanMove = true;
 //					}

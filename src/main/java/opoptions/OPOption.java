@@ -26,6 +26,7 @@ public class OPOption implements OptionGenerator {
     protected SelectedHashableStateFactory typeSignature;
     protected OPOGoalPF opoGoalPF;
 
+    @Override
     public Set<Option> generateOptions(OPOTrainer trainer) {
 
         OPODriver.log("making options...");
@@ -43,6 +44,18 @@ public class OPOption implements OptionGenerator {
         List<GroundedProp> gps = opoGoalPF.allGroundings((OOState)initialState);
         int numberPossibleOptions = gps.size();
         OPODriver.log(numberPossibleOptions + " gps found, so there are that many possible grounded options");
+
+        HashSet<Option> options = new HashSet<Option>();
+//        for (int i = 0; i < numberPossibleOptions; i++) {
+//            StateConditionTest specificGoal = new InSelectedStateTest(typeSignature, hs);
+//            Planner planner = (Planner) trainer.initializeOptionPlanner(specificGoal);
+//            Policy optionPolicy = planner.planFromState(initialState);
+//            SubgoalOption option = new SubgoalOption(NAME_OPOPTION_DEFAULT + i, optionPolicy, initiation, specificGoal);
+//            options.add(option);
+//            i++;
+//        }
+//        OPODriver.log("made " + options.size() + " options");
+
 
         /*
         List<State> endStates = new ArrayList<State>();
@@ -85,7 +98,6 @@ public class OPOption implements OptionGenerator {
 //        OPODriver.log("made " + hashedStates.size() + " hashedStates");
 //
 
-        HashSet<Option> options = new HashSet<Option>();
 //        int i = 0;
 //        for (HashableState hs : hashedStates) {
 //            StateConditionTest specificGoal = new InSelectedStateTest(typeSignature, hs);

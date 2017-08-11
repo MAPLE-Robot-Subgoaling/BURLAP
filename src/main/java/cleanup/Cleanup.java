@@ -312,11 +312,7 @@ public class Cleanup implements DomainGenerator {
             ObjectInstance agent = cws.objectsOfClass(CLASS_AGENT).get(0);
             int ax = (Integer) agent.get(ATT_X);
             int ay = (Integer) agent.get(ATT_Y);
-            ObjectInstance agentRoom = cws.roomContainingPoint(ax, ay);
-            if (agentRoom == null) {
-                return false;
-            }
-            return cws.wallAt(agentRoom, ax + this.dx, ay + this.dy);
+            return cws.wallAt(ax + this.dx, ay + this.dy);
         }
     }
 
@@ -640,8 +636,8 @@ public class Cleanup implements DomainGenerator {
         gen.setHeight(9);
         int numBlocks1 = 1;
         int numBlocks2 = 2;
-        State state1 = gen.generateCentralRoomWithFourDoors(numBlocks1);
-        State state2 = gen.generateCentralRoomWithFourDoors(numBlocks2);
+        State state1 = gen.generateTwoRoomsOneDoor(); //gen.generateCentralRoomWithFourDoors(numBlocks1);
+        State state2 = gen.generateTwoRoomsOneDoor(); //gen.generateCentralRoomWithFourDoors(numBlocks2);
 
         System.out.println(state1);
         System.out.println(state2);
