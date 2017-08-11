@@ -13,6 +13,7 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.statehashing.HashableState;
 import burlap.statehashing.HashableStateFactory;
+import cleanup.GroundedPropSC;
 
 import java.util.*;
 
@@ -46,68 +47,15 @@ public class OPOption implements OptionGenerator {
         OPODriver.log(numberPossibleOptions + " gps found, so there are that many possible grounded options");
 
         HashSet<Option> options = new HashSet<Option>();
-//        for (int i = 0; i < numberPossibleOptions; i++) {
-//            StateConditionTest specificGoal = new InSelectedStateTest(typeSignature, hs);
-//            Planner planner = (Planner) trainer.initializeOptionPlanner(specificGoal);
-//            Policy optionPolicy = planner.planFromState(initialState);
-//            SubgoalOption option = new SubgoalOption(NAME_OPOPTION_DEFAULT + i, optionPolicy, initiation, specificGoal);
-//            options.add(option);
-//            i++;
-//        }
-//        OPODriver.log("made " + options.size() + " options");
-
-
-        /*
-        List<State> endStates = new ArrayList<State>();
-//        for (int i = 0; i < states.size(); i++) {
-//            State state = states.get(i);
-//            if (goal.satisfies(state)) {
-//                endStates.add(state);
-//            }
-//        }
-//        OPODriver.log("found " + states.size() + " states and " + endStates.size() + " endStates");
-        List<GroundedProp> trueGPs = new ArrayList<GroundedProp>();
-        for (State state : states) {
-            OOState s = (OOState) state;
-            if (opoGoalPF.someGroundingIsTrue(s)) {
-                OPODriver.log(state);
-                List<GroundedProp> allGroundings = opoGoalPF.allGroundings(s);
-                for (GroundedProp gp : allGroundings) {
-                    if (gp.isTrue(s)) {
-                        OPODriver.log(gp);
-                        trueGPs.add(gp);
-                    }
-                }
-
-            }
+        for (int i = 0; i < numberPossibleOptions; i++) {
+            GroundedProp gp = gps.get(i);
+//            String[] params = gp.params;
+            GroundedPropSC specificGoal = new GroundedPropSC(gp);
+            Planner planner = (Planner) trainer.initializeOptionPlanner(specificGoal);
+            Policy optionPolicy = planner.planFromState(initialState);
+            SubgoalOption option = new SubgoalOption(NAME_OPOPTION_DEFAULT + i, optionPolicy, initiation, specificGoal);
+            options.add(option);
         }
-        OPODriver.log(trueGPs.size() + " true gps");
-        OPODriver.log("done");
-        */
-
-//
-//
-////		// use the type signature / MaskedHashableStateFactory
-//        // to reduce the number of options that are about to be created
-//        Set<HashableState> hashedStates = new HashSet<HashableState>();
-//        for (int i = 0; i < endStates.size(); i++) {
-//            State state = endStates.get(i);
-//            HashableState hs = typeSignature.hashState(state);
-//            hashedStates.add(hs);
-//        }
-//        OPODriver.log("made " + hashedStates.size() + " hashedStates");
-//
-
-//        int i = 0;
-//        for (HashableState hs : hashedStates) {
-//            StateConditionTest specificGoal = new InSelectedStateTest(typeSignature, hs);
-//            Planner planner = (Planner) trainer.initializeOptionPlanner(specificGoal);
-//            Policy optionPolicy = planner.planFromState(initialState);
-//            SubgoalOption option = new SubgoalOption(NAME_OPOPTION_DEFAULT + i, optionPolicy, initiation, specificGoal);
-//            options.add(option);
-//            i++;
-//        }
-//        OPODriver.log("made " + options.size() + " options");
 
         return options;
     }

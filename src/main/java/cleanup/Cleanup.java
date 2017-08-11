@@ -632,12 +632,13 @@ public class Cleanup implements DomainGenerator {
         Cleanup cleanup = new Cleanup();
         OOSADomain domain = (OOSADomain) cleanup.generateDomain();
         CleanupRandomStateGenerator gen = new CleanupRandomStateGenerator();
-        gen.setWidth(9);
-        gen.setHeight(9);
+        int size = 9 + RandomFactory.getDefault().nextInt(10);
+        gen.setWidth(size);
+        gen.setHeight(size);
         int numBlocks1 = 1;
         int numBlocks2 = 2;
-        State state1 = gen.generateTwoRoomsOneDoor(); //gen.generateCentralRoomWithFourDoors(numBlocks1);
-        State state2 = gen.generateTwoRoomsOneDoor(); //gen.generateCentralRoomWithFourDoors(numBlocks2);
+        State state1 = gen.generateTwoRoomsWithFourDoors(numBlocks1); //gen.generateCentralRoomWithFourDoors(numBlocks1);
+        State state2 = gen.generateTwoRoomsWithFourDoors(numBlocks2); //gen.generateCentralRoomWithFourDoors(numBlocks2);
 
         System.out.println(state1);
         System.out.println(state2);
@@ -670,7 +671,7 @@ public class Cleanup implements DomainGenerator {
         System.out.println(hs1.equals(hs2));
 
 
-        Visualizer v = CleanupVisualizer.getVisualizer(9, 9);
+        Visualizer v = CleanupVisualizer.getVisualizer(size, size);
 		VisualExplorer exp = new VisualExplorer(domain, v, state2);
 		exp.addKeyAction("w", ACTION_NORTH, "");
 		exp.addKeyAction("s", ACTION_SOUTH, "");
