@@ -25,6 +25,7 @@ import weka.core.converters.CSVLoader;
 import weka.core.converters.ConverterUtils;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.AddValues;
+import weka.filters.unsupervised.attribute.RemoveByName;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -305,7 +306,7 @@ public class OPODriver {
             FileWriter writer = new FileWriter(file);
             Transition exampleTransition = transitions.get(0);
             OOState exampleState = (OOState) exampleTransition.state;
-            List<GroundedProp> gpfs = StateFeaturizer.getAllGroundedProps(exampleState, (OOSADomain) trainer.getDomain());
+            List<GroundedProp> gpfs = StateFeaturizer.getAllGroundedProps((OOSADomain) trainer.getDomain(), exampleState);
             writeFeatureVectorHeader(writer, exampleTransition, trainer, gpfs);
             for (Transition transition : transitions) {
                 writeFeatureVector(writer, transition, trainer, gpfs);
@@ -331,6 +332,27 @@ public class OPODriver {
             data = source.getDataSet();
             data.setClassIndex(data.numAttributes() - 1);
 //            OPODriver.log(data.classAttribute());
+
+            // filter on attributes not in the typesignature
+            SelectedHashableStateFactory shsf = trainer.getOpoption().getTypeSignature();
+            Enumeration<Attribute> atts = data.enumerateAttributes();
+            List<Attribute> attributes = Collections.list(atts);
+//            List<String> toRemove = new ArrayList<String>();
+            for (int i = 0; i < attributes.size(); i++) {
+                Attribute attribute = attributes.get(i);
+                String attributeName = attribute.name();
+                if (shsf.isValidObjectAttribute(attributeName) && !shsf.hasSelected(attributeName)) {
+//                    toRemove.add(attributeName);
+                    RemoveByName filter = new RemoveByName();
+                    String[] args = new String[2];
+                    args[0] = "-E";
+                    args[1] = attributeName;
+                    filter.setOptions(args);
+                    filter.setInputFormat(data);
+                    Instances newData = Filter.useFilter(data, filter);
+                    data = newData;
+                }
+            }
 
 //			SpreadSubsample filter = new SpreadSubsample();
 //			String[] options = new String[2];

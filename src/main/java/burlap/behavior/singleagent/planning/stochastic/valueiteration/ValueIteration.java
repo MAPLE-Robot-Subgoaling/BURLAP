@@ -187,11 +187,11 @@ public class ValueIteration extends DynamicProgramming implements Planner {
 		Set <HashableState> openedSet = new HashSet<HashableState>();
 		openList.offer(sih);
 		openedSet.add(sih);
-		
-		
+
+
 		while(!openList.isEmpty()){
 			HashableState sh = openList.poll();
-			
+
 			//skip this if it's already been expanded
 			if(valueFunction.containsKey(sh)){
 				continue;

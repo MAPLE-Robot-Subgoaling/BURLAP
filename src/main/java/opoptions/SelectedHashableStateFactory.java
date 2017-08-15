@@ -29,6 +29,11 @@ public class SelectedHashableStateFactory extends SimpleHashableStateFactory {
         config.setSelection(objectAttributes);
     }
 
+    // assumes all objectAttributes given in form "objectClass#:attributeName", e.g. "door1:y"
+    public boolean hasSelected(String objectAttribute) {
+        return config.hasSelected(objectAttribute);
+    }
+
     public SelectedConfig getConfig() {
         return config;
     }
@@ -48,4 +53,7 @@ public class SelectedHashableStateFactory extends SimpleHashableStateFactory {
         return new IDSelectedHashableState(s, config);
     }
 
+    public boolean isValidObjectAttribute(String objectAttribute) {
+        return config.isValidObjectAttribute(objectAttribute);
+    }
 }

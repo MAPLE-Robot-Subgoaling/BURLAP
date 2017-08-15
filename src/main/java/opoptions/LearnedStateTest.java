@@ -11,7 +11,7 @@ import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
 
-import java.util.List;
+import java.util.*;
 
 public class LearnedStateTest implements StateConditionTest {
 
@@ -35,32 +35,40 @@ public class LearnedStateTest implements StateConditionTest {
         return name;
     }
 
-    protected Instance stateToInstance(State s) {
+    protected Instance stateToInstance(State s, String[] params) {
         int numAttributes = instancesStructure.numAttributes();
         Instance instance = new DenseInstance(numAttributes);
         instance.setDataset(instancesStructure);
-//        Enumeration<Attribute> as = instancesStructure.enumerateAttributes();
-//        while(as.hasMoreElements()) {
-//            Attribute a = as.nextElement();
-//            OPODriver.log(a + " " + a.index());
-//        }
 
         boolean printWarning = false;
         OOState state = (OOState) s;
-        List<ObjectInstance> objects = state.objects();
+//        List<ObjectInstance> objects = state.objects();
+        List<ObjectInstance> objects = new ArrayList<ObjectInstance>();
+        for(String param : params) { objects.add(state.object(param)); }
+        Map<String, Integer> classCounter = new HashMap<String, Integer>();
+        Map<String, String> objectRenaming = new HashMap<String, String>();
         for (ObjectInstance object : objects) {
+
+            // idea here is to create an instance for all possible permutations of objectclass / name
+            // basically to make this identifier-independent, by reordering the objectClasses
+            String objectClass = object.className();
+            String oldObjectName = object.name();
+            if (classCounter.get(objectClass) == null) { classCounter.put(objectClass, 0); }
+            int redoneObjectIndex = classCounter.get(objectClass);
+            String reorderedObjectName = objectClass + redoneObjectIndex;
+            objectRenaming.put(oldObjectName, reorderedObjectName);
+            classCounter.put(objectClass, redoneObjectIndex+1); // increment counter
+
             for (Object variableKey : object.variableKeys()) {
                 String objectKey = variableKey.toString();
                 String val = object.get(objectKey).toString();
 
-//                OPODriver.log("WARNING: need to fix this to handle any permutation of object name");
-                // one idea is to create an instance for all possible permutations of objectclass / name
-                // basically to make this test identifier-independent
-                String attributeKey = object.name() + ":" + objectKey;
+//                String attributeKey = object.name() + ":" + objectKey;
+                String attributeKey = reorderedObjectName + ":" + objectKey;
                 Attribute attribute = instancesStructure.attribute(attributeKey);
                 if (attribute == null) {
 //                    OPODriver.log("null attribute for key " + attributeKey + ", skipping...");
-                    printWarning = true;
+//                    printWarning = true;
                     continue;
                 }
                 if (attribute.isNumeric()) {
@@ -71,20 +79,29 @@ public class LearnedStateTest implements StateConditionTest {
             }
         }
 
-        if (printWarning) {
-            System.err.println("WARNING: at least one null attribute was found, meaning it was unused in the test");
-            System.err.println("likely due to target state including class/attributes not in the training domain");
-        }
+//        if (printWarning) {
+//            System.err.println("WARNING: at least one null attribute was found, meaning it was unused in the test");
+//            System.err.println("likely due to target state including class/attributes not in the training domain");
+//        }
 
         if (includePFs) {
-            List<GroundedProp> gpfs = featurizer.getAllGroundedProps(state);
+//            List<GroundedProp> gpfs = featurizer.getAllGroundedProps(state);
+            List<GroundedProp> gpfs = featurizer.getSubsetGroundedProps(state, params);
             for (GroundedProp gpf : gpfs) {
+                String[] actualParams = gpf.params.clone();
+                String[] remappedParams = new String[actualParams.length];
+                for (int i = 0; i < remappedParams.length; i++) {
+                    remappedParams[i] = objectRenaming.get(actualParams[i]);
+                }
+                gpf.params = remappedParams;
                 String attributeKey = gpf.toString().replace(",", ";").replace(" ", "");
+
                 Attribute attribute = instancesStructure.attribute(attributeKey);
                 if (attribute == null) {
 //                    OPODriver.log("null attribute for key " + attributeKey + ", skipping...");
                     continue;
                 }
+                gpf.params = actualParams;
                 String value = gpf.isTrue(state) ? "true" : "false";
                 instance.setValue(attribute, value);
             }
@@ -93,9 +110,8 @@ public class LearnedStateTest implements StateConditionTest {
         return instance;
     }
 
-    @Override
-    public boolean satisfies(State s) {
-        Instance instance = stateToInstance(s);
+    public boolean satisfies(OOState s, String[] params) {
+        Instance instance = stateToInstance(s, params);
         double output = 0.0;
         try {
             output = classifier.classifyInstance(instance);
@@ -110,7 +126,12 @@ public class LearnedStateTest implements StateConditionTest {
 //        OPODriver.log("target: " + targetLabel + ", predicted: " + predictedLabel + " out of " + instance.classAttribute() + ", using output " + output);
 
         return predictedLabel.equals(targetLabel);
+    }
 
+
+    @Override
+    public boolean satisfies(State s) {
+        throw new RuntimeException("Temp debug: don't call satisfies(s), use satisfies(s,params) instead");
     }
 
     public boolean isIncludePFs() {
@@ -152,4 +173,5 @@ public class LearnedStateTest implements StateConditionTest {
     public void setTargetLabel(String targetLabel) {
         this.targetLabel = targetLabel;
     }
+
 }

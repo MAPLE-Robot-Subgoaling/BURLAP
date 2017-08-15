@@ -82,4 +82,24 @@ public class SelectedConfig {
         }
         return parameterClasses.toArray(new String[0]);
     }
+
+    public boolean hasSelected(String objectAttribute) {
+
+        String[] split = objectAttribute.split(":");
+        String objectName = split[0];
+        String attributeName = split[1];
+        // split on a digit character, assumes objectName in form "objectClass#" like "agent0"
+        String objectClass = objectName.split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)")[0];
+
+        Set<String> selected = objectClassToSelectedVariables.get(objectClass);
+        if (selected == null) {
+            return false;
+        }
+        return selected.contains(attributeName);
+
+    }
+
+    public boolean isValidObjectAttribute(String objectAttribute) {
+        return objectAttribute.matches("\\w+\\d+:.+");
+    }
 }

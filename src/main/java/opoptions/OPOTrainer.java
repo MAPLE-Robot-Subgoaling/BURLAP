@@ -24,6 +24,7 @@ import burlap.statehashing.simple.SimpleHashableStateFactory;
 import cleanup.CleanupVisualizer;
 import utils.Simulation;
 import utils.SimulationConfig;
+import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 
 import java.util.*;
@@ -125,8 +126,8 @@ public abstract class OPOTrainer extends SimulationConfig {
         RandomFactory.seedMapped(getIndexForRandomFactory(), this.seed);
     }
 
-    public Classifier getClassifier() {
-        return classifier;
+    public Classifier getClassifier() throws Exception {
+        return AbstractClassifier.makeCopy(classifier);
     }
 
     public void setClassifier(Classifier classifier) {
@@ -265,9 +266,15 @@ public abstract class OPOTrainer extends SimulationConfig {
         for(int i = 0; i < parameterOrderGroup.length; i++){
             parameterOrderGroup[i] = name + ".P" + objectClassToOrderNumber.get(parameterClasses[i]);
         }
-        OPOGoalPF opoGoalPF = new OPOGoalPF(name, parameterClasses, parameterOrderGroup);
-        opoption.setGoalPF(opoGoalPF);
+        OPOLearnedPF opoGoalPF = new OPOLearnedPF(name+"_goal", parameterClasses, parameterOrderGroup);
+        opoption.setOPOGoalPF(opoGoalPF);
+        OPOLearnedPF opoInitiationPF = new OPOLearnedPF(name+"_initiation", parameterClasses, parameterOrderGroup);
+        opoption.setOPOInitiationPF(opoInitiationPF);
 
+    }
+
+    public OPOption getOpoption() {
+        return opoption;
     }
 
 }
