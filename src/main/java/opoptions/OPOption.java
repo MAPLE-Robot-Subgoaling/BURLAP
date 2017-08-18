@@ -77,16 +77,12 @@ public class OPOption implements OptionGenerator {
                 if(specificGoal.satisfies(state)) { OPODriver.log(state); }
             }
 
-//            SimulatedEnvironment env = new SimulatedEnvironment(domain);
-//            VisualActionObserver observer = new VisualActionObserver((OOSADomain)domain, CleanupVisualizer.getVisualizer(9,9));
-//            observer.initGUI();
-//            env.addObservers(observer);
-            Episode episode = PolicyUtils.rollout(optionPolicy, initialState, domain.getModel(), 100);
-            List<Episode> episodes = new ArrayList<Episode>();
-            episodes.add(episode);
-            EpisodeSequenceVisualizer esv = new EpisodeSequenceVisualizer(CleanupVisualizer.getVisualizer(9,9),
-                    domain, episodes);
-            esv.initGUI();
+//            Episode episode = PolicyUtils.rollout(optionPolicy, initialState, ((OOSADomain)planner.getDomain()).getModel(), 100);
+//            List<Episode> episodes = new ArrayList<Episode>();
+//            episodes.add(episode);
+//            EpisodeSequenceVisualizer esv = new EpisodeSequenceVisualizer(CleanupVisualizer.getVisualizer(9,9),
+//                    planner.getDomain(), episodes);
+//            esv.initGUI();
 
             SubgoalOption option = new SubgoalOption(name, optionPolicy, specificInitiation, specificGoal);
             options.add(option);
