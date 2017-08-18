@@ -758,11 +758,80 @@ public class CleanupRandomStateGenerator implements StateGenerator {
         return s;
     }
 
+    public OOState generateNoRoomsOneDoor() {
+
+
+        Random rng = RandomFactory.getMapped(DEFAULT_RNG_INDEX);
+
+        int numBlocks = 0;
+        int numRooms = 0;
+        int numDoors = 1;
+
+        int mx = (width / 2);
+        int my = (height / 2);
+        int maxRadiusWidth = mx - 2;
+        int maxRadiusHeight = my -2 ;
+        int mainW = 1 + rng.nextInt(maxRadiusWidth);
+        int mainH = 1 + rng.nextInt(maxRadiusHeight);
+        int availableW = maxRadiusWidth - mainW;
+        int availableH = maxRadiusHeight - mainH;
+
+        int ax = mx + rng.nextInt(availableW + 1);
+        int ay = my + rng.nextInt(availableH + 1);
+        String agentDirection = Cleanup.directions[rng.nextInt(Cleanup.directions.length)];
+
+        List<String> blockColors = new ArrayList<String>(Arrays.asList(Cleanup.COLORS_BLOCKS));
+        List<String> roomColors = new ArrayList<String>(Arrays.asList(Cleanup.COLORS_ROOMS));
+
+
+
+        int bigRoomRadiusWidth = mx;
+        int bigRoomRadiusHeight = my;
+        String bigRoomColor = roomColors.get(rng.nextInt(roomColors.size()));
+        CleanupRoom bigRoom = new CleanupRoom("room1", mx - bigRoomRadiusWidth, mx + bigRoomRadiusWidth, my - bigRoomRadiusHeight, my + bigRoomRadiusHeight, bigRoomColor, Cleanup.SHAPE_ROOM);
+
+
+        String roomColor = roomColors.get(rng.nextInt(roomColors.size()));
+        CleanupRoom room = new CleanupRoom("room0", ax - mainW, ax + mainW, ay - mainH, ay + mainH, roomColor, Cleanup.SHAPE_ROOM);
+        int rx = ((Integer) room.get(Cleanup.ATT_LEFT));
+        int ry = ((Integer) room.get(Cleanup.ATT_BOTTOM));
+        int rWidth = ((Integer) room.get(Cleanup.ATT_RIGHT)) - ((Integer) room.get(Cleanup.ATT_LEFT));
+        int rHeight = ((Integer) room.get(Cleanup.ATT_TOP)) - ((Integer) room.get(Cleanup.ATT_BOTTOM));
+        boolean leftOrBottom = rng.nextBoolean();
+        int dx = 0;
+        int dy = 0;
+        boolean onVerticalWall = rng.nextBoolean();
+        if (onVerticalWall) {
+            dx = leftOrBottom ? rx : rx + rWidth;
+            dy = 1 + ry + rng.nextInt(rHeight - 1);
+        } else {
+            dx = 1 + rx + rng.nextInt(rWidth - 1);
+            dy = leftOrBottom ? ry : ry + rHeight;
+        }
+        CleanupDoor door = new CleanupDoor("door0", dx, dx, dy, dy, Cleanup.LOCKABLE_STATES[0], Cleanup.SHAPE_DOOR, Cleanup.COLOR_GRAY);
+
+        // randomize agent's position
+        CleanupState s = new CleanupState(width, height, ax, ay, agentDirection, numBlocks, numRooms, numDoors);
+//        s.addObject(bigRoom);
+//        s.addObject(room);
+        s.addObject(door);
+        do {
+            ax = rng.nextInt(width);
+            ay = rng.nextInt(height);
+        } while (!s.isOpen(ax,ay));
+        s.getAgent().set(Cleanup.ATT_X, ax);
+        s.getAgent().set(Cleanup.ATT_Y, ay);
+
+        return s;
+    }
+
 
     public State getStateFor(String stateType, int numBlocks) {
         State state = null;
         if (stateType.equals("oneRoomOneDoor")) {
             state = generateOneRoomOneDoor();
+        } else if (stateType.equals("noRoomsOneDoor")) {
+            state = generateNoRoomsOneDoor();
         } else if (stateType.equals("twoRoomsOneDoor")) {
             state = generateTwoRoomsOneDoor();
         } else if (stateType.equals("oneRoomFourDoors")) {

@@ -1,16 +1,22 @@
 package opoptions;
 
+import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.auxiliary.EpisodeSequenceVisualizer;
 import burlap.behavior.singleagent.auxiliary.StateReachability;
 import burlap.behavior.singleagent.options.Option;
+import burlap.behavior.singleagent.options.SubgoalBoundedOption;
 import burlap.behavior.singleagent.options.SubgoalOption;
 import burlap.behavior.singleagent.planning.Planner;
+import burlap.behavior.singleagent.planning.deterministic.DDPlannerPolicy;
 import burlap.behavior.singleagent.planning.stochastic.DynamicProgramming;
+import burlap.behavior.singleagent.planning.stochastic.rtdp.BoundedRTDP;
 import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
+import burlap.behavior.valuefunction.QProvider;
 import burlap.domain.singleagent.gridworld.GridWorldVisualizer;
+import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.oo.propositional.GroundedProp;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
@@ -20,6 +26,7 @@ import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.statehashing.HashableStateFactory;
+import cleanup.Cleanup;
 import cleanup.CleanupVisualizer;
 import cleanup.GroundedPropSC;
 
@@ -71,20 +78,27 @@ public class OPOption implements OptionGenerator {
             GroundedPropSC specificGoal = new GroundedPropSC(goalGP);
 
             Planner planner = (Planner) trainer.initializeOptionPlanner(specificGoal);
-            Policy optionPolicy = planner.planFromState(initialState);
-            for (int stateIdx = 0; stateIdx < states.size(); stateIdx++) {
-                State state = states.get(stateIdx);
-                if(specificGoal.satisfies(state)) { OPODriver.log(state); }
+//            Policy optionPolicy = planner.planFromState(initialState);
+//            Policy optionPolicy = new EpsilonGreedy((QProvider) planner, 0.1);
+            Policy optionPolicy = null;
+            for (State state : states) {
+                optionPolicy = planner.planFromState(state);
             }
+//            for (int stateIdx = 0; stateIdx < states.size(); stateIdx++) {
+//                State state = states.get(stateIdx);
+//                if(specificGoal.satisfies(state)) { OPODriver.log(state); }
+//            }
 
-//            Episode episode = PolicyUtils.rollout(optionPolicy, initialState, ((OOSADomain)planner.getDomain()).getModel(), 100);
-//            List<Episode> episodes = new ArrayList<Episode>();
-//            episodes.add(episode);
-//            EpisodeSequenceVisualizer esv = new EpisodeSequenceVisualizer(CleanupVisualizer.getVisualizer(9,9),
-//                    planner.getDomain(), episodes);
-//            esv.initGUI();
+            Episode episode = PolicyUtils.rollout(optionPolicy, initialState, ((OOSADomain)planner.getDomain()).getModel(), 256);
+            List<Episode> episodes = new ArrayList<Episode>();
+            episodes.add(episode);
+            EpisodeSequenceVisualizer esv = new EpisodeSequenceVisualizer(CleanupVisualizer.getVisualizer(
+                    ((Cleanup)trainer.getDomainGenerator()).getWidth(),
+                    ((Cleanup)trainer.getDomainGenerator()).getHeight()),
+                    planner.getDomain(), episodes);
+            esv.initGUI();
 
-            SubgoalOption option = new SubgoalOption(name, optionPolicy, specificInitiation, specificGoal);
+            SubgoalBoundedOption option = new SubgoalBoundedOption(name, optionPolicy, specificInitiation, specificGoal);
             options.add(option);
         }
 

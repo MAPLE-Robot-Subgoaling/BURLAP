@@ -13,6 +13,8 @@ import java.util.*;
 @ShallowCopyState
 public class CleanupState implements MutableOOState {
 
+    private static final int DEFAULT_MIN_X = 0;
+    private static final int DEFAULT_MIN_Y = 0;
     private int width;
     private int height;
     private CleanupAgent agent;
@@ -222,6 +224,11 @@ public class CleanupState implements MutableOOState {
     }
 
     public boolean wallAt(int x, int y) {
+
+        if (x < DEFAULT_MIN_X || x >= DEFAULT_MIN_X + width || y < DEFAULT_MIN_Y || y >= DEFAULT_MIN_Y + height ) {
+            return true;
+        }
+
         // check if any room has a wall at x,y
         for (CleanupRoom room : rooms.values()) {
             if (wallAt(room, x, y)) {

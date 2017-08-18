@@ -638,7 +638,7 @@ public class Cleanup implements DomainGenerator {
         int numBlocks1 = 1;
         int numBlocks2 = 2;
         State state1 = gen.generateTwoRoomsWithFourDoors(numBlocks1); //gen.generateCentralRoomWithFourDoors(numBlocks1);
-        State state2 = gen.generateTwoRoomsWithFourDoors(numBlocks2); //gen.generateCentralRoomWithFourDoors(numBlocks2);
+        State state2 = gen.getStateFor("noRoomsOneDoor",numBlocks2);//gen.generateTwoRoomsWithFourDoors(numBlocks2); //gen.generateCentralRoomWithFourDoors(numBlocks2);
 
         System.out.println(state1);
         System.out.println(state2);

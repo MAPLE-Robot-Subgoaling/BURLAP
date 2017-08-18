@@ -9,6 +9,7 @@ import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.options.OptionType;
 import burlap.debugtools.RandomFactory;
+import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
@@ -195,40 +196,7 @@ public abstract class OPOTrainer extends SimulationConfig {
 
         setupAgent();
 
-        Set<Option> options = opoption.generateOptions(this);
 
-        QLearning ql = new QLearning(domain, 0.9, hashingFactory, 0.0, 0.01);
-        ql.setLearningPolicy(new EpsilonGreedy(ql, 0.1));
-        for (Option option : options) {
-            ql.addActionType(new OptionType(option));
-        }
-        VisualActionObserver observer = new VisualActionObserver((OOSADomain) domain, CleanupVisualizer.getVisualizer(9, 9));
-        observer.initGUI();
-        env = new SimulatedEnvironment(domain, initialState);
-        env = new EnvironmentServer(env, observer);
-        int numEpisodes = 100;
-        int maxEpisodeSize = 100;
-        List<Episode> episodes = new ArrayList<Episode>();
-        for (int i = 0; i < numEpisodes; i++) {
-            Episode e = ql.runLearningEpisode(env, maxEpisodeSize);
-            OPODriver.log(i + ": " + e.maxTimeStep() + " " + e.actionSequence.toString());
-            episodes.add(e);
-            env.resetEnvironment();
-        }
-        runEpisodeVisualizer(episodes);
-//        for (LearnedStateTest test : tests) {
-//            OPODriver.log("learnedStateTest for " + test.getTargetLabel());
-//            OPODriver.log("predicted / actual: ");
-//            for (State state : states) {
-//                OOState s = (OOState) state;
-//                boolean satisfied = test.satisfies(s);
-//                OPODriver.log(satisfied + " / " + satisfiesTrainingGoal(s) + ", for state " + StateFeaturizer.stateToStringBuilder(new StringBuilder(), s));
-//            }
-//        }
-
-//        episodeOutputPath = getEpisodeOutputPathEvaluation();
-//        String seedTimestamp = planAndRollout(plotter);
-//        lastSeedTimestampEvaluation = seedTimestamp;
 
     }
 
@@ -276,5 +244,7 @@ public abstract class OPOTrainer extends SimulationConfig {
     public OPOption getOpoption() {
         return opoption;
     }
+
+    public abstract DomainGenerator getDomainGenerator();
 
 }

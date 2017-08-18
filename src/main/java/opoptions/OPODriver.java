@@ -24,6 +24,7 @@ import weka.core.converters.ArffSaver;
 import weka.core.converters.CSVLoader;
 import weka.core.converters.ConverterUtils;
 import weka.filters.Filter;
+import weka.filters.supervised.instance.SpreadSubsample;
 import weka.filters.unsupervised.attribute.AddValues;
 import weka.filters.unsupervised.attribute.RemoveByName;
 

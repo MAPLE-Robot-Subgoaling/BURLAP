@@ -8,12 +8,12 @@
     "nameEvaluationStateType"       : "twoRoomsFourDoors",
     "numBlocksTraining"             : 0,
     "numBlocksEvaluation"           : 0,
-    "includePFs"                    : true,
+    "includePFs"                    : false,
     "domainGenerator" : {
         "minX"                      : 0,
         "minY"                      : 0,
-        "maxX"                      : 9,
-        "maxY"                      : 9
+        "maxX"                      : 25,
+        "maxY"                      : 25
 	},
     "numGoals"                      : 1,
 	"useEpsilonDecay"               : true,
