@@ -1,29 +1,26 @@
-package opoptions;
+package burlap.statehashing.selected;
 
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.OOStateUtilities;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.State;
-import burlap.statehashing.simple.IDSimpleHashableState;
+import burlap.statehashing.simple.IISimpleHashableState;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class IDSelectedHashableState extends IDSimpleHashableState {
+public class IISelectedHashableState extends IISimpleHashableState {
 
     public SelectedConfig config;
 
-    public IDSelectedHashableState() {
+    public IISelectedHashableState() {
     }
 
-    public IDSelectedHashableState(SelectedConfig config) {
+    public IISelectedHashableState(SelectedConfig config) {
         this.config = config;
     }
 
-    public IDSelectedHashableState(State s, SelectedConfig config) {
+    public IISelectedHashableState(State s, SelectedConfig config) {
         super(s);
         this.config = config;
     }
@@ -39,8 +36,7 @@ public class IDSelectedHashableState extends IDSimpleHashableState {
             if (config.getSelectedObjectClasses().contains(o.className())) {
                 int oHash = this.computeFlatHashCode(o);
                 int classNameHash = o.className().hashCode();
-                int nameHash = o.name().hashCode();
-                int totalHash = oHash + 31 * classNameHash + 31 * 31 * nameHash;
+                int totalHash = oHash + 31 * classNameHash;
                 hashCodes.add(totalHash);
             }
         }
@@ -90,6 +86,7 @@ public class IDSelectedHashableState extends IDSimpleHashableState {
             return true;
         }
 
+        Set<String> matchedObjects = new HashSet<String>();
         for (Map.Entry<String, List<ObjectInstance>> e1 : OOStateUtilities.objectsByClass(s1).entrySet()) {
 
             String oclass = e1.getKey();
@@ -107,8 +104,19 @@ public class IDSelectedHashableState extends IDSimpleHashableState {
             }
 
             for (ObjectInstance o : objects) {
-                ObjectInstance oo = s2.object(o.name());
-                if (oo == null || !flatStatesEqual(o, oo)) {
+                boolean foundMatch = false;
+                for (ObjectInstance oo : oobjects) {
+                    String ooname = oo.name();
+                    if (matchedObjects.contains(ooname)) {
+                        continue;
+                    }
+                    if (flatStatesEqual(o, oo)) {
+                        foundMatch = true;
+                        matchedObjects.add(ooname);
+                        break;
+                    }
+                }
+                if (!foundMatch) {
                     return false;
                 }
             }
@@ -117,6 +125,7 @@ public class IDSelectedHashableState extends IDSimpleHashableState {
 
         return true;
     }
+
 
     @Override
     protected boolean flatStatesEqual(State s1, State s2) {

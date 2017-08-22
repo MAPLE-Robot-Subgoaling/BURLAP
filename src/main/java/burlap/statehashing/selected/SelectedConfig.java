@@ -1,4 +1,6 @@
-package opoptions;
+package burlap.statehashing.selected;
+
+import opoptions.OPODriver;
 
 import java.util.*;
 

@@ -1,4 +1,4 @@
-package opoptions;
+package burlap.statehashing.selected;
 
 
 import burlap.mdp.core.state.State;
@@ -7,9 +7,7 @@ import burlap.statehashing.simple.IDSimpleHashableState;
 import burlap.statehashing.simple.IISimpleHashableState;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class SelectedHashableStateFactory extends SimpleHashableStateFactory {
 

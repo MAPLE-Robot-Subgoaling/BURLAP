@@ -10,6 +10,7 @@ import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.model.FullModel;
 import burlap.mdp.singleagent.oo.OOSADomain;
+import burlap.statehashing.selected.SelectedHashableStateFactory;
 import cat.CATrajectory;
 import cat.CreateActionModels;
 import cat.VariableTree;
@@ -24,7 +25,6 @@ import weka.core.converters.ArffSaver;
 import weka.core.converters.CSVLoader;
 import weka.core.converters.ConverterUtils;
 import weka.filters.Filter;
-import weka.filters.supervised.instance.SpreadSubsample;
 import weka.filters.unsupervised.attribute.AddValues;
 import weka.filters.unsupervised.attribute.RemoveByName;
 

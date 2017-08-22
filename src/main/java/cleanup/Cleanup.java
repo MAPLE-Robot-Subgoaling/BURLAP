@@ -20,12 +20,11 @@ import burlap.shell.visual.VisualExplorer;
 import burlap.statehashing.HashableState;
 import burlap.visualizer.Visualizer;
 import cleanup.state.*;
-import opoptions.SelectedHashableStateFactory;
+import burlap.statehashing.selected.SelectedHashableStateFactory;
 
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 
 public class Cleanup implements DomainGenerator {
