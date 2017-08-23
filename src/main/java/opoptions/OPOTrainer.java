@@ -10,6 +10,7 @@ import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
+import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.oo.OOSADomain;
@@ -35,8 +36,8 @@ public abstract class OPOTrainer extends SimulationConfig {
     protected boolean includePFs;
     protected String trainerName = "unsetTrainer";
     protected String domainName = "unsetDomain";
-    protected RewardFunction rf;
-    protected TerminalFunction tf;
+//    protected RewardFunction rf;
+//    protected TerminalFunction tf;
     protected HashableStateFactory hashingFactory;
     protected Environment env;
 
@@ -84,21 +85,21 @@ public abstract class OPOTrainer extends SimulationConfig {
         return getTrainingGoalPF().someGroundingIsTrue(s);
     }
 
-    public RewardFunction getRf() {
-        return rf;
-    }
-
-    public void setRf(RewardFunction rf) {
-        this.rf = rf;
-    }
-
-    public TerminalFunction getTf() {
-        return tf;
-    }
-
-    public void setTf(TerminalFunction tf) {
-        this.tf = tf;
-    }
+//    public RewardFunction getRf() {
+//        return rf;
+//    }
+//
+//    public void setRf(RewardFunction rf) {
+//        this.rf = rf;
+//    }
+//
+//    public TerminalFunction getTf() {
+//        return tf;
+//    }
+//
+//    public void setTf(TerminalFunction tf) {
+//        this.tf = tf;
+//    }
 
     public HashableStateFactory getHashingFactory() {
         return hashingFactory;
@@ -137,7 +138,11 @@ public abstract class OPOTrainer extends SimulationConfig {
 
     public abstract OOState setupStateEvaluation();
 
-    public abstract OOSADomain setupDomain();
+    public abstract OOSADomain setupDomainTraining();
+
+    public abstract OOSADomain setupDomainNoRFTF();
+
+    public abstract OOSADomain setupDomainEvaluation();
 
     public MDPSolver setupAgent() {
         agent.resetSolver();
@@ -167,7 +172,7 @@ public abstract class OPOTrainer extends SimulationConfig {
         setupStateTraining();
 
         // 2. setup the domain
-        setupDomain();
+        setupDomainTraining();
 
         // 3. setup the agent
         setupAgent();
@@ -186,7 +191,7 @@ public abstract class OPOTrainer extends SimulationConfig {
 
         setupStateEvaluation();
 
-        setupDomain();
+        setupDomainEvaluation();
 
         setupAgent();
 
@@ -240,5 +245,11 @@ public abstract class OPOTrainer extends SimulationConfig {
     }
 
     public abstract DomainGenerator getDomainGenerator();
+
+    @Override
+    public SADomain getDomain() {
+        return setupDomainNoRFTF();
+    }
+
 
 }

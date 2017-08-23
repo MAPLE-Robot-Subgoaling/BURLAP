@@ -14,16 +14,19 @@ import burlap.behavior.singleagent.auxiliary.performance.PerformancePlotter;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.behavior.singleagent.options.Option;
 import burlap.behavior.singleagent.options.OptionType;
+import burlap.behavior.singleagent.planning.deterministic.uninformed.bfs.BFS;
 import burlap.behavior.singleagent.planning.stochastic.rtdp.RTDP;
 import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.auxiliary.common.GoalConditionTF;
+import burlap.mdp.auxiliary.common.NullTermination;
 import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.common.GoalBasedRF;
+import burlap.mdp.singleagent.common.NullRewardFunction;
 import burlap.mdp.singleagent.common.VisualActionObserver;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.mdp.singleagent.environment.extensions.EnvironmentServer;
@@ -57,10 +60,6 @@ public class CleanupTrainer extends OPOTrainer {
     public double rewardPull;
 //    private MDPSolver optionPlanner;
 
-    // generated in code
-    private CleanupGoal goal;
-    private CleanupGoalDescription[] goalDescriptions;
-
     public CleanupTrainer() {
         // use SimulationConfig to load the trainer, not this constructor
     }
@@ -86,10 +85,39 @@ public class CleanupTrainer extends OPOTrainer {
     }
 
     @Override
-    public OOSADomain setupDomain() {
-        goal = new CleanupGoal();
-        rf = new CleanupRF(goal, rewardGoal, rewardDefault, rewardNoop, rewardPull);
-        tf = new GoalConditionTF(goal);
+    public OOSADomain setupDomainTraining() {
+        CleanupGoal goal = new CleanupGoal();
+        RewardFunction rf = new CleanupRF(goal, rewardGoal, rewardDefault, rewardNoop, rewardPull);
+        TerminalFunction tf = new GoalConditionTF(goal);
+        domainGenerator.setRf(rf);
+        domainGenerator.setTf(tf);
+        domain = (OOSADomain) domainGenerator.generateDomain();
+
+        // setup the goal
+        PropositionalFunction trainingGoalPF = getTrainingGoalPF();
+        CleanupGoalDescription[] goalDescriptions = CleanupRandomStateGenerator.getRandomGoalDescription((CleanupState) initialState, numGoals, trainingGoalPF);
+        goal.setGoals(goalDescriptions);
+        OPODriver.log("Goal is: " + goalDescriptions[0]);
+
+        return (OOSADomain) domain;
+    }
+
+    @Override
+    public OOSADomain setupDomainNoRFTF() {
+        RewardFunction rf = new NullRewardFunction();//new CleanupRF(goal, rewardGoal, rewardDefault, rewardNoop, rewardPull);
+        TerminalFunction tf = new NullTermination();//GoalConditionTF(goal);
+        domainGenerator.setRf(rf);
+        domainGenerator.setTf(tf);
+        domain = (OOSADomain) domainGenerator.generateDomain();
+
+        return (OOSADomain) domain;
+    }
+
+    @Override
+    public OOSADomain setupDomainEvaluation() {
+        CleanupGoal goal = new CleanupGoal();
+        RewardFunction rf = new CleanupRF(goal, rewardGoal, rewardDefault, rewardNoop, rewardPull);
+        TerminalFunction tf = new GoalConditionTF(goal);
 //		tf = new NullTermination();
         domainGenerator.setRf(rf);
         domainGenerator.setTf(tf);
@@ -97,7 +125,7 @@ public class CleanupTrainer extends OPOTrainer {
 
         // setup the goal
         PropositionalFunction trainingGoalPF = getTrainingGoalPF();
-        goalDescriptions = CleanupRandomStateGenerator.getRandomGoalDescription((CleanupState) initialState, numGoals, trainingGoalPF);
+        CleanupGoalDescription[] goalDescriptions = CleanupRandomStateGenerator.getRandomGoalDescription((CleanupState) initialState, numGoals, trainingGoalPF);
         goal.setGoals(goalDescriptions);
         OPODriver.log("Goal is: " + goalDescriptions[0]);
 
@@ -128,6 +156,9 @@ public class CleanupTrainer extends OPOTrainer {
         super.runEvaluation(plotter);
 
         Set<Option> options = opoption.generateOptions(this);
+
+        return;
+        /*
 
         int maxEpisodeSize = 100;
         QLearning ql = new QLearning(domain, 0.9, hashingFactory, 0.0, 0.01, maxEpisodeSize);
@@ -162,6 +193,7 @@ public class CleanupTrainer extends OPOTrainer {
 //        episodeOutputPath = getEpisodeOutputPathEvaluation();
 //        String seedTimestamp = planAndRollout(plotter);
 //        lastSeedTimestampEvaluation = seedTimestamp;
+*/
     }
 
 
@@ -193,8 +225,10 @@ public class CleanupTrainer extends OPOTrainer {
         int maxDepth = 2 * domainGenerator.getWidth() * domainGenerator.getHeight();
 //        RTDP rtdp = new RTDP(optionDomain, optionGamma, optionHashingFactory, vInit, numRollouts, maxDelta, maxDepth);
 //        return rtdp;
-        ValueIteration vi = new ValueIteration(optionDomain, optionGamma, optionHashingFactory, maxDelta, maxIterations);
-        return vi;
+//        ValueIteration vi = new ValueIteration(optionDomain, optionGamma, optionHashingFactory, maxDelta, maxIterations);
+//        return vi;
+        BFS bfs = new BFS(optionDomain, specificGoal, hashingFactory);
+        return bfs;
 //		optionPlanner.setDomain(optionDomain);
 //		optionPlanner.setHashingFactory(optionHashingFactory);
 //		optionPlanner.resetSolver();

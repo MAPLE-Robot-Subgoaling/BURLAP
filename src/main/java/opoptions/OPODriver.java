@@ -307,7 +307,7 @@ public class OPODriver {
             FileWriter writer = new FileWriter(file);
             Transition exampleTransition = transitions.get(0);
             OOState exampleState = (OOState) exampleTransition.state;
-            List<GroundedProp> gpfs = StateFeaturizer.getAllGroundedProps((OOSADomain) trainer.getDomain(), exampleState);
+            List<GroundedProp> gpfs = StateFeaturizer.getAllGroundedProps((OOSADomain) trainer.setupDomainNoRFTF(), exampleState);
             writeFeatureVectorHeader(writer, exampleTransition, trainer, gpfs);
             for (Transition transition : transitions) {
                 writeFeatureVector(writer, transition, trainer, gpfs);
@@ -373,7 +373,7 @@ public class OPODriver {
             log(evaluation.toMatrixString());
             SerializationHelper.write(path + "_" + targetLabel + "_" + classifier.getClass().getSimpleName() + ".model", classifier);
 
-            StateFeaturizer featurizer = new StateFeaturizer((OOSADomain) trainer.getDomain());
+            StateFeaturizer featurizer = new StateFeaturizer((OOSADomain) trainer.setupDomainNoRFTF());
             String name = targetLabel.equals(OPOption.NAME_STATE_TEST_GOAL) ? targetLabel : OPOption.NAME_STATE_TEST_INTERNAL;
             LearnedStateTest test = new LearnedStateTest(name, classifier, data, targetLabel, featurizer, trainer.getIncludePFs());
             trainer.addLearnedStateTest(test);
@@ -406,7 +406,7 @@ public class OPODriver {
         List<CATrajectory> caTrajectories = new ArrayList<CATrajectory>();
         for (Episode trajectory : trajectories) {
             CATrajectory cat = new CATrajectory();
-            cat.annotateTrajectory(trajectory, models, (FullModel) trainer.getDomain().getModel());
+            cat.annotateTrajectory(trajectory, models, (FullModel) trainer.setupDomainNoRFTF().getModel());
             caTrajectories.add(cat);
 //            OPODriver.log(cat);
             Set<String>[] checkedVariables = cat.getCheckedVariables();
