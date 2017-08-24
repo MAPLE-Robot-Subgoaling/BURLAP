@@ -8,7 +8,7 @@
     "nameEvaluationStateType"       : "twoRoomsFourDoors",
     "numBlocksTraining"             : 0,
     "numBlocksEvaluation"           : 0,
-    "includePFs"                    : true,
+    "includePFs"                    : false,
     "domainGenerator" : {
         "minX"                      : 0,
         "minY"                      : 0,

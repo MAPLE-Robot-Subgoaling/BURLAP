@@ -60,6 +60,9 @@ public class CleanupTrainer extends OPOTrainer {
     public double rewardPull;
 //    private MDPSolver optionPlanner;
 
+    private int visualizerWidth = 600;
+    private int visualizerHeight = 600;
+
     public CleanupTrainer() {
         // use SimulationConfig to load the trainer, not this constructor
     }
@@ -140,14 +143,14 @@ public class CleanupTrainer extends OPOTrainer {
     @Override
     public void runEpisodeVisualizer(String filePrefix) {
         Visualizer v = CleanupVisualizer.getVisualizer(domainGenerator.getWidth(), domainGenerator.getHeight());
-        EpisodeSequenceVisualizer esv = new EpisodeSequenceVisualizer(v, domain, episodeOutputPath + "/" + filePrefix);
+        EpisodeSequenceVisualizer esv = new EpisodeSequenceVisualizer(v, domain, episodeOutputPath + "/" + filePrefix, visualizerWidth, visualizerHeight);
         esv.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     @Override
     public void runEpisodeVisualizer(List<Episode> episodes) {
         Visualizer v = CleanupVisualizer.getVisualizer(domainGenerator.getWidth(), domainGenerator.getHeight());
-        EpisodeSequenceVisualizer esv = new EpisodeSequenceVisualizer(v, domain, episodes);
+        EpisodeSequenceVisualizer esv = new EpisodeSequenceVisualizer(v, domain, episodes, visualizerWidth, visualizerHeight);
         esv.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 

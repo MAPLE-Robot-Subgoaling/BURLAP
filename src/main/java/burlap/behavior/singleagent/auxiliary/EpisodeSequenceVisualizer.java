@@ -37,40 +37,40 @@ import java.util.List;
 public class EpisodeSequenceVisualizer extends JFrame{
 
 	private static final long serialVersionUID = 1L;
-	
-	
+
+
 	//Frontend GUI
 	protected Visualizer							painter;
 	protected TextArea								propViewer;
-	
+
 	protected JList									episodeList;
 	protected JScrollPane							episodeScroller;
-	
+
 	protected JList									iterationList;
 	protected JScrollPane							iterationScroller;
-	
+
 	protected Container								controlContainer;
-	
+
 	protected int									cWidth;
 	protected int									cHeight;
-	
-	
-	
+
+
+
 	//Backend
 	protected List <String>							episodeFiles;
 	protected DefaultListModel						episodesListModel;
 
 	protected List <Episode>				directEpisodes;
-	
+
 	protected Episode curEA;
 	protected DefaultListModel						iterationListModel;
-	
+
 	protected Domain								domain;
-	
+
 	protected boolean								alreadyInitedGUI = false;
-	
-	
-	
+
+
+
 	/**
 	 * Initializes the EpisodeSequenceVisualizer. By default the state visualizer will be set to the size 800x800 pixels.
 	 * @param v the visualizer used to render states
@@ -78,9 +78,9 @@ public class EpisodeSequenceVisualizer extends JFrame{
 	 * @param experimentDirectory the path to the directory containing the episode files.
 	 */
 	public EpisodeSequenceVisualizer(Visualizer v, Domain d, String experimentDirectory){
-		
+
 		this.init(v, d, experimentDirectory, 800, 800);
-		
+
 	}
 
 	/**
@@ -120,7 +120,7 @@ public class EpisodeSequenceVisualizer extends JFrame{
 	public EpisodeSequenceVisualizer(Visualizer v, Domain d, List<Episode> episodes, int w, int h){
 		this.initWithDirectEpisodes(v, d, episodes, w, h);
 	}
-	
+
 	/**
 	 * Initializes the EpisodeSequenceVisualizer with episodes read from disk.
 	 * @param v the visualizer used to render states
@@ -130,24 +130,24 @@ public class EpisodeSequenceVisualizer extends JFrame{
 	 * @param h the height of the state visualizer canvas
 	 */
 	public void init(Visualizer v, Domain d, String experimentDirectory, int w, int h){
-		
+
 		painter = v;
 		domain = d;
-		
+
 		//get rid of trailing / and pull out the file paths
 		if(experimentDirectory.charAt(experimentDirectory.length()-1) == '/'){
 			experimentDirectory = experimentDirectory.substring(0, experimentDirectory.length());
 		}
 		this.parseEpisodeFiles(experimentDirectory);
-		
+
 		cWidth = w;
 		cHeight = h;
 
-		
-		
+
+
 		this.initGUI();
-		
-		
+
+
 	}
 
 
@@ -180,34 +180,38 @@ public class EpisodeSequenceVisualizer extends JFrame{
 
 
 	}
-	
+
 	/**
 	 * Initializes the GUI and presents it to the user.
 	 */
 	public void initGUI(){
-		
+
+		int propViewerHeight = Math.round(cHeight * 0.125f);
+		int scrollWidth = Math.round(cHeight * 0.125f);
+		int scrollHeight = Math.round(cHeight * 0.75f);
+
 		if(this.alreadyInitedGUI){
 			return;
 		}
-		
+
 		this.alreadyInitedGUI = true;
 
 		//set viewer components
 		propViewer = new TextArea();
 		propViewer.setEditable(false);
 		painter.setPreferredSize(new Dimension(cWidth, cHeight));
-		propViewer.setPreferredSize(new Dimension(cWidth, 100));
+		propViewer.setPreferredSize(new Dimension(cWidth, propViewerHeight));
 
-		
+
 		getContentPane().add(painter, BorderLayout.CENTER);
 		getContentPane().add(propViewer, BorderLayout.SOUTH);
-		
-		
-		
+
+
+
 		//set episode component
 		episodeList = new JList(episodesListModel);
-		
-		
+
+
 		episodeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		episodeList.setLayoutOrientation(JList.VERTICAL);
 		episodeList.setVisibleRowCount(-1);
@@ -218,16 +222,16 @@ public class EpisodeSequenceVisualizer extends JFrame{
 				handleEpisodeSelection(e);
 			}
 		});
-		
+
 		episodeScroller = new JScrollPane(episodeList);
-		episodeScroller.setPreferredSize(new Dimension(100, 600));
-		
-		
-		
+		episodeScroller.setPreferredSize(new Dimension(scrollWidth, scrollHeight));
+
+
+
 		//set iteration component
 		iterationListModel = new DefaultListModel();
 		iterationList = new JList(iterationListModel);
-		
+
 		iterationList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		iterationList.setLayoutOrientation(JList.VERTICAL);
 		iterationList.setVisibleRowCount(-1);
@@ -236,50 +240,50 @@ public class EpisodeSequenceVisualizer extends JFrame{
 				handleIterationSelection(e);
 			}
 		});
-		
+
 		iterationScroller = new JScrollPane(iterationList);
-		iterationScroller.setPreferredSize(new Dimension(150, 600));
-		
-		
-		
+		iterationScroller.setPreferredSize(new Dimension(scrollWidth, scrollHeight));
+
+
+
 		//add episode-iteration lists to window
 		controlContainer = new Container();
 		controlContainer.setLayout(new BorderLayout());
-		
-		
+
+
 		controlContainer.add(episodeScroller, BorderLayout.WEST);
 		controlContainer.add(iterationScroller, BorderLayout.EAST);
-		
+
 		/*
 		//add render movie button
 		JButton renderButton = new JButton("Render Episode Movie");
 		renderButton.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				//ExperimentVisualizer.this.handleEpisodeRender();
-				
+
 			}
 		});
-		
+
 		controlContainer.add(renderButton, BorderLayout.SOUTH);*/
-		
+
 		getContentPane().add(controlContainer, BorderLayout.EAST);
-		
-		
-		
+
+
+
 		//display the window
 		pack();
 		setVisible(true);
-		
+
 	}
-	
-	
+
+
 	protected void parseEpisodeFiles(String directory){
-		
+
 		File dir = new File(directory);
 		final String ext = ".episode";
-		
+
 		FilenameFilter filter = new FilenameFilter() {
 			public boolean accept(File dir, String name) {
 				if(name.endsWith(ext)){
@@ -290,43 +294,43 @@ public class EpisodeSequenceVisualizer extends JFrame{
 		};
 		String[] children = dir.list(filter);
 		Arrays.sort(children, new AlphanumericSorting());
-		
+
 		episodeFiles = new ArrayList<String>(children.length);
 		episodesListModel = new DefaultListModel();
-		
+
 		for(int i = 0; i < children.length; i++){
 			episodeFiles.add(directory + "/" + children[i]);
 			episodesListModel.addElement(children[i].substring(0, children[i].indexOf(ext)));
 			//System.out.println(files.get(i));
 		}
-		
+
 	}
 
 
 	protected void setIterationListData(){
-		
+
 		//clear the old contents
 		iterationListModel.clear();
-		
-		
+
+
 		//add each action (which is taken in the state being renderd)
 		for(burlap.mdp.core.action.Action ga : curEA.actionSequence){
 			iterationListModel.addElement(ga.toString());
 		}
-		
+
 		//add the final state
 		iterationListModel.addElement("final state");
-		
+
 	}
 
 	protected void handleEpisodeSelection(ListSelectionEvent e){
-		
+
 		if (!e.getValueIsAdjusting()) {
 
 			int ind = episodeList.getSelectedIndex();
 			//System.out.println("epsidoe id: " + ind);
-       		if (ind != -1) {
-       			
+			if (ind != -1) {
+
 				//System.out.println("Loading Episode File...");
 				if(this.directEpisodes == null) {
 					curEA = Episode.read(episodeFiles.get(ind));
@@ -336,45 +340,45 @@ public class EpisodeSequenceVisualizer extends JFrame{
 				}
 				//curEA = EpisodeAnalysis.readEpisodeFromFile(episodeFiles.get(ind));
 				//System.out.println("Finished Loading Episode File.");
-				
+
 				painter.updateState(NullState.instance); //clear screen
 				this.setIterationListData();
-				
+
 			}
 			else{
 				//System.out.println("canceled selection");
 			}
-			
+
 		}
-		
-	
+
+
 	}
 
 	protected void handleIterationSelection(ListSelectionEvent e){
-		
+
 		if (!e.getValueIsAdjusting()) {
 
-       		if (iterationList.getSelectedIndex() != -1) {
+			if (iterationList.getSelectedIndex() != -1) {
 				//System.out.println("Changing visualization...");
 				int index = iterationList.getSelectedIndex();
-				
+
 				State curState = curEA.state(index);
-				
-				
-				
+
+
+
 				//draw it and update prop list
 				//System.out.println(curState.getCompleteStateDescription()); //uncomment to print to terminal
 				painter.updateState(curState);
 				this.updatePropTextArea(curState);
-				
+
 				//System.out.println("Finished updating visualization.");
 			}
 			else{
 				//System.out.println("canceled selection");
 			}
-			
+
 		}
-	
+
 	}
 
 
@@ -384,8 +388,8 @@ public class EpisodeSequenceVisualizer extends JFrame{
 			return ;
 		}
 
-	    StringBuilder buf = new StringBuilder();
-		
+		StringBuilder buf = new StringBuilder();
+
 		List <PropositionalFunction> props = ((OODomain)domain).propFunctions();
 		for(PropositionalFunction pf : props){
 			//List<GroundedProp> gps = s.getAllGroundedPropsFor(pf);
@@ -396,13 +400,13 @@ public class EpisodeSequenceVisualizer extends JFrame{
 				}
 			}
 		}
-		
+
 		propViewer.setText(buf.toString());
-		
-		
-		
+
+
+
 	}
-	
-	
-	
+
+
+
 }
