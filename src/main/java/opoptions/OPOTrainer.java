@@ -11,6 +11,7 @@ import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.common.VisualActionObserver;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.oo.OOSADomain;

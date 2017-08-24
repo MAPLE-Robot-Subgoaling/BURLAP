@@ -53,17 +53,17 @@ public class OPOption implements OptionGenerator {
         int numberPossibleOptions = goalGPs.size();
         OPODriver.log(numberPossibleOptions + " options will be made (based on that many gps found)");
 
-
         List<State> states = StateReachability.getReachableStates(initialState, domain, hashingFactory);
         Set<State> goalStates = new HashSet<State>();
         for (State state : states) {
             for (GroundedProp gp : goalGPs) {
                 if(gp.isTrue((OOState) state)) {
-//                    OPODri/ver.log(gp.toString() + " " + state);
+//                    OPODriver.log(gp.toString() + " " + state);
                     goalStates.add(state);
                 }
             }
         }
+        OPODriver.log(goalStates.size());
         for (State state : goalStates) {
             OPODriver.log(state);
             List<Episode> episodeList = new ArrayList<>();

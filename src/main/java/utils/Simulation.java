@@ -14,6 +14,7 @@ import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.mdp.singleagent.environment.extensions.EnvironmentServer;
+import opoptions.OPODriver;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -47,7 +48,7 @@ public class Simulation {
         Episode e = PolicyUtils.rollout(policy, env, maxEpisodeSize);
 //		if (plotter != null) { plotter.endEpisode(); }
         e.write(episodeOutputPath + filePrepend + ".episode");
-
+        OPODriver.log(e.actionSequence);
 
         return filePrepend;
     }

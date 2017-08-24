@@ -111,6 +111,7 @@ public class OPODriver {
     }
 
     public void runTraining() {
+        OPODriver.log("running training...");
         for (OPOTrainer trainer : trainers) {
             runTraining(trainer);
         }
@@ -131,6 +132,7 @@ public class OPODriver {
     }
 
     public static void csvToArff(String filenamePrefix) throws Exception {
+        OPODriver.log("converting csv to ARFF...");
         // load CSV
         CSVLoader loader = new CSVLoader();
         loader.setSource(new File(filenamePrefix + ".csv"));
@@ -187,12 +189,14 @@ public class OPODriver {
     }
 
     public void runEvaluation() {
+        OPODriver.log("running evaluation...");
         for (OPOTrainer trainer : trainers) {
             runEvaluation(trainer);
         }
     }
 
     public void addTrainers() {
+        OPODriver.log("adding trainers...");
         CleanupTrainer moveToDoor = (CleanupTrainer) SimulationConfig.load("./config/moveToDoor.yaml", CleanupTrainer.class);
         addTrainer(moveToDoor);
 //        CleanupTrainer blockToDoor = (CleanupTrainer) SimulationConfig.load("./config/blockToDoor.yaml", CleanupTrainer.class);
@@ -200,18 +204,21 @@ public class OPODriver {
     }
 
     private void runVisualizer() {
+        OPODriver.log("running visualizers...");
         for (OPOTrainer trainer : trainers) {
             trainer.runEpisodeVisualizer("");
         }
     }
 
     private void collectDataset() {
+        OPODriver.log("collecting datasets...");
         for (OPOTrainer trainer : trainers) {
             collectDataset(trainer);
         }
     }
 
     private void buildClassifiers() {
+        OPODriver.log("building classifiers...");
         for (OPOTrainer trainer : trainers) {
             buildClassifier(trainer, OPOption.NAME_STATE_TEST_GOAL);
             buildClassifier(trainer, OPOption.NAME_STATE_TEST_INTERNAL);
@@ -391,6 +398,7 @@ public class OPODriver {
     }
 
     public void createCATs() {
+        OPODriver.log("creating causally-annotated trajectories...");
         for (OPOTrainer trainer : trainers) {
             createCATs(trainer);
         }
@@ -399,7 +407,6 @@ public class OPODriver {
     // returns the object classes that have any attribute/variable/factor that is checked or changed
     // e.g., "agent" and "room"
     public void createCATs(OPOTrainer trainer) {
-
         Set<String> allCheckedChanged = new HashSet<String>();
         List<Episode> trajectories = Episode.readEpisodes(trainer.getEpisodeOutputPath());
         Map<String, Map<String, VariableTree>> models = CreateActionModels.createModels(trajectories);
@@ -431,12 +438,11 @@ public class OPODriver {
 
     public static void main(String[] args) {
 
-//    	Long globalSeed = null;
-//    	if (globalSeed != null) { log("using a global seed of " + globalSeed); }
         Random rng = new Random();
 
         boolean debugMode = true;
         DPrint.toggleCode(DEBUG_CODE, debugMode);
+
 
         OPODriver driver = new OPODriver();
         long initSeedTraining = rng.nextLong();
