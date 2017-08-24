@@ -247,10 +247,4 @@ public abstract class OPOTrainer extends SimulationConfig {
 
     public abstract DomainGenerator getDomainGenerator();
 
-    @Override
-    public SADomain getDomain() {
-        return setupDomainNoRFTF();
-    }
-
-
 }

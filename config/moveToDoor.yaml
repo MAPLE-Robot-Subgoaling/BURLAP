@@ -41,6 +41,6 @@
 		}
 	},
 	"classifier" : {
-	    "type"                      : "J48"
+	    "type"                      : "MultilayerPerceptron"
 	}
 }
