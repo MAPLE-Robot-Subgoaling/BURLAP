@@ -11,6 +11,7 @@ import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.deterministic.DDPlannerPolicy;
 import burlap.behavior.singleagent.planning.deterministic.DeterministicPlanner;
 import burlap.mdp.core.oo.propositional.GroundedProp;
+import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
@@ -20,6 +21,7 @@ import burlap.statehashing.selected.SelectedHashableStateFactory;
 import cleanup.Cleanup;
 import cleanup.CleanupVisualizer;
 import cleanup.GroundedPropSC;
+import opoptions.trainers.CleanupTrainer;
 
 import java.util.*;
 
@@ -53,28 +55,37 @@ public class OPOption implements OptionGenerator {
         int numberPossibleOptions = goalGPs.size();
         OPODriver.log(numberPossibleOptions + " options will be made (based on that many gps found)");
 
-        List<State> states = StateReachability.getReachableStates(initialState, domain, hashingFactory);
-        Set<State> goalStates = new HashSet<State>();
-        for (State state : states) {
-            for (GroundedProp gp : goalGPs) {
-                if(gp.isTrue((OOState) state)) {
-//                    OPODriver.log(gp.toString() + " " + state);
-                    goalStates.add(state);
-                }
-            }
-        }
-        OPODriver.log(goalStates.size());
-        for (State state : goalStates) {
-            OPODriver.log(state);
-            List<Episode> episodeList = new ArrayList<>();
-            episodeList.add(new Episode(state));
-            trainer.runEpisodeVisualizer(episodeList);
-        }
-        OPODriver.log(goalStates.size());
-
-        return null;
-        /*
-
+//        List<State> states = StateReachability.getReachableStates(initialState, domain, hashingFactory);
+//        Set<State> goalStates = new HashSet<State>();
+//        int truePositives = 0;
+//        int falsePositives = 0;
+//        for (State state : states) {
+//            for (GroundedProp gp : goalGPs) {
+//                if(gp.isTrue((OOState) state)) {
+////                    OPODriver.log(gp.toString() + " " + state);
+//                    goalStates.add(state);
+//                    PropositionalFunction actualPF = ((CleanupTrainer) trainer).getTrainingGoalPF();
+//                    if (actualPF.someGroundingIsTrue((OOState) state)) {
+//                        truePositives += 1;
+//                    } else {
+//                        falsePositives += 1;
+//                    }
+//                }
+//            }
+//        }
+//        OPODriver.log(goalStates.size());
+//        OPODriver.log(truePositives);
+//        OPODriver.log(falsePositives);
+//        for (State state : goalStates) {
+//        }
+  //            OPODriver.log(state);
+//            List<Episode> episodeList = new ArrayList<>();
+//            episodeList.add(new Episode(state));
+//            trainer.runEpisodeVisualizer(episodeList);
+//        }
+//        OPODriver.log(goalStates.size());
+//
+//        return null;
         HashSet<Option> options = new HashSet<Option>();
         for (int i = 0; i < numberPossibleOptions; i++) {
             String name = NAME_OPOPTION_DEFAULT + i;
@@ -112,7 +123,6 @@ public class OPOption implements OptionGenerator {
         }
 
         return options;
-        */
     }
 
     public void addLearnedStateTest(LearnedStateTest test) {

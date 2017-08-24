@@ -8,7 +8,7 @@
     "nameEvaluationStateType"       : "twoRoomsFourDoors",
     "numBlocksTraining"             : 0,
     "numBlocksEvaluation"           : 0,
-    "includePFs"                    : false,
+    "includePFs"                    : true,
     "domainGenerator" : {
         "minX"                      : 0,
         "minY"                      : 0,
@@ -41,6 +41,6 @@
 		}
 	},
 	"classifier" : {
-	    "type"                      : "MultilayerPerceptron"
+	    "type"                      : "J48"
 	}
 }

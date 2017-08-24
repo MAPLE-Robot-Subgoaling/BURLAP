@@ -446,7 +446,7 @@ public class OPODriver {
 
         OPODriver driver = new OPODriver();
         long initSeedTraining = rng.nextLong();
-        int numSeedsTraining = 100;
+        int numSeedsTraining = 1;
         driver.addSeedsTo(driver.getTrainingSeeds(), initSeedTraining, numSeedsTraining);
         log(initSeedTraining + ": " + driver.getTrainingSeeds());
         long initSeedEvaluation = rng.nextLong();

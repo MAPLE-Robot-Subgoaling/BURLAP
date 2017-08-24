@@ -160,10 +160,9 @@ public class CleanupTrainer extends OPOTrainer {
 
         Set<Option> options = opoption.generateOptions(this);
 
-        return;
-        /*
 
         int maxEpisodeSize = 100;
+        SADomain domain = setupDomainEvaluation();
         QLearning ql = new QLearning(domain, 0.9, hashingFactory, 0.0, 0.01, maxEpisodeSize);
         ql.setLearningPolicy(new EpsilonGreedy(ql, 0.1));
         for (Option option : options) {
@@ -196,7 +195,7 @@ public class CleanupTrainer extends OPOTrainer {
 //        episodeOutputPath = getEpisodeOutputPathEvaluation();
 //        String seedTimestamp = planAndRollout(plotter);
 //        lastSeedTimestampEvaluation = seedTimestamp;
-*/
+
     }
 
 
