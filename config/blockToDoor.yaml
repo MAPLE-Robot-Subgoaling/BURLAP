@@ -4,16 +4,16 @@
     "shortName"                     : "b2d",
     "domainName"                    : "cleanup",
     "nameTrainingGoalPF"            : "blockInDoor",
-    "nameTrainingStateType"         : "oneRoomFourDoors",
-    "nameEvaluationStateType"       : "oneRoomFourDoors",
+    "nameTrainingStateType"         : "noRoomsOneDoor",
+    "nameEvaluationStateType"       : "noRoomsOneDoor",
     "numBlocksTraining"             : 1,
-    "numBlocksEvaluation"           : 1,
-    "includePFs"                    : false,
+    "numBlocksEvaluation"           : 2,
+    "includePFs"                    : true,
     "domainGenerator" : {
         "minX"                      : 0,
         "minY"                      : 0,
-        "maxX"                      : 9,
-        "maxY"                      : 9
+        "maxX"                      : 5,
+        "maxY"                      : 5
 	},
     "numGoals"                      : 1,
 	"useEpsilonDecay"               : true,

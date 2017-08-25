@@ -48,6 +48,11 @@ public class CleanupVisualizer {
         return srl;
     }
 
+    public static Visualizer getVisualizer(Cleanup domainGenerator) {
+        Visualizer v = new Visualizer(getStateRenderLayer(domainGenerator.getWidth(), domainGenerator.getHeight()));
+        return v;
+    }
+
     public static class AgentPainter implements ObjectPainter, ImageObserver {
 
         public int minx = 0;

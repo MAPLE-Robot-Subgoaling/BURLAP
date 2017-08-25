@@ -6,17 +6,12 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.model.statemodel.FullStateModel;
 import cleanup.state.CleanupAgent;
 import cleanup.state.CleanupBlock;
-import cleanup.state.CleanupRoom;
 import cleanup.state.CleanupState;
 
 import java.util.List;
 
 public class CleanupModel implements FullStateModel {
 
-    protected int minX;
-    protected int minY;
-    protected int maxX;
-    protected int maxY;
     protected double[][] transitionProbs;
 //		private double lockProb;
 
@@ -24,11 +19,7 @@ public class CleanupModel implements FullStateModel {
 
     }
 
-    public CleanupModel(int minX, int minY, int maxX, int maxY, int numActions) {
-        this.minX = minX;
-        this.minY = minY;
-        this.maxX = maxX;
-        this.maxY = maxY;
+    public CleanupModel(int numActions) {
         this.transitionProbs = new double[numActions][numActions];
         for (int i = 0; i < numActions; i++) {
             for (int j = 0; j < numActions; j++) {

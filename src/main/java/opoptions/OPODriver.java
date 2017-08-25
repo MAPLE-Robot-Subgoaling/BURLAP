@@ -197,10 +197,10 @@ public class OPODriver {
 
     public void addTrainers() {
         OPODriver.log("adding trainers...");
-        CleanupTrainer moveToDoor = (CleanupTrainer) SimulationConfig.load("./config/moveToDoor.yaml", CleanupTrainer.class);
-        addTrainer(moveToDoor);
-//        CleanupTrainer blockToDoor = (CleanupTrainer) SimulationConfig.load("./config/blockToDoor.yaml", CleanupTrainer.class);
-//        addTrainer(blockToDoor);
+//        CleanupTrainer moveToDoor = (CleanupTrainer) SimulationConfig.load("./config/moveToDoor.yaml", CleanupTrainer.class);
+//        addTrainer(moveToDoor);
+        CleanupTrainer blockToDoor = (CleanupTrainer) SimulationConfig.load("./config/blockToDoor.yaml", CleanupTrainer.class);
+        addTrainer(blockToDoor);
     }
 
     private void runVisualizer() {
@@ -426,8 +426,9 @@ public class OPODriver {
                 if (action.equals("START") || action.equals("END")) {
                     continue;
                 }
-//                OPODriver.log("checked " + checked);
-//                OPODriver.log("changed " + changed);
+                OPODriver.log(action);
+                OPODriver.log("checked " + checked);
+                OPODriver.log("changed " + changed);
                 allCheckedChanged.addAll(checked);
                 allCheckedChanged.addAll(changed);
             }

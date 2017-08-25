@@ -10,6 +10,9 @@ import cleanup.Cleanup;
 
 import java.util.*;
 
+import static cleanup.Cleanup.ATT_X;
+import static cleanup.Cleanup.ATT_Y;
+
 @ShallowCopyState
 public class CleanupState implements MutableOOState {
 
@@ -210,7 +213,7 @@ public class CleanupState implements MutableOOState {
     public CleanupBlock getBlockAtPoint(int x, int y) {
         List<ObjectInstance> blocks = objectsOfClass(Cleanup.CLASS_BLOCK);
         for (ObjectInstance b : blocks) {
-            int bx = (Integer) b.get(Cleanup.ATT_X);
+            int bx = (Integer) b.get(ATT_X);
             int by = (Integer) b.get(Cleanup.ATT_Y);
             if (bx == x && by == y) {
                 return (CleanupBlock) b;
@@ -221,6 +224,11 @@ public class CleanupState implements MutableOOState {
 
     public boolean blockAt(int x, int y) {
         return getBlockAtPoint(x, y) != null;
+    }
+
+    public boolean agentAt(int x, int y) {
+        if (getAgent() == null) { return false; }
+        return ((Integer)getAgent().get(ATT_X)) == x && ((Integer)getAgent().get(ATT_Y)) == y;
     }
 
     public boolean wallAt(int x, int y) {
@@ -262,17 +270,7 @@ public class CleanupState implements MutableOOState {
     }
 
     public boolean isOpen(int x, int y) {
-        // must be open in all rooms
-        for (CleanupRoom room : rooms.values()) {
-            if (!isOpen(room, x, y)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean isOpen(CleanupRoom room, int nx, int ny) {
-        return !(isBlocked(room, nx, ny));
+        return !(wallAt(x, y) || blockAt(x, y));
     }
 
     public ObjectInstance roomContainingPoint(int x, int y) {

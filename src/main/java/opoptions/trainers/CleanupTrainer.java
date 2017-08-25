@@ -70,9 +70,7 @@ public class CleanupTrainer extends OPOTrainer {
     @Override
     public OOState setupStateTraining() {
         CleanupRandomStateGenerator.setDebugMode(true);
-        CleanupRandomStateGenerator randomCleanup = new CleanupRandomStateGenerator();
-        randomCleanup.setWidth(domainGenerator.getWidth());
-        randomCleanup.setHeight(domainGenerator.getHeight());
+        CleanupRandomStateGenerator randomCleanup = new CleanupRandomStateGenerator(domainGenerator);
         initialState = (OOState) randomCleanup.getStateFor(nameTrainingStateType, numBlocksTraining);  //randomCleanup.generateOneRoomOneDoor(); // generateTaxiInCleanup(1);//.generateCentralRoomWithClosets(1); //cw.getRandomState(domain, rng, numBlocks);
         return (OOState) initialState;
     }
@@ -80,9 +78,7 @@ public class CleanupTrainer extends OPOTrainer {
     @Override
     public OOState setupStateEvaluation() {
         CleanupRandomStateGenerator.setDebugMode(true);
-        CleanupRandomStateGenerator randomCleanup = new CleanupRandomStateGenerator();
-        randomCleanup.setWidth(domainGenerator.getWidth());
-        randomCleanup.setHeight(domainGenerator.getHeight());
+        CleanupRandomStateGenerator randomCleanup = new CleanupRandomStateGenerator(domainGenerator);
         initialState = (OOState) randomCleanup.getStateFor(nameEvaluationStateType, numBlocksEvaluation);  // randomCleanup.generateCentralRoomWithFourDoors(0); //generateTaxiInCleanup(1);//.generateCentralRoomWithClosets(1); //cw.getRandomState(domain, rng, numBlocks);
         return (OOState) initialState;
     }
@@ -142,14 +138,14 @@ public class CleanupTrainer extends OPOTrainer {
 
     @Override
     public void runEpisodeVisualizer(String filePrefix) {
-        Visualizer v = CleanupVisualizer.getVisualizer(domainGenerator.getWidth(), domainGenerator.getHeight());
+        Visualizer v = CleanupVisualizer.getVisualizer(domainGenerator);
         EpisodeSequenceVisualizer esv = new EpisodeSequenceVisualizer(v, domain, episodeOutputPath + "/" + filePrefix, visualizerWidth, visualizerHeight);
         esv.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     @Override
     public void runEpisodeVisualizer(List<Episode> episodes) {
-        Visualizer v = CleanupVisualizer.getVisualizer(domainGenerator.getWidth(), domainGenerator.getHeight());
+        Visualizer v = CleanupVisualizer.getVisualizer(domainGenerator);
         EpisodeSequenceVisualizer esv = new EpisodeSequenceVisualizer(v, domain, episodes, visualizerWidth, visualizerHeight);
         esv.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }

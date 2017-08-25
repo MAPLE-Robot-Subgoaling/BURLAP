@@ -196,8 +196,6 @@ public abstract class OPOTrainer extends SimulationConfig {
 
         setupAgent();
 
-
-
     }
 
     public boolean getIncludePFs() {
